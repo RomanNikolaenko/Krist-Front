@@ -1,0 +1,52 @@
+@for (order of visible(); track order.id) {
+  <div class="order">
+    <div class="row">
+      <img
+        class="thumb"
+        [src]="order.image"
+        [alt]="order.name"
+        width="700"
+        height="860"
+        loading="lazy"
+      />
+
+      <div>
+        <p class="name">{{ order.name }}</p>
+        <p class="meta">{{ 'orders.size' | t }}: {{ order.size }}</p>
+        <p class="meta">{{ 'orders.qty' | t }}: {{ order.qty }}</p>
+      </div>
+
+      <span class="price">{{ order.price | currency: 'USD' }}</span>
+
+      <div class="actions">
+        <button type="button">{{ 'orders.viewOrder' | t }}</button>
+        @if (order.status === 'Delivered') {
+          <button type="button" class="is-primary" [routerLink]="['/shop']">
+            {{ 'orders.writeReview' | t }}
+          </button>
+        } @else if (order.status === 'In Process') {
+          <button type="button" class="is-cancel" (click)="cancel(order.id)">
+            {{ 'orders.cancelOrder' | t }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <p class="status">
+      <span
+        class="tag"
+        [class.is-process]="order.status === 'In Process'"
+        [class.is-cancelled]="order.status === 'Cancelled'"
+        >{{ 'status.' + order.status | t }}</span
+      >
+      {{ order.statusTextKey | t }}
+    </p>
+  </div>
+}
+
+@if (!visible().length) {
+  <div class="empty">
+    <h3>{{ (query() ? 'orders.noneSearch' : 'orders.noneTitle') | t }}</h3>
+    <a class="btn btn--primary" routerLink="/shop">{{ 'orders.startShopping' | t }}</a>
+  </div>
+}

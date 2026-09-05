@@ -7,14 +7,7 @@ import { Footer } from './footer';
   selector: 'app-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, Header, Footer],
-  styles: `
-    :host { display: flex; flex-direction: column; min-height: 100vh; }
-    main { flex: 1; }
-  `,
-  template: `
-    <app-header />
-    <main><router-outlet /></main>
-    <app-footer />
-  `,
+  styleUrl: './shell.scss',
+  templateUrl: './shell.html',
 })
 export class Shell {}

@@ -1,0 +1,22 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--c-heading);
+}
+:host(.light) {
+  color: var(--c-footer-fg);
+}
+.mark {
+  width: var(--logo-mark, 2.125rem);
+  height: var(--logo-mark, 2.125rem);
+  flex: none;
+}
+.word {
+  /* a host can set --logo-word: none to keep just the mark */
+  display: var(--logo-word, inline);
+  font-size: var(--logo-size, 2.125rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}

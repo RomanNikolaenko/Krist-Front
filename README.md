@@ -16,6 +16,10 @@ npm run build      # production bundle into dist/krist
 Angular 22, standalone components, zoneless change detection, signals, the built-in
 control flow (`@if` / `@for` / `@switch`), and plain SCSS — no UI library.
 
+Every component keeps its template and its styles in files of their own next to the class —
+`foo.ts`, `foo.html`, `foo.scss` — so markup and styles are reachable by the tools that
+understand them rather than living inside template literals.
+
 ## Screens
 
 | Route | Screen |

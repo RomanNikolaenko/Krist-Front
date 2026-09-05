@@ -1,0 +1,50 @@
+<div class="container page">
+  <h1 class="page__title">{{ 'story.title' | t }}</h1>
+  <p class="lead">{{ 'story.lead' | t }}</p>
+
+  <div class="hero">
+    <img
+      src="https://picsum.photos/seed/krist-story/1400/600"
+      [alt]="'story.heroAlt' | t"
+      width="1400"
+      height="600"
+    />
+  </div>
+
+  <section class="mission">
+    <h2>{{ 'story.missionTitle' | t }}</h2>
+    <p>{{ 'story.missionText' | t }}</p>
+  </section>
+
+  <section class="values">
+    <h2>{{ 'story.valuesTitle' | t }}</h2>
+    <div class="values__grid">
+      @for (value of values; track value.titleKey) {
+        <article class="value">
+          <app-icon [name]="value.icon" [size]="24" />
+          <h3>{{ value.titleKey | t }}</h3>
+          <p>{{ value.textKey | t }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <div class="stats">
+    @for (stat of stats; track stat.labelKey) {
+      <div class="stat">
+        <strong>{{ stat.value }}</strong>
+        <span>{{ stat.labelKey | t }}</span>
+      </div>
+    }
+  </div>
+
+  <section class="cta">
+    <h2>{{ 'story.ctaTitle' | t }}</h2>
+    <a class="btn btn--primary" routerLink="/shop">
+      {{ 'story.cta' | t }}
+      <app-icon [name]="'arrow-right'" [size]="24" />
+    </a>
+  </section>
+
+  <app-feature-strip />
+</div>

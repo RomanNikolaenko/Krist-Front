@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.lead {
+  max-width: 38rem;
+  font-size: 1.125rem;
+  color: var(--c-body);
+  margin-bottom: 2.5rem;
+  text-wrap: balance;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  gap: 3.75rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+
+h2 {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+
+  app-icon {
+    color: var(--c-heading);
+    margin-top: 0.125rem;
+  }
+}
+
+.info__label {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+  display: block;
+}
+
+.info__value {
+  font-size: var(--fs-body);
+  color: var(--c-heading);
+
+  a {
+    color: inherit;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.full {
+  grid-column: 1 / -1;
+}
+.submit {
+  justify-self: start;
+  padding-inline: 2.5rem;
+}
+.sent {
+  color: var(--c-success);
+  font-size: var(--fs-sm);
+}
+
+@container page (max-width: 52rem) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  form {
+    grid-template-columns: 1fr;
+  }
+}

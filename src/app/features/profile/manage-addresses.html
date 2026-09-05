@@ -1,0 +1,45 @@
+<button type="button" class="btn btn--primary add" (click)="open.set(true)">
+  <app-icon [name]="'plus'" [size]="24" />
+  {{ 'addr.addNew' | t }}
+</button>
+
+@for (address of account.addresses(); track address.id) {
+  <div class="row">
+    <div>
+      <p class="name">{{ address.name }}</p>
+      <p class="lines">{{ line(address) }}</p>
+      <p class="phone">
+        <app-icon [name]="'phone'" [size]="24" />
+        <a [href]="'tel:' + address.phone.replace(dialSeparators, '')">{{ address.phone }}</a>
+      </p>
+    </div>
+
+    <div class="row__actions">
+      <button type="button" class="action" (click)="edit(address)">
+        <app-icon [name]="'edit'" [size]="24" /> {{ 'addr.edit' | t }}
+      </button>
+      <button
+        type="button"
+        class="action action--danger"
+        (click)="account.removeAddress(address.id)"
+      >
+        <app-icon [name]="'trash'" [size]="24" /> {{ 'addr.delete' | t }}
+      </button>
+    </div>
+  </div>
+}
+
+@if (!account.addresses().length) {
+  <p class="muted">{{ 'addr.none' | t }}</p>
+}
+
+<app-modal [open]="open()" [label]="'addr.addTitle' | t" (closed)="close()">
+  <h2>{{ (editing() ? 'addr.editTitle' : 'addr.addTitle') | t }}</h2>
+  <app-address-form
+    [value]="editing()"
+    [showCancel]="true"
+    [submitLabel]="editing() ? 'form.saveAddress' : 'form.addNewAddress'"
+    (saved)="save($event)"
+    (cancelled)="close()"
+  />
+</app-modal>

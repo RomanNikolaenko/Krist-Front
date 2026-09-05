@@ -1,0 +1,21 @@
+nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: var(--fs-sm);
+}
+a {
+  color: var(--c-heading);
+  &:hover {
+    color: var(--c-ink);
+    text-decoration: underline;
+  }
+}
+.sep {
+  color: var(--c-muted);
+  display: inline-flex;
+}
+.current {
+  color: var(--c-muted);
+}

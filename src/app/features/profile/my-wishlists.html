@@ -1,0 +1,13 @@
+@if (wishlist.products().length) {
+  <div class="grid">
+    @for (product of wishlist.products(); track product.id) {
+      <app-product-card [product]="product" variant="wishlist" (remove)="wishlist.remove($event)" />
+    }
+  </div>
+} @else {
+  <div class="empty">
+    <h3>{{ 'wish.emptyTitle' | t }}</h3>
+    <p class="muted">{{ 'wish.emptyText' | t }}</p>
+    <a class="btn btn--primary" routerLink="/shop">{{ 'wish.browse' | t }}</a>
+  </div>
+}

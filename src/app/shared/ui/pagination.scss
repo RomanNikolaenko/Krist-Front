@@ -1,0 +1,28 @@
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+}
+button {
+  min-width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--c-heading);
+  font-size: var(--fs-sm);
+  &:hover:not(:disabled):not(.is-active) {
+    background: var(--c-surface);
+  }
+  &:disabled {
+    color: var(--c-placeholder);
+    cursor: not-allowed;
+  }
+}
+.is-active {
+  background: var(--c-ink);
+  color: var(--c-on-ink);
+}

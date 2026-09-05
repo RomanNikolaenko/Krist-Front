@@ -44,16 +44,8 @@ const STATE_EVENTS = [
   selector: 'app-carousel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  styles: `
-    :host { display: block; }
-    swiper-container { display: block; }
-    swiper-slide { height: auto; }
-  `,
-  template: `
-    <swiper-container #swiper init="false">
-      <ng-content />
-    </swiper-container>
-  `,
+  styleUrl: './carousel.scss',
+  templateUrl: './carousel.html',
 })
 export class Carousel {
   private readonly container = viewChild.required<ElementRef<HTMLElement>>('swiper');

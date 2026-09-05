@@ -1,0 +1,15 @@
+<div class="track">
+  <span class="rule"></span>
+  @for (s of steps; track s.key; let i = $index) {
+    <div class="step" [class.is-current]="s.key === current()" [class.is-done]="i < index()">
+      <a
+        class="badge"
+        [routerLink]="s.link"
+        [attr.aria-current]="s.key === current() ? 'step' : null"
+      >
+        <app-icon [name]="s.icon" [size]="24" />
+      </a>
+      <span class="label">{{ s.labelKey | t }}</span>
+    </div>
+  }
+</div>

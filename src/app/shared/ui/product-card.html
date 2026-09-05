@@ -1,0 +1,90 @@
+<div class="card__media">
+  <!--
+    The image is the whole of this link, so the link carries the name and
+    the image stays decorative — an alt as well would read the product
+    twice over. Every control below names its product too: a row of cards
+    otherwise gives a screen reader five identical "Quick view" links.
+  -->
+  <a
+    class="card__plate"
+    [routerLink]="['/product', product().slug]"
+    [attr.aria-label]="product().name"
+  >
+    <img
+      class="card__image"
+      [src]="product().images[0]"
+      alt=""
+      width="700"
+      height="860"
+      loading="lazy"
+    />
+  </a>
+
+  <div class="card__tools">
+    @if (variant() === 'wishlist') {
+      <button
+        type="button"
+        class="card__tool card__tool--danger"
+        (click)="remove.emit(product().id)"
+        [attr.aria-label]="'card.removeWishlist' | t: { name: product().name }"
+      >
+        <app-icon [name]="'trash'" [size]="24" />
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="card__tool"
+        [class.card__tool--on]="wishlist.has(product().id)"
+        (click)="wishlist.toggle(product().id)"
+        [attr.aria-label]="'card.wishlistToggle' | t: { name: product().name }"
+      >
+        <app-icon [name]="wishlist.has(product().id) ? 'heart-filled' : 'heart'" [size]="24" />
+      </button>
+      <button
+        type="button"
+        class="card__tool"
+        [attr.aria-label]="'card.compare' | t: { name: product().name }"
+      >
+        <app-icon [name]="'compare'" [size]="24" />
+      </button>
+      <a
+        class="card__tool"
+        [routerLink]="['/product', product().slug]"
+        [attr.aria-label]="'card.quickView' | t: { name: product().name }"
+      >
+        <app-icon [name]="'eye'" [size]="24" />
+      </a>
+    }
+  </div>
+
+  @if (layout() === 'grid') {
+    <button type="button" class="card__cta" (click)="addToCart()">
+      {{ (variant() === 'wishlist' ? 'card.moveToCart' : 'card.addToCart') | t }}
+    </button>
+  }
+</div>
+
+@if (layout() === 'list') {
+  <div class="card__info">
+    <span class="card__brand">{{ product().brand }}</span>
+    <a class="card__name" [routerLink]="['/product', product().slug]">{{ product().name }}</a>
+    <span class="card__prices">
+      <span class="card__price">{{ product().price | currency: 'USD' }}</span>
+      @if (product().oldPrice > product().price) {
+        <span class="card__old">{{ product().oldPrice | currency: 'USD' }}</span>
+      }
+    </span>
+    <button type="button" class="card__cta" (click)="addToCart()">
+      {{ (variant() === 'wishlist' ? 'card.moveToCart' : 'card.addToCart') | t }}
+    </button>
+  </div>
+} @else {
+  <span class="card__brand">{{ product().brand }}</span>
+  <a class="card__name" [routerLink]="['/product', product().slug]">{{ product().name }}</a>
+  <span class="card__prices">
+    <span class="card__price">{{ product().price | currency: 'USD' }}</span>
+    @if (product().oldPrice > product().price) {
+      <span class="card__old">{{ product().oldPrice | currency: 'USD' }}</span>
+    }
+  </span>
+}

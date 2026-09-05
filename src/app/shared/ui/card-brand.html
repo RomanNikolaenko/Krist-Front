@@ -1,0 +1,13 @@
+@switch (brand()) {
+  @case ('mastercard') {
+    <svg viewBox="0 0 38 24" aria-label="Mastercard">
+      <circle cx="15" cy="12" r="9" fill="#eb001b" />
+      <circle cx="23" cy="12" r="9" fill="#f79e1b" fill-opacity=".85" />
+    </svg>
+  }
+  @case ('visa') {
+    <svg viewBox="0 0 38 24" aria-label="Visa">
+      <text class="visa" x="19" y="16" text-anchor="middle">VISA</text>
+    </svg>
+  }
+}

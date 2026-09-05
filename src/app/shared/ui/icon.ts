@@ -23,31 +23,7 @@ export type { IconName } from './icon-registry';
     '[style.--icon-size.rem]': 'size() / 16',
     '[innerHTML]': 'svg()',
   },
-  styles: `
-    /*
-     * inline-flex + a zero line box keeps the glyph exactly on the element box,
-     * so a flex row with align-items:center lands it on the text's optical
-     * centre. vertical-align:middle covers the inline contexts, and flex:none
-     * stops a long label from squashing it. The box is sized here rather than
-     * on the svg, so it holds its place while the file is still in flight.
-     */
-    .app-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: none;
-      width: var(--icon-size, 1.25rem);
-      height: var(--icon-size, 1.25rem);
-      line-height: 0;
-      vertical-align: middle;
-    }
-
-    .app-icon svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-  `,
+  styleUrl: './icon.scss',
   template: '',
 })
 export class Icon {

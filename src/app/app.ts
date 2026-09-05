@@ -9,11 +9,7 @@ import { ThemeStore } from './core/theme-store';
   imports: [RouterOutlet],
   // Keying the outlet on the language rebuilds the view tree when it changes,
   // which is what lets the translate pipe stay pure.
-  template: `
-    @for (lang of [i18n.lang()]; track lang) {
-      <router-outlet />
-    }
-  `,
+  templateUrl: './app.html',
 })
 export class App {
   protected readonly i18n = inject(I18n);

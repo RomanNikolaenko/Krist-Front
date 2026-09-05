@@ -1,0 +1,102 @@
+<div class="container page">
+  <h1 class="page__title">{{ 'pay.title' | t }}</h1>
+
+  <div class="layout">
+    <div>
+      <app-checkout-steps current="payment" />
+
+      <h2>{{ 'pay.select' | t }}</h2>
+
+      @for (option of options; track option.key) {
+        <div class="option">
+          <label class="option__label check check--radio">
+            <input
+              type="radio"
+              name="payment"
+              [value]="option.key"
+              [checked]="account.payment() === option.key"
+              (change)="account.selectPayment(option.key)"
+            />
+            <span>{{ option.labelKey | t }}</span>
+          </label>
+
+          @if (option.key === 'card' && account.payment() === 'card') {
+            <form class="card-form" [formGroup]="form" (ngSubmit)="addCard()">
+              <label class="field">
+                <span class="field__label">{{ 'pay.cardNumber' | t }}</span>
+                <input
+                  class="control"
+                  type="text"
+                  formControlName="number"
+                  placeholder="0000 0000 0000 0000"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  [class.is-invalid]="invalid('number')"
+                />
+                @if (invalid('number')) {
+                  <span class="field__error">{{ 'pay.cardNumberInvalid' | t }}</span>
+                }
+              </label>
+
+              <label class="field">
+                <span class="field__label">{{ 'pay.cardName' | t }}</span>
+                <input
+                  class="control"
+                  type="text"
+                  formControlName="holder"
+                  [placeholder]="'pay.cardNamePlaceholder' | t"
+                  [class.is-invalid]="invalid('holder')"
+                />
+                @if (invalid('holder')) {
+                  <span class="field__error">{{ 'pay.cardNameRequired' | t }}</span>
+                }
+              </label>
+
+              <div class="pair">
+                <label class="field">
+                  <span class="field__label">{{ 'pay.expiry' | t }}</span>
+                  <input
+                    class="control"
+                    type="text"
+                    formControlName="expiry"
+                    placeholder="MM/YY"
+                    [class.is-invalid]="invalid('expiry')"
+                  />
+                  @if (invalid('expiry')) {
+                    <span class="field__error">{{ 'pay.expiryInvalid' | t }}</span>
+                  }
+                </label>
+
+                <label class="field">
+                  <span class="field__label">{{ 'pay.cvv' | t }}</span>
+                  <input
+                    class="control"
+                    type="password"
+                    formControlName="cvv"
+                    placeholder="•••"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    [class.is-invalid]="invalid('cvv')"
+                  />
+                  @if (invalid('cvv')) {
+                    <span class="field__error">{{ 'pay.cvvInvalid' | t }}</span>
+                  }
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn--primary add-card">
+                {{ 'pay.addCard' | t }}
+              </button>
+            </form>
+          }
+        </div>
+      }
+
+      <button type="button" class="btn btn--primary continue" (click)="continue()">
+        {{ 'pay.continue' | t }}
+      </button>
+    </div>
+
+    <app-order-summary />
+  </div>
+</div>

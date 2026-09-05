@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.order {
+  border-bottom: 0.0625rem solid var(--c-line);
+  padding-bottom: 1.375rem;
+  margin-bottom: 1.375rem;
+}
+.order:last-child {
+  margin-bottom: 0;
+}
+
+.row {
+  display: grid;
+  /* the action column sizes to its content so longer locales don't wrap */
+  grid-template-columns: 5rem minmax(0, 1fr) 7.5rem minmax(8rem, max-content);
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.thumb {
+  width: 5rem;
+  height: 5.25rem;
+  object-fit: cover;
+  background: var(--c-surface);
+}
+
+.name {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-heading);
+}
+.meta {
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+}
+.price {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-heading);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actions button {
+  border: 0.0625rem solid var(--c-line-strong);
+  border-radius: var(--r-md);
+  background: var(--c-panel);
+  color: var(--c-heading);
+  padding: 0.6875rem 1.125rem;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  &:hover {
+    background: var(--c-surface);
+  }
+}
+
+.actions .is-primary {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-on-ink);
+  &:hover {
+    background: var(--c-ink-hover);
+  }
+}
+
+.actions .is-cancel {
+  background: var(--c-cancel);
+  border-color: var(--c-cancel);
+  color: var(--c-fixed-white);
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 1.125rem;
+  font-size: var(--fs-sm);
+  color: var(--c-heading);
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  background: var(--c-success-soft);
+  color: var(--c-success);
+}
+.tag.is-process {
+  background: var(--c-warn-soft);
+  color: var(--c-warn);
+}
+.tag.is-cancelled {
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 2.5rem 0;
+}
+
+@container panel (max-width: 44rem) {
+  .row {
+    grid-template-columns: 5rem minmax(0, 1fr);
+    row-gap: 1rem;
+  }
+  .price {
+    grid-column: 2;
+  }
+  .actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+  .actions button {
+    flex: 1;
+  }
+}

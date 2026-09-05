@@ -1,0 +1,28 @@
+<a class="btn btn--primary add" routerLink="/checkout/payment">
+  <app-icon [name]="'plus'" [size]="24" />
+  {{ 'cards.addNew' | t }}
+</a>
+
+@for (card of account.cards(); track card.id) {
+  <div class="card">
+    <app-card-brand [brand]="card.brand" />
+
+    <div>
+      <p class="label">{{ card.label }}</p>
+      <p class="number">{{ card.number }}</p>
+    </div>
+
+    <button
+      type="button"
+      class="action action--danger"
+      (click)="account.removeCard(card.id)"
+      [attr.aria-label]="'cards.deleteLabel' | t: { label: card.label }"
+    >
+      <app-icon [name]="'trash'" [size]="24" /> {{ 'cards.delete' | t }}
+    </button>
+  </div>
+}
+
+@if (!account.cards().length) {
+  <p class="muted empty">{{ 'cards.none' | t }}</p>
+}

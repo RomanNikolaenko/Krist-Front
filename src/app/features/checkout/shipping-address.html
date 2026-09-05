@@ -1,0 +1,60 @@
+<div class="container page">
+  <h1 class="page__title">{{ 'ship.title' | t }}</h1>
+
+  <div class="layout">
+    <div>
+      <app-checkout-steps current="address" />
+
+      <h2>{{ 'ship.selectAddress' | t }}</h2>
+      <p class="lead">
+        {{ 'ship.lead' | t }}
+      </p>
+
+      <div class="cards">
+        @for (address of account.addresses(); track address.id) {
+          <div class="card" [class.is-on]="account.selectedAddress()?.id === address.id">
+            <div class="card__head">
+              <span class="card__name">{{ address.name }}</span>
+              <label class="check">
+                <input
+                  type="checkbox"
+                  [checked]="account.selectedAddress()?.id === address.id"
+                  (change)="account.selectAddress(address.id)"
+                  [attr.aria-label]="'ship.deliverTo' | t: { name: address.name }"
+                />
+              </label>
+            </div>
+
+            <p class="card__lines">{{ line(address) }}</p>
+
+            <div class="card__actions">
+              <button type="button" class="action">
+                <app-icon [name]="'edit'" [size]="24" /> {{ 'addr.edit' | t }}
+              </button>
+              <button
+                type="button"
+                class="action action--danger"
+                (click)="account.removeAddress(address.id)"
+              >
+                <app-icon [name]="'trash'" [size]="24" /> {{ 'addr.delete' | t }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="button" class="btn btn--primary deliver" (click)="deliverHere()">
+        {{ 'ship.deliverHere' | t }}
+      </button>
+
+      <hr />
+
+      <div class="form-wrap">
+        <h2>{{ 'ship.addNew' | t }}</h2>
+        <app-address-form (saved)="add($event)" />
+      </div>
+    </div>
+
+    <app-order-summary />
+  </div>
+</div>

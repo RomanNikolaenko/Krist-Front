@@ -1,0 +1,9 @@
+<div class="features">
+  @for (feature of features; track feature.titleKey) {
+    <article class="features__item">
+      <app-icon class="features__icon" [name]="feature.icon" [size]="24" />
+      <h3 class="features__title">{{ feature.titleKey | t }}</h3>
+      <p class="features__text">{{ feature.textKey | t }}</p>
+    </article>
+  }
+</div>

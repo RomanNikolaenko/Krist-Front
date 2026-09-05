@@ -1,0 +1,43 @@
+<div class="card">
+  <div class="row row--strong">
+    <span>{{ 'summary.subtotal' | t }}</span>
+    <span>{{ cart.subtotal() | currency: 'USD' }}</span>
+  </div>
+
+  <hr />
+
+  <p class="label">{{ 'summary.discountLabel' | t }}</p>
+  <div class="coupon">
+    <input
+      type="text"
+      [(ngModel)]="code"
+      placeholder="FLAT50"
+      [attr.aria-label]="'summary.codeLabel' | t"
+    />
+    <button type="button" (click)="apply()">{{ 'summary.apply' | t }}</button>
+  </div>
+  @if (failed()) {
+    <p class="error">{{ 'summary.invalidCode' | t }}</p>
+  }
+
+  @if (cart.discount(); as off) {
+    <div class="row discount">
+      <span>{{ 'summary.discount' | t: { code: cart.appliedCode() ?? '' } }}</span>
+      <span>-{{ off | currency: 'USD' }}</span>
+    </div>
+  }
+
+  <div class="row">
+    <span>{{ 'summary.delivery' | t }}</span>
+    <span>{{ cart.deliveryCharge() | currency: 'USD' }}</span>
+  </div>
+
+  <hr />
+
+  <div class="row row--strong">
+    <span>{{ 'summary.grandTotal' | t }}</span>
+    <span>{{ cart.total() | currency: 'USD' }}</span>
+  </div>
+
+  <div class="actions"><ng-content /></div>
+</div>

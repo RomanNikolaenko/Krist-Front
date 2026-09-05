@@ -1,0 +1,16 @@
+@for (item of notifications; track item.id) {
+  <div class="item">
+    @if (item.icon === 'avatar' && item.image) {
+      <img class="avatar" [src]="item.image" alt="" width="160" height="160" loading="lazy" />
+    } @else {
+      <span class="badge"><app-icon [name]="badgeIcon(item.icon)" [size]="24" /></span>
+    }
+
+    <div>
+      <p class="title">{{ item.titleKey | t }}</p>
+      <p class="text">{{ item.textKey | t }}</p>
+    </div>
+
+    <span class="time">{{ item.timeKey ? (item.timeKey | t) : item.time }}</span>
+  </div>
+}

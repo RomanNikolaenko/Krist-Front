@@ -1,0 +1,13 @@
+@if (open()) {
+  <div class="backdrop" (click)="onBackdrop($event)">
+    <div
+      class="panel"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="label()"
+      [style.--modal-width.px]="width()"
+    >
+      <ng-content />
+    </div>
+  </div>
+}

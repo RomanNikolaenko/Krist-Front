@@ -35,48 +35,7 @@ export interface SelectOption {
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Select), multi: true },
   ],
   styleUrl: './select.scss',
-  template: `
-    <button
-      #trigger
-      type="button"
-      class="trigger"
-      [class.is-open]="open()"
-      [class.is-empty]="!selected()"
-      [disabled]="disabled()"
-      [attr.aria-label]="ariaLabel() || null"
-      [attr.aria-expanded]="open()"
-      [attr.aria-controls]="open() ? listId : null"
-      [attr.aria-activedescendant]="open() ? listId + '-' + activeIndex() : null"
-      aria-haspopup="listbox"
-      (click)="toggle()"
-      (keydown)="onTriggerKeydown($event)"
-    >
-      <span class="trigger__label">{{ selected()?.label ?? placeholder() }}</span>
-      <app-icon class="trigger__caret" [name]="'chevron-down'" [size]="20" />
-    </button>
-
-    @if (open()) {
-      <ul class="panel" role="listbox" [id]="listId" [attr.aria-label]="ariaLabel() || null">
-        @for (option of options(); track option.value; let i = $index) {
-          <li
-            class="option"
-            role="option"
-            [id]="listId + '-' + i"
-            [class.is-selected]="option.value === value()"
-            [class.is-active]="i === activeIndex()"
-            [attr.aria-selected]="option.value === value()"
-            (click)="choose(option.value)"
-            (mouseenter)="activeIndex.set(i)"
-          >
-            <span>{{ option.label }}</span>
-            @if (option.value === value()) {
-              <app-icon [name]="'check'" [size]="20" />
-            }
-          </li>
-        }
-      </ul>
-    }
-  `,
+  templateUrl: './select.html',
   host: {
     '[class.is-disabled]': 'disabled()',
     '[class.field]': "variant() === 'field'",

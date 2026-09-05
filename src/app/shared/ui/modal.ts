@@ -7,38 +7,8 @@ import { ChangeDetectionStrategy, Component, effect, input, output } from '@angu
 @Component({
   selector: 'app-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: `
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      background: var(--c-overlay);
-      display: grid;
-      place-items: center;
-      padding: 1.5rem;
-      z-index: 100;
-      overflow-y: auto;
-    }
-    .panel {
-      background: var(--c-panel);
-      width: 100%;
-      max-width: var(--modal-width, 30.625rem);
-      padding: 2rem;
-      box-shadow: var(--shadow-card);
-      max-height: calc(100vh - 3rem);
-      overflow-y: auto;
-    }
-    @media (max-width: 37.5rem) { .panel { padding: 1.375rem; } }
-  `,
-  template: `
-    @if (open()) {
-      <div class="backdrop" (click)="onBackdrop($event)">
-        <div class="panel" role="dialog" aria-modal="true" [attr.aria-label]="label()"
-             [style.--modal-width.px]="width()">
-          <ng-content />
-        </div>
-      </div>
-    }
-  `,
+  styleUrl: './modal.scss',
+  templateUrl: './modal.html',
   host: { '(document:keydown.escape)': 'closed.emit()' },
 })
 export class Modal {

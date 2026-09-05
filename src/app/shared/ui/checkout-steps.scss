@@ -1,0 +1,51 @@
+.track {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  position: relative;
+  margin-bottom: 2.25rem;
+}
+.rule {
+  position: absolute;
+  top: 1.75rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  border-top: 0.0625rem dashed var(--c-muted);
+}
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  align-items: flex-start;
+}
+.step:last-child {
+  align-items: flex-end;
+}
+.step:nth-child(3) {
+  align-items: center;
+}
+.badge {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-muted);
+  position: relative;
+  z-index: 1;
+}
+.is-done .badge,
+.is-current .badge {
+  background: var(--c-ink);
+  color: var(--c-on-ink);
+}
+.label {
+  font-size: var(--fs-sm);
+  color: var(--c-heading);
+}
+@container page (max-width: 32rem) {
+  .label {
+    font-size: var(--fs-xs);
+  }
+}

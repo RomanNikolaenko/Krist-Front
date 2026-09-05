@@ -11,28 +11,7 @@ import { T } from '../../shared/t.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, AuthLayout, Icon, T],
   styleUrl: './auth.scss',
-  template: `
-    <app-auth-layout image="https://picsum.photos/seed/krist-forgot/900/1200">
-      <button type="button" class="auth-back" (click)="back()">
-        <app-icon [name]="'chevron-left'" [size]="24" />
-        {{ 'auth.back' | t }}
-      </button>
-
-      <h1 class="auth-title">{{ 'auth.forgotTitle' | t }}</h1>
-      <p class="auth-sub">{{ 'auth.forgotText' | t }}</p>
-
-      <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
-        <label class="field">
-          <span class="field__label">{{ 'auth.email' | t }}</span>
-          <input class="control" type="email" formControlName="email" autocomplete="email"
-                 [class.is-invalid]="invalid()" />
-          @if (invalid()) { <span class="field__error">{{ 'auth.emailInvalid' | t }}</span> }
-        </label>
-
-        <button type="submit" class="btn btn--primary auth-submit">{{ 'auth.sendOtp' | t }}</button>
-      </form>
-    </app-auth-layout>
-  `,
+  templateUrl: './forgot-password.html',
 })
 export class ForgotPassword {
   private readonly fb = inject(FormBuilder);

@@ -1,0 +1,32 @@
+<app-auth-layout image="https://picsum.photos/seed/krist-otp/900/1200">
+  <button type="button" class="auth-back" (click)="back()">
+    <app-icon [name]="'chevron-left'" [size]="24" />
+    {{ 'auth.back' | t }}
+  </button>
+
+  <h1 class="auth-title">{{ 'auth.otpTitle' | t }}</h1>
+  <p class="auth-sub">{{ 'auth.otpText' | t }}<br />{{ email() }}</p>
+
+  <div class="boxes">
+    @for (i of slots; track i) {
+      <input
+        #slot
+        type="text"
+        inputmode="numeric"
+        maxlength="1"
+        [value]="digits()[i]"
+        (input)="onInput(i, $event)"
+        (keydown)="onKeydown(i, $event)"
+        [attr.aria-label]="'auth.otpDigit' | t: { index: i + 1 }"
+      />
+    }
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ 'auth.otpIncomplete' | t: { count: slots.length } }}</p>
+  }
+
+  <button type="button" class="btn btn--primary btn--block auth-submit" (click)="verify()">
+    {{ 'auth.verify' | t }}
+  </button>
+</app-auth-layout>

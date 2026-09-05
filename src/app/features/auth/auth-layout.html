@@ -1,0 +1,14 @@
+<div class="split">
+  <div class="art">
+    @if (showLogo()) {
+      <a class="art__logo" routerLink="/" [attr.aria-label]="'header.brandHome' | t"
+        ><app-logo class="light"
+      /></a>
+    }
+    <img [src]="image()" alt="" width="900" height="1200" />
+  </div>
+
+  <div class="panel">
+    <div class="inner"><ng-content /></div>
+  </div>
+</div>

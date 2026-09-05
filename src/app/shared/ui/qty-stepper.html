@@ -1,0 +1,19 @@
+<div class="box">
+  <button
+    type="button"
+    (click)="step(-1)"
+    [disabled]="value() <= min()"
+    [attr.aria-label]="'qty.decrease' | t"
+  >
+    <app-icon [name]="'minus'" [size]="24" />
+  </button>
+  <span class="value">{{ value() }}</span>
+  <button
+    type="button"
+    (click)="step(1)"
+    [disabled]="value() >= max()"
+    [attr.aria-label]="'qty.increase' | t"
+  >
+    <app-icon [name]="'plus'" [size]="24" />
+  </button>
+</div>

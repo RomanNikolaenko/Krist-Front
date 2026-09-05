@@ -1,0 +1,144 @@
+:host {
+  display: block;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 22.5rem;
+  gap: 3.75rem;
+  align-items: start;
+}
+
+.eta {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--c-heading);
+  margin-bottom: 1.125rem;
+}
+.eta span {
+  font-weight: 400;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 4.75rem 1fr;
+  gap: 1.25rem;
+  padding-block: 1.25rem;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+.line img {
+  width: 4.75rem;
+  height: 5.75rem;
+  object-fit: cover;
+  background: var(--c-surface);
+}
+.line__name {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-heading);
+}
+.line__meta {
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+}
+
+.block {
+  padding-block: 1.625rem;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+.block__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.edit {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-heading);
+  &:hover {
+    background: var(--c-line);
+  }
+}
+
+.who {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-heading);
+}
+.where {
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+  margin-top: 0.25rem;
+}
+
+.confirm {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.confirm__ring {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: var(--c-surface);
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.875rem;
+}
+.confirm__dot {
+  width: 3.875rem;
+  height: 3.875rem;
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: var(--c-on-ink);
+  display: grid;
+  place-items: center;
+}
+.confirm h3 {
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+.confirm p {
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+  margin-bottom: 0.75rem;
+}
+.confirm .btn {
+  width: 100%;
+}
+.confirm__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+@container page (max-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 18.75rem;
+    gap: 2rem;
+  }
+}
+@container page (max-width: 50rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

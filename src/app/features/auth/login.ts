@@ -10,42 +10,7 @@ import { T } from '../../shared/t.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, RouterLink, AuthLayout, T],
   styleUrl: './auth.scss',
-  template: `
-    <app-auth-layout image="https://picsum.photos/seed/krist-login/900/1200" [showLogo]="true">
-      <h1 class="auth-title">{{ 'auth.welcome' | t }} <span aria-hidden="true">👋</span></h1>
-      <p class="auth-sub">{{ 'auth.pleaseLogin' | t }}</p>
-
-      <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
-        <label class="field">
-          <span class="field__label">{{ 'auth.email' | t }}</span>
-          <input class="control" type="email" formControlName="email" autocomplete="email"
-                 [class.is-invalid]="invalid('email')" />
-          @if (invalid('email')) { <span class="field__error">{{ 'auth.emailInvalid' | t }}</span> }
-        </label>
-
-        <label class="field">
-          <span class="field__label">{{ 'auth.password' | t }}</span>
-          <input class="control" type="password" formControlName="password" autocomplete="current-password"
-                 [class.is-invalid]="invalid('password')" />
-          @if (invalid('password')) { <span class="field__error">{{ 'auth.passwordRequired' | t }}</span> }
-        </label>
-
-        <div class="auth-row">
-          <label class="check">
-            <input type="checkbox" formControlName="remember" />
-            <span>{{ 'auth.rememberMe' | t }}</span>
-          </label>
-          <a class="auth-link" routerLink="/forgot-password">{{ 'auth.forgotPassword' | t }}</a>
-        </div>
-
-        <button type="submit" class="btn btn--primary auth-submit">{{ 'auth.login' | t }}</button>
-
-        <p class="auth-row" style="justify-content:center">
-          <span class="muted">{{ 'auth.newHere' | t }}&nbsp;</span><a class="auth-link" routerLink="/signup">{{ 'auth.createAccount' | t }}</a>
-        </p>
-      </form>
-    </app-auth-layout>
-  `,
+  templateUrl: './login.html',
 })
 export class Login {
   private readonly fb = inject(FormBuilder);
