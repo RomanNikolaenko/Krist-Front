@@ -1,0 +1,143 @@
+<!-- Hero -->
+<section class="hero">
+  <span class="hero__word" aria-hidden="true">BEST</span>
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__copy">
+        <p class="hero__kicker">{{ 'home.kicker' | t }}</p>
+        <h1 class="hero__title">{{ 'home.title' | t }}</h1>
+        <p class="hero__offer">{{ 'home.offer' | t }}</p>
+        <a class="btn btn--primary" routerLink="/shop">
+          {{ 'home.shopNow' | t }}
+          <app-icon [name]="'arrow-right'" [size]="24" />
+        </a>
+      </div>
+
+      <div class="hero__media">
+        <span class="hero__frame" aria-hidden="true"></span>
+        <img src="https://picsum.photos/seed/krist-hero/900/1100" [alt]="'home.heroAlt' | t" width="900" height="1100" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Shop by categories -->
+<section class="section container">
+  <div class="section__head">
+    <h2>{{ 'home.categories' | t }}</h2>
+    @if (categoryRail()?.scrollable()) {
+      <div class="rail-nav">
+        <button type="button" (click)="categoryRail()?.prev()" [disabled]="categoryRail()?.atStart()"
+                [attr.aria-label]="'home.prevCategories' | t">
+          <app-icon [name]="'arrow-left'" [size]="24" />
+        </button>
+        <button type="button" (click)="categoryRail()?.next()" [disabled]="categoryRail()?.atEnd()"
+                [attr.aria-label]="'home.nextCategories' | t">
+          <app-icon [name]="'arrow-right'" [size]="24" />
+        </button>
+      </div>
+    }
+  </div>
+
+  <app-carousel #catRailEl [perView]="1.2" [breakpoints]="categoryBreakpoints">
+    @for (category of categories; track category.slug) {
+      <swiper-slide>
+        <a class="cat" routerLink="/shop">
+          <span class="cat__ghost" aria-hidden="true">{{ (category.titleKey | t).split(' ')[0] }}</span>
+          <span class="cat__plate">
+            <img [src]="category.image" alt="" width="540" height="700" loading="lazy" />
+            <span class="cat__label">{{ category.titleKey | t }}</span>
+          </span>
+        </a>
+      </swiper-slide>
+    }
+  </app-carousel>
+</section>
+
+<!-- Bestsellers -->
+<section class="section container">
+  <h2 class="section__title">{{ 'home.bestseller' | t }}</h2>
+  <div class="grid-4">
+    @for (product of bestsellers; track product.id) {
+      <app-product-card [product]="product" />
+    }
+  </div>
+</section>
+
+<!-- Deals of the month -->
+<section class="section container deals">
+  <div class="deals__copy">
+    <h2>{{ 'home.deals' | t }}</h2>
+    <p>{{ 'home.dealsText' | t }}</p>
+
+    <ul class="clock">
+      <li><strong>{{ countdown().days }}</strong><span>{{ 'home.days' | t }}</span></li>
+      <li><strong>{{ pad(countdown().hours) }}</strong><span>{{ 'home.hours' | t }}</span></li>
+      <li><strong>{{ pad(countdown().mins) }}</strong><span>{{ 'home.mins' | t }}</span></li>
+      <li><strong>{{ pad(countdown().secs) }}</strong><span>{{ 'home.secs' | t }}</span></li>
+    </ul>
+
+    <a class="btn btn--primary" routerLink="/shop">
+      {{ 'home.viewAll' | t }}
+      <app-icon [name]="'arrow-right'" [size]="24" />
+    </a>
+  </div>
+
+  <div class="deals__media">
+    <span class="deals__shape" aria-hidden="true"></span>
+    <img src="https://picsum.photos/seed/krist-deal/900/1000" [alt]="'home.dealAlt' | t" width="900" height="1000" loading="lazy" />
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="quotes">
+  <div class="container">
+    <div class="section__head">
+      <h2>{{ 'home.testimonials' | t }}</h2>
+      @if (quoteRail()?.scrollable()) {
+        <div class="rail-nav">
+          <button type="button" (click)="quoteRail()?.prev()" [disabled]="quoteRail()?.atStart()"
+                  [attr.aria-label]="'home.prevQuotes' | t">
+            <app-icon [name]="'arrow-left'" [size]="24" />
+          </button>
+          <button type="button" (click)="quoteRail()?.next()" [disabled]="quoteRail()?.atEnd()"
+                  [attr.aria-label]="'home.nextQuotes' | t">
+            <app-icon [name]="'arrow-right'" [size]="24" />
+          </button>
+        </div>
+      }
+    </div>
+
+    <app-carousel #quoteRailEl [perView]="1.1" [breakpoints]="quoteBreakpoints">
+      @for (quote of testimonials; track quote.author) {
+        <swiper-slide>
+          <figure class="quote">
+            <app-star-rating [value]="quote.rating" [size]="24" />
+            <blockquote>{{ quote.quote }}</blockquote>
+            <figcaption>
+              <img [src]="quote.avatar" alt="" width="96" height="96" loading="lazy" />
+              <span>
+                <strong>{{ quote.author }}</strong>
+                <small>{{ quote.role }}</small>
+              </span>
+            </figcaption>
+          </figure>
+        </swiper-slide>
+      }
+    </app-carousel>
+  </div>
+</section>
+
+<!-- Instagram -->
+<section class="section container">
+  <h2 class="section__title">{{ 'home.instagram' | t }}</h2>
+  <div class="grid-4 stories">
+    @for (story of stories; track story) {
+      <a class="story" href="#"><img [src]="story" [alt]="'home.storyAlt' | t" width="420" height="520" loading="lazy" /></a>
+    }
+  </div>
+</section>
+
+<div class="container">
+  <app-feature-strip />
+</div>

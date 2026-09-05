@@ -1,0 +1,10 @@
+# Normalise to LF in the repository; checkouts get the platform's own endings.
+* text=auto eol=lf
+
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.woff  binary
+*.woff2 binary

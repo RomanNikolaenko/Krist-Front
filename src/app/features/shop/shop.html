@@ -1,0 +1,172 @@
+<div class="container page">
+  <!-- the kit gives the catalogue no visible title, but the page still needs one -->
+  <h1 class="sr-only">{{ 'shop.title' | t }}</h1>
+
+  <app-breadcrumbs [items]="crumbs()" />
+
+  <button type="button" class="btn btn--outline filters-toggle" (click)="filtersOpen.set(!filtersOpen())">
+    <app-icon [name]="'filter'" [size]="24" />
+    {{ 'shop.filters' | t }}
+    @if (activeCount()) { <span class="pill">{{ activeCount() }}</span> }
+  </button>
+
+  <div class="layout">
+    <aside class="sidebar" [class.is-open]="filtersOpen()">
+      <!--
+        Each filter group follows the accordion pattern: the heading carries the
+        button rather than the other way round, which keeps the group in the
+        document outline without nesting flow content inside a button.
+      -->
+      <!-- categories -->
+      <section class="panel">
+        <h2 class="panel__title">
+          <button type="button" class="panel__head" (click)="togglePanel('categories')"
+                  [attr.aria-expanded]="panels().categories">
+            {{ 'shop.productCategories' | t }}
+            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().categories" />
+          </button>
+        </h2>
+
+        @if (panels().categories) {
+          <ul class="panel__body">
+            @for (category of categories; track category) {
+              <li class="opt">
+                <label class="check">
+                  <input type="checkbox" [checked]="filters().categories.includes(category)"
+                         (change)="toggleCategory(category)" />
+                  <span>{{ 'category.' + category | t }}</span>
+                </label>
+                @if (expandable.includes(category)) {
+                  <app-icon [name]="'plus'" [size]="20" class="opt__more" />
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- price -->
+      <section class="panel">
+        <h2 class="panel__title">
+          <button type="button" class="panel__head" (click)="togglePanel('price')"
+                  [attr.aria-expanded]="panels().price">
+            {{ 'shop.filterByPrice' | t }}
+            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().price" />
+          </button>
+        </h2>
+
+        @if (panels().price) {
+          <div class="panel__body">
+            <p class="price-label">
+              {{ 'shop.price' | t }}: {{ 0 | currency: 'USD' : 'symbol' : '1.0-0' }} -
+              {{ filters().maxPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
+            </p>
+            <input class="range" type="range" min="0" [max]="maxPrice" step="10"
+                   [value]="filters().maxPrice" (input)="setPrice($event)" [attr.aria-label]="'shop.maxPrice' | t" />
+          </div>
+        }
+      </section>
+
+      <!-- colour -->
+      <section class="panel">
+        <h2 class="panel__title">
+          <button type="button" class="panel__head" (click)="togglePanel('color')"
+                  [attr.aria-expanded]="panels().color">
+            {{ 'shop.filterByColor' | t }}
+            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().color" />
+          </button>
+        </h2>
+
+        @if (panels().color) {
+          <ul class="panel__body">
+            @for (color of colors; track color.name) {
+              <li class="opt">
+                <button type="button" class="swatch-row" [class.is-on]="filters().colors.includes(color.name)"
+                        (click)="toggleColor(color.name)">
+                  <span class="swatch" [style.background]="color.token"></span>
+                  <span>{{ 'color.' + color.name | t }}</span>
+                </button>
+                <span class="count">({{ color.count }})</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- size -->
+      <section class="panel">
+        <h2 class="panel__title">
+          <button type="button" class="panel__head" (click)="togglePanel('size')"
+                  [attr.aria-expanded]="panels().size">
+            {{ 'shop.filterBySize' | t }}
+            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().size" />
+          </button>
+        </h2>
+
+        @if (panels().size) {
+          <ul class="panel__body">
+            @for (size of sizes; track size.name) {
+              <li class="opt">
+                <label class="check">
+                  <input type="checkbox" [checked]="filters().sizes.includes(size.name)"
+                         (change)="toggleSize(size.name)" />
+                  <span>{{ size.name }}</span>
+                </label>
+                <span class="count">({{ size.count }})</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      @if (activeCount()) {
+        <button type="button" class="btn btn--outline btn--sm btn--block" (click)="reset()">{{ 'shop.clearFilters' | t }}</button>
+      }
+    </aside>
+
+    <div class="content">
+      <div class="toolbar">
+        <div class="views">
+          <button type="button" [class.is-on]="view() === 'grid'" (click)="view.set('grid')" [attr.aria-label]="'shop.gridView' | t">
+            <app-icon [name]="'grid'" [size]="24" />
+          </button>
+          <button type="button" [class.is-on]="view() === 'list'" (click)="view.set('list')" [attr.aria-label]="'shop.listView' | t">
+            <app-icon [name]="'list'" [size]="24" />
+          </button>
+        </div>
+
+        <p class="count">{{ 'shop.showing' | t: { from: result().from, to: result().to, total: result().total } }}</p>
+
+        <app-select
+          class="sort"
+          variant="plain"
+          [options]="sortOptions()"
+          [value]="filters().sort"
+          [ariaLabel]="'shop.sortLabel' | t"
+          (valueChange)="setSort($event)" />
+      </div>
+
+      @if (result().items.length) {
+        <div [class]="view() === 'grid' ? 'grid' : 'list'">
+          @for (product of result().items; track product.id) {
+            <app-product-card [product]="product" [layout]="view()" />
+          }
+        </div>
+
+        @if (result().pages > 1) {
+          <div class="pager">
+            <app-pagination [page]="filters().page" [pages]="result().pages" (pageChange)="setPage($event)" />
+          </div>
+        }
+      } @else {
+        <div class="empty">
+          <h2>{{ 'shop.emptyTitle' | t }}</h2>
+          <p class="muted">{{ 'shop.emptyText' | t }}</p>
+          <button type="button" class="btn btn--primary" (click)="reset()">{{ 'shop.clearFilters' | t }}</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <app-feature-strip />
+</div>

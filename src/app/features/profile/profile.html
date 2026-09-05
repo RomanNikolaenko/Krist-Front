@@ -1,0 +1,94 @@
+<div class="container page">
+  <div class="profile__head">
+    
+    <!-- icon-only, so it carries its name in aria-label rather than in text -->
+    <button type="button" class="profile__toggle" (click)="sideOpen.set(!sideOpen())"
+            [attr.aria-expanded]="sideOpen()" aria-controls="profile-side"
+            [attr.aria-label]="'profile.sections' | t">
+      <app-icon [name]="sideOpen() ? 'close' : 'menu'" [size]="24" />
+    </button>
+
+    <h1 class="profile__title">{{ 'profile.title' | t }}</h1>
+
+    @if (showToolbar()) {
+      <div class="profile__tools">
+        <label class="profile__search">
+          <app-icon [name]="'search'" [size]="24" />
+          <input type="search" [placeholder]="'header.search' | t" [value]="toolbar.search()"
+                 (input)="onSearch($event)" [attr.aria-label]="'profile.searchOrders' | t" />
+        </label>
+
+        <div class="profile__filter">
+          <button type="button" class="btn btn--primary profile__filter-btn"
+                  (click)="filterOpen.set(!filterOpen())" [attr.aria-expanded]="filterOpen()">
+            {{ 'profile.filter' | t }}
+            <app-icon [name]="'sliders'" [size]="24" />
+          </button>
+
+          @if (filterOpen()) {
+            <div class="profile__filter-menu">
+              @for (status of statuses; track status) {
+                <label class="check">
+                  <input type="checkbox" [checked]="toolbar.statuses().includes(status)"
+                         (change)="toolbar.toggleStatus(status)" />
+                  <span>{{ 'status.' + status | t }}</span>
+                </label>
+              }
+              <button type="button" class="profile__filter-clear"
+                      (click)="toolbar.reset(); filterOpen.set(false)">
+                {{ 'profile.clear' | t }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!--
+    Sidenav container. On wide layouts the rail is simply the first grid column.
+    Below the breakpoint it becomes a drawer in "over" mode: it slides in from
+    the left edge across the content, dimming it behind a backdrop, and neither
+    of them takes any space in the flow.
+  -->
+  <div class="profile">
+    <div class="profile__backdrop" [class.profile__backdrop--open]="sideOpen()"
+         (click)="sideOpen.set(false)" aria-hidden="true"></div>
+
+    <!-- shut, the drawer is visibility:hidden, which keeps it out of the tab order -->
+    <aside class="profile__side" id="profile-side" [class.profile__side--open]="sideOpen()">
+      <div class="profile__side-inner">
+        <div class="profile__user">
+          <img class="profile__avatar" [src]="account.profile().avatar" alt="" width="160" height="160" />
+          <div class="profile__identity">
+            <small class="profile__greeting">{{ 'profile.hello' | t }} 👋</small>
+            <strong class="profile__name">{{ account.fullName() }}</strong>
+          </div>
+
+          <!-- the drawer covers the trigger in over mode, so it carries its own way out -->
+          <button type="button" class="profile__close" (click)="sideOpen.set(false)"
+                  [attr.aria-label]="'profile.closeSections' | t">
+            <app-icon [name]="'close'" [size]="24" />
+          </button>
+        </div>
+
+        <nav class="profile__nav" [attr.aria-label]="'profile.sections' | t">
+          @for (item of nav; track item.path) {
+            <a class="profile__nav-item" [routerLink]="item.path"
+               routerLinkActive="profile__nav-item--active" (click)="sideOpen.set(false)">
+              <app-icon class="profile__nav-icon" [name]="item.icon" [size]="24" />
+              <span class="profile__nav-label">{{ item.labelKey | t }}</span>
+            </a>
+          }
+
+          <button type="button" class="profile__nav-item profile__nav-item--out" (click)="signOut()">
+            <app-icon class="profile__nav-icon" [name]="'logout'" [size]="24" />
+            <span class="profile__nav-label">{{ 'profile.signOut' | t }}</span>
+          </button>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="profile__content"><router-outlet /></div>
+  </div>
+</div>

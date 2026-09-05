@@ -1,0 +1,48 @@
+// Shared form furniture for the auth screens.
+.auth-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--c-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.auth-sub {
+  color: var(--c-placeholder);
+  margin: 0.375rem 0 1.875rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.auth-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: var(--fs-sm);
+}
+
+.auth-link {
+  color: var(--c-heading);
+  &:hover { text-decoration: underline; }
+}
+
+.auth-submit {
+  padding-block: 1rem;
+  margin-top: 0.375rem;
+}
+
+.auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--c-heading);
+  margin-bottom: 1.625rem;
+  font-size: var(--fs-body);
+  &:hover { text-decoration: underline; }
+}

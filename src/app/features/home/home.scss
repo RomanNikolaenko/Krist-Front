@@ -1,0 +1,300 @@
+@use '../../../styles/mixins' as *;
+
+:host { display: block; }
+
+// ---------- hero ----------
+.hero {
+  position: relative;
+  background: var(--c-surface-alt);
+  overflow: hidden;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2.5rem;
+  min-height: 37.5rem;
+  padding-block: 2.5rem;
+}
+
+.hero__word {
+  position: absolute;
+  left: 50%;
+  bottom: -4%;
+  transform: translateX(-50%);
+  font-size: clamp(8.75rem, 20vw, 18.125rem);
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: .8;
+  color: var(--c-hero-ghost);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.hero__kicker { font-size: 1.375rem; color: var(--c-heading); }
+
+.hero__title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  margin: 0.25rem 0 0.625rem;
+}
+
+.hero__offer { font-size: 1.5rem; color: var(--c-heading); margin-bottom: 1.75rem; }
+
+.hero__media {
+  /*
+   * The frame sits one offset above and to the right of the photo. That offset
+   * is reserved as padding on the media box rather than bled outwards, so the
+   * border always lands inside the page gutter instead of on the screen edge.
+   */
+  --hero-offset: 1.625rem;
+  position: relative;
+  justify-self: end;
+  width: min(100%, 31rem); // 29.375rem of photo + the offset
+  padding: var(--hero-offset) var(--hero-offset) 0 0;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 47 / 56;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.hero__frame {
+  position: absolute;
+  inset: 0 0 var(--hero-offset) var(--hero-offset);
+  border: 0.375rem solid var(--c-hero-frame);
+  z-index: 2;
+  pointer-events: none;
+}
+
+// ---------- shared section furniture ----------
+.section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  /*
+   * The arrows only mount once Swiper reports the rail overflows, which is a
+   * frame or two after first paint. Reserving their height up front keeps the
+   * section from nudging everything below it down when they appear.
+   */
+  min-height: 3rem;
+  margin-bottom: 1.75rem;
+}
+
+.section__title { text-align: center; margin-bottom: 2rem; }
+
+.rail-nav {
+  display: flex;
+  gap: 0.625rem;
+
+  button {
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    border: 0.0625rem solid var(--c-ink);
+    border-radius: var(--r-sm);
+    background: var(--c-ink);
+    color: var(--c-on-ink);
+    transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+
+    // white on hover, dark at rest — both arrows read as one control
+    &:hover:not(:disabled) {
+      background: var(--c-fixed-white);
+      border-color: var(--c-fixed-white);
+      color: #17171f;
+    }
+
+    &:focus-visible {
+      outline: 0.125rem solid var(--c-ink);
+      outline-offset: 0.1875rem;
+    }
+
+    &:active:not(:disabled) { transform: scale(.94); }
+
+    &:disabled {
+      background: transparent;
+      border-color: var(--c-line);
+      color: var(--c-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem 1.25rem;
+}
+
+// ---------- categories ----------
+.cat {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  padding-top: 2.125rem; // room for the ghost word above the plate
+  overflow: hidden;
+}
+
+.cat__plate {
+  position: relative;
+  display: block;
+  aspect-ratio: 27 / 35;
+  overflow: hidden;
+  background: var(--c-surface);
+  z-index: 1;
+
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+}
+
+.cat:hover .cat__plate img { transform: scale(1.05); }
+
+.cat__ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  /* scales with the card so a long word never has to be cut mid-letter */
+  font-size: clamp(1.5rem, 14cqi, 2.875rem);
+  line-height: 1;
+  font-weight: 500;
+  color: var(--c-cat-ghost);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.cat__label {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  background: var(--c-panel);
+  color: var(--c-heading);
+  font-size: var(--fs-sm);
+  padding: 0.5rem 1.625rem;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+// ---------- deals ----------
+.deals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.75rem;
+  align-items: center;
+}
+
+.deals__copy p { color: var(--c-body); margin: 1rem 0 1.75rem; max-width: 46ch; }
+
+.clock {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 1.875rem;
+
+  li { display: flex; flex-direction: column; }
+  strong { font-size: 1.875rem; font-weight: 600; color: var(--c-heading); line-height: 1.1; }
+  span { font-size: var(--fs-sm); color: var(--c-body); }
+}
+
+.deals__media {
+  position: relative;
+  aspect-ratio: 5 / 4;
+
+  img {
+    width: 88%;
+    height: 100%;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.deals__shape {
+  position: absolute;
+  top: 10%;
+  right: 0;
+  width: 34%;
+  height: 82%;
+  background: #e5484d;
+  z-index: 0;
+}
+
+// ---------- testimonials ----------
+.quotes { background: var(--c-surface); padding-block: 3.5rem; margin-top: 2rem; }
+
+
+.quote {
+  height: 100%;
+  background: var(--c-panel);
+  padding: 1.625rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  blockquote { margin: 0; font-size: var(--fs-sm); color: var(--c-body); }
+
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    img { width: 2.75rem; height: 2.75rem; border-radius: 50%; object-fit: cover; }
+    span { display: flex; flex-direction: column; }
+    strong { font-size: var(--fs-sm); color: var(--c-heading); }
+    small { font-size: var(--fs-xs); color: var(--c-muted); }
+  }
+}
+
+// ---------- instagram ----------
+.story {
+  display: block;
+  aspect-ratio: 21 / 26;
+  overflow: hidden;
+  background: var(--c-surface);
+
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+  &:hover img { transform: scale(1.05); }
+}
+
+// ---------- responsive ----------
+@container page (max-width: 62rem) {
+  .grid-4 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@container page (max-width: 44rem) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@container page (max-width: 27rem) {
+  .grid-4 { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+
+@container page (max-width: 50rem) {
+  // one column, centred: the .btn is inline-flex, so text-align carries it too
+  .hero__inner { grid-template-columns: 1fr; min-height: 0; text-align: center; }
+  // one column: the photo drops below the copy, DOM order does the rest
+  .hero__media { justify-self: center; width: min(100%, 25.375rem); }
+  .deals { grid-template-columns: 1fr; gap: 2rem; }
+  .clock { gap: 1.5rem; }
+}
+
+@container page (max-width: 32rem) {
+  .hero__word { font-size: 6rem; }
+}

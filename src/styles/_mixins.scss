@@ -1,0 +1,20 @@
+// Breakpoints match the responsive plan: 1200 / 1024 / 900 / 600.
+@mixin nav-down { @media (max-width: 64rem) { @content; } }
+@mixin lg-down { @media (max-width: 75rem) { @content; } }
+@mixin md-down { @media (max-width: 56.25rem) { @content; } }
+@mixin sm-down { @media (max-width: 37.5rem) { @content; } }
+
+@mixin clamp-lines($n) {
+  display: -webkit-box;
+  -webkit-line-clamp: $n;
+  line-clamp: $n;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 0.125rem solid var(--c-ink);
+    outline-offset: 0.125rem;
+  }
+}

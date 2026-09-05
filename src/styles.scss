@@ -1,0 +1,242 @@
+@use 'styles/tokens';
+@use 'styles/mixins' as *;
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--c-body);
+  background: var(--c-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.is-locked { overflow: hidden; }
+
+h1, h2, h3, h4, h5 {
+  margin: 0;
+  color: var(--c-heading);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+
+// ---------- layout helpers ----------
+/*
+ * Every page gutter is a container query context named "page", so components
+ * adapt to the space they actually get rather than to the viewport.
+ */
+.container {
+  container-type: inline-size;
+  container-name: page;
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.container--wide { max-width: var(--container-wide); }
+
+.page { padding-block: 1.625rem; }
+
+.page__title {
+  font-size: var(--fs-h1);
+  font-weight: 400;
+  margin-bottom: 2rem;
+  @container page (max-width: 32rem) { font-size: 1.875rem; }
+}
+
+.section { padding-block: 3rem; }
+
+.stack { display: flex; flex-direction: column; }
+
+// ---------- buttons ----------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border: 0.0625rem solid transparent;
+  border-radius: var(--r-md);
+  padding: 0.875rem 1.75rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+  @include focus-ring;
+
+  &--primary {
+    background: var(--c-ink);
+    color: var(--c-on-ink);
+    &:hover { background: var(--c-ink-hover); }
+  }
+
+  &--outline {
+    background: var(--c-panel);
+    color: var(--c-heading);
+    border-color: var(--c-line-strong);
+    &:hover { background: var(--c-surface); }
+  }
+
+  &--ghost {
+    background: var(--c-surface);
+    color: var(--c-heading);
+    &:hover { background: var(--c-line); }
+  }
+
+  &--block { width: 100%; }
+  &--sm { padding: 0.625rem 1.125rem; font-size: var(--fs-sm); }
+
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+// small icon-and-label action used by address / order rows
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 0.625rem 1.25rem;
+  font-size: var(--fs-sm);
+  background: var(--c-surface);
+  color: var(--c-heading);
+  &:hover { background: var(--c-line); }
+  &--danger { background: var(--c-danger-soft); color: var(--c-danger); &:hover { background: #fbdcdc; } }
+}
+
+// ---------- forms ----------
+.field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+.field__label {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+.control {
+  width: 100%;
+  border: 0.0625rem solid var(--c-line-strong);
+  border-radius: var(--r-md);
+  padding: 0.875rem 1rem;
+  font: inherit;
+  font-size: var(--fs-body);
+  color: var(--c-heading);
+  background: var(--c-panel);
+  &::placeholder { color: var(--c-placeholder); }
+  &:focus { outline: none; border-color: var(--c-ink); box-shadow: 0 0 0 0.1875rem rgba(23, 23, 31, .08); }
+}
+
+textarea.control { resize: vertical; min-height: 6rem; }
+
+// app-select in its `field` variant sits in the same rhythm as .control
+app-select.is-invalid .trigger { border-color: var(--c-danger); }
+
+.field__error {
+  font-size: var(--fs-xs);
+  color: var(--c-danger);
+}
+
+.control.is-invalid { border-color: var(--c-danger); }
+
+// checkbox / radio built on the native input
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--c-heading);
+
+  input {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    border: 0.09375rem solid var(--c-line-strong);
+    border-radius: var(--r-sm);
+    // explicit, so the box never falls back to the browser's own control colour
+    background: var(--c-panel);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &::after {
+      content: '';
+      width: 0.6875rem;
+      height: 0.375rem;
+      border-left: 0.125rem solid var(--c-panel);
+      border-bottom: 0.125rem solid var(--c-panel);
+      transform: rotate(-45deg) scale(0);
+      transition: transform .12s ease;
+      margin-top: -0.1875rem;
+    }
+
+    &:checked { background: var(--c-ink); border-color: var(--c-ink); }
+    &:checked::after { transform: rotate(-45deg) scale(1); }
+    &:focus-visible { outline: 0.125rem solid var(--c-ink); outline-offset: 0.125rem; }
+  }
+
+  &--radio input {
+    border-radius: 50%;
+    &::after {
+      width: 0.625rem; height: 0.625rem; margin: 0; border: none; border-radius: 50%;
+      background: var(--c-panel); transform: scale(0);
+    }
+    &:checked::after { transform: scale(1); }
+  }
+}
+
+// ---------- misc ----------
+.muted { color: var(--c-muted); }
+.strike { text-decoration: line-through; color: var(--c-muted); }
+.divider { height: 0.0625rem; background: var(--c-line); border: none; margin: 0; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  &--success { background: var(--c-success-soft); color: var(--c-success); }
+}
+
+/*
+ * Every interactive control is at least 48x48 at every size — the icon inside
+ * stays its design size, only the hit box grows.
+ */
+.btn,
+.action,
+.tool {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+@media (pointer: coarse) {
+  .check input {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.sr-only {
+  position: absolute; width: 0.0625rem; height: 0.0625rem; padding: 0; margin: -0.0625rem;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

@@ -1,0 +1,131 @@
+// Design tokens extracted from the Krist Figma kit.
+//
+// Light is the palette the kit specifies. Dark has no frames in the kit, so it
+// is derived: the neutrals are inverted around the same steps, and the primary
+// action flips to a light chip on a dark ground so buttons keep their contrast.
+//
+// Theme is driven by `data-theme` on <html> (see core/theme-store.ts):
+//   data-theme="light" / "dark" — an explicit choice
+//   no attribute               — follow the OS via prefers-color-scheme
+
+:root {
+  color-scheme: light;
+
+  // Brand / neutrals
+  --c-page: #ffffff;         // page ground
+  --c-panel: #ffffff;        // cards, menus, inputs — anything raised off the page
+  --c-ink: #17171f;          // primary buttons and active states
+  --c-ink-hover: #2c2c38;
+  --c-on-ink: #ffffff;       // text/icons sitting on --c-ink
+  --c-heading: #3c4242;
+  --c-body: #3c4242;
+  --c-muted: #807d7e;
+  --c-placeholder: #bebcbd;
+  --c-line: #e5e5e5;
+  --c-line-strong: #3c4242;
+  --c-surface: #f6f6f6;      // product image plate
+  --c-surface-alt: #ededed;  // hero / section bands
+
+  // Always white regardless of theme: knobs, card-brand chips
+  --c-fixed-white: #ffffff;
+
+  // Decorative layers on the hero and category cards
+  --c-hero-frame: #ffffff;
+  --c-hero-ghost: rgba(255, 255, 255, .55);
+  --c-cat-ghost: rgba(60, 66, 66, .13);
+  --c-brand-plate: #f6f6f6;
+
+  // Footer keeps its dark slab in both themes
+  --c-footer-bg: #17171f;
+  --c-footer-fg: #ffffff;
+  --c-footer-muted: rgba(255, 255, 255, .82);
+  --c-footer-line: rgba(255, 255, 255, .18);
+  --c-footer-line-strong: rgba(255, 255, 255, .5);
+
+  // Semantic
+  --c-danger: #ee5858;
+  --c-danger-soft: #fdeded;
+  --c-success: #12a150;
+  --c-success-soft: #ddf5e5;
+  --c-star: #fbbc04;
+  --c-toggle-on: #22c55e;
+  --c-warn: #b5730a;
+  --c-warn-soft: #fff3d6;
+  --c-cancel: #fa7070;
+  --c-overlay: rgba(60, 66, 66, 0.35);
+
+  // Swatches used by product colour pickers
+  --sw-red: #e85d5d;
+  --sw-blue: #4a4ae4;
+  --sw-orange: #e8a54a;
+  --sw-black: #17171f;
+  --sw-green: #8bc53f;
+  --sw-yellow: #e2d54b;
+
+  // Layout
+  --container: 71.25rem;
+  --container-wide: 77.75rem;
+  --header-h: 6.25rem;
+
+  // Radii
+  --r-sm: 0.25rem;
+  --r-md: 0.5rem;
+  --r-lg: 0.75rem;
+  --r-pill: 62.4375rem;
+
+  // Type scale
+  --fs-h1: 2.5rem;
+  --fs-h2: 1.75rem;
+  --fs-h3: 1.25rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.75rem;
+
+  --font: 'Jost', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --shadow-card: 0 0.25rem 1.5rem rgba(60, 66, 66, 0.12);
+  --shadow-menu: 0 0.75rem 2.5rem rgba(60, 66, 66, 0.16);
+}
+
+// One definition of the dark palette, applied both to the explicit choice and
+// to "System" when the OS asks for dark.
+@mixin dark-palette {
+  color-scheme: dark;
+
+  --c-page: #121218;
+  --c-panel: #1b1b23;
+  --c-ink: #f2f2f5;
+  --c-ink-hover: #dcdce2;
+  --c-on-ink: #16161c;
+  --c-heading: #f0f0f3;
+  --c-body: #c9c9d2;
+  --c-muted: #8f8f9c;
+  --c-placeholder: #6c6c78;
+  --c-line: #2e2e39;
+  --c-line-strong: #4a4a58;
+  --c-surface: #21212a;
+  --c-surface-alt: #1c1c24;
+
+  --c-footer-bg: #0d0d12;
+
+  --c-hero-frame: rgba(255, 255, 255, .3);
+  --c-hero-ghost: rgba(255, 255, 255, .07);
+  --c-cat-ghost: rgba(255, 255, 255, .13);
+
+  --c-danger: #ff7676;
+  --c-danger-soft: #3a2224;
+  --c-success: #4ade80;
+  --c-success-soft: #17301f;
+  --c-warn: #f0b656;
+  --c-warn-soft: #33291a;
+  --c-overlay: rgba(0, 0, 0, .6);
+
+  --shadow-card: 0 0.25rem 1.5rem rgba(0, 0, 0, .5);
+  --shadow-menu: 0 0.75rem 2.5rem rgba(0, 0, 0, .55);
+}
+
+:root[data-theme='dark'] { @include dark-palette; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) { @include dark-palette; }
+}
