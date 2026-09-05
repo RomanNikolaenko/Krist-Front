@@ -7,13 +7,13 @@
       <!-- gallery -->
       <div class="gallery">
         <div class="gallery__main">
-          <img [src]="p.images[activeImage()]" [alt]="p.name" width="700" height="860" />
+          <img [src]="p.images[activeImage()]" [alt]="p.name" width="455" height="500" />
         </div>
         <div class="gallery__thumbs">
           @for (image of p.images; track image; let i = $index) {
             <button type="button" [class.is-on]="i === activeImage()" (click)="pick(i)"
                     [attr.aria-label]="'product.viewImage' | t: { index: i + 1 }">
-              <img [src]="image" [alt]="p.name + ' view ' + (i + 1)" width="700" height="860" loading="lazy" />
+              <img [src]="image" [alt]="p.name + ' view ' + (i + 1)" width="103" height="109" loading="lazy" />
             </button>
           }
         </div>
@@ -110,7 +110,7 @@
             @for (review of reviews; track review.id) {
               <li class="review">
                 <div class="review__head">
-                  <img [src]="review.avatar" [alt]="review.author" width="80" height="80" loading="lazy" />
+                  <img [src]="review.avatar" [alt]="review.author" width="38" height="38" loading="lazy" />
                   <div>
                     <span class="review__author">{{ review.author }}</span>
                     <app-star-rating [value]="review.rating" [size]="18" />

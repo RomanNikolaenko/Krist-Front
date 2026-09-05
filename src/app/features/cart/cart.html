@@ -15,7 +15,7 @@
         @for (item of cart.items(); track item.id) {
           <div class="row">
             <div class="item">
-              <img [src]="item.image" [alt]="item.name" width="700" height="860" loading="lazy" />
+              <img [src]="item.image" [alt]="item.name" width="70" height="84" loading="lazy" />
               <div>
                 <p class="item__name">{{ item.name }}</p>
                 <p class="item__meta">{{ 'cart.size' | t }}: {{ item.size }}</p>

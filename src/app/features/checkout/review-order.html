@@ -11,7 +11,7 @@
 
       @for (item of cart.items(); track item.id) {
         <div class="line">
-          <img [src]="item.image" [alt]="item.name" width="700" height="860" loading="lazy" />
+          <img [src]="item.image" [alt]="item.name" width="76" height="92" loading="lazy" />
           <div>
             <p class="line__name">{{ item.name }}</p>
             <p class="line__meta">{{ item.price | currency: 'USD' }}</p>

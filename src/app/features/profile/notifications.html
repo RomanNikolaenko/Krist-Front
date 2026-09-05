@@ -1,7 +1,7 @@
 @for (item of notifications; track item.id) {
   <div class="item">
     @if (item.icon === 'avatar' && item.image) {
-      <img class="avatar" [src]="item.image" alt="" width="160" height="160" loading="lazy" />
+      <img class="avatar" [src]="item.image" alt="" width="56" height="56" loading="lazy" />
     } @else {
       <span class="badge"><app-icon [name]="badgeIcon(item.icon)" [size]="24" /></span>
     }
