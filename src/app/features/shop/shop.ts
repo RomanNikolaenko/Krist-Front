@@ -12,7 +12,6 @@ import { I18n } from '../../core/i18n/i18n';
 import { Select, SelectOption } from '../../shared/ui/select';
 import { T } from '../../shared/t.pipe';
 
-
 type PanelKey = 'categories' | 'price' | 'color' | 'size';
 
 @Component({
@@ -60,7 +59,9 @@ export class Shop {
 
   protected readonly activeCount = computed(() => {
     const f = this.filters();
-    return f.categories.length + f.colors.length + f.sizes.length + (f.maxPrice < MAX_PRICE ? 1 : 0);
+    return (
+      f.categories.length + f.colors.length + f.sizes.length + (f.maxPrice < MAX_PRICE ? 1 : 0)
+    );
   });
 
   protected togglePanel(key: PanelKey): void {

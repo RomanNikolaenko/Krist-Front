@@ -7,9 +7,9 @@
  */
 .app-icon {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  flex: none;
   width: var(--icon-size, 1.25rem);
   height: var(--icon-size, 1.25rem);
   line-height: 0;

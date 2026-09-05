@@ -9,38 +9,36 @@
 //   no attribute               — follow the OS via prefers-color-scheme
 
 :root {
-  color-scheme: light;
-
   // Brand / neutrals
-  --c-page: #ffffff;         // page ground
-  --c-panel: #ffffff;        // cards, menus, inputs — anything raised off the page
-  --c-ink: #17171f;          // primary buttons and active states
+  --c-page: #fff; // page ground
+  --c-panel: #fff; // cards, menus, inputs — anything raised off the page
+  --c-ink: #17171f; // primary buttons and active states
   --c-ink-hover: #2c2c38;
-  --c-on-ink: #ffffff;       // text/icons sitting on --c-ink
+  --c-on-ink: #fff; // text/icons sitting on --c-ink
   --c-heading: #3c4242;
   --c-body: #3c4242;
   --c-muted: #807d7e;
   --c-placeholder: #bebcbd;
   --c-line: #e5e5e5;
   --c-line-strong: #3c4242;
-  --c-surface: #f6f6f6;      // product image plate
-  --c-surface-alt: #ededed;  // hero / section bands
+  --c-surface: #f6f6f6; // product image plate
+  --c-surface-alt: #ededed; // hero / section bands
 
   // Always white regardless of theme: knobs, card-brand chips
-  --c-fixed-white: #ffffff;
+  --c-fixed-white: #fff;
 
   // Decorative layers on the hero and category cards
-  --c-hero-frame: #ffffff;
-  --c-hero-ghost: rgba(255, 255, 255, .55);
-  --c-cat-ghost: rgba(60, 66, 66, .13);
+  --c-hero-frame: #fff;
+  --c-hero-ghost: rgb(255 255 255 / 55%);
+  --c-cat-ghost: rgb(60 66 66 / 13%);
   --c-brand-plate: #f6f6f6;
 
   // Footer keeps its dark slab in both themes
   --c-footer-bg: #17171f;
-  --c-footer-fg: #ffffff;
-  --c-footer-muted: rgba(255, 255, 255, .82);
-  --c-footer-line: rgba(255, 255, 255, .18);
-  --c-footer-line-strong: rgba(255, 255, 255, .5);
+  --c-footer-fg: #fff;
+  --c-footer-muted: rgb(255 255 255 / 82%);
+  --c-footer-line: rgb(255 255 255 / 18%);
+  --c-footer-line-strong: rgb(255 255 255 / 50%);
 
   // Semantic
   --c-danger: #ee5858;
@@ -52,7 +50,7 @@
   --c-warn: #b5730a;
   --c-warn-soft: #fff3d6;
   --c-cancel: #fa7070;
-  --c-overlay: rgba(60, 66, 66, 0.35);
+  --c-overlay: rgb(60 66 66 / 35%);
 
   // Swatches used by product colour pickers
   --sw-red: #e85d5d;
@@ -83,15 +81,14 @@
 
   --font: 'Jost', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
-  --shadow-card: 0 0.25rem 1.5rem rgba(60, 66, 66, 0.12);
-  --shadow-menu: 0 0.75rem 2.5rem rgba(60, 66, 66, 0.16);
+  --shadow-card: 0 0.25rem 1.5rem rgb(60 66 66 / 12%);
+  --shadow-menu: 0 0.75rem 2.5rem rgb(60 66 66 / 16%);
+  color-scheme: light;
 }
 
 // One definition of the dark palette, applied both to the explicit choice and
 // to "System" when the OS asks for dark.
 @mixin dark-palette {
-  color-scheme: dark;
-
   --c-page: #121218;
   --c-panel: #1b1b23;
   --c-ink: #f2f2f5;
@@ -108,9 +105,9 @@
 
   --c-footer-bg: #0d0d12;
 
-  --c-hero-frame: rgba(255, 255, 255, .3);
-  --c-hero-ghost: rgba(255, 255, 255, .07);
-  --c-cat-ghost: rgba(255, 255, 255, .13);
+  --c-hero-frame: rgb(255 255 255 / 30%);
+  --c-hero-ghost: rgb(255 255 255 / 7%);
+  --c-cat-ghost: rgb(255 255 255 / 13%);
 
   --c-danger: #ff7676;
   --c-danger-soft: #3a2224;
@@ -118,14 +115,19 @@
   --c-success-soft: #17301f;
   --c-warn: #f0b656;
   --c-warn-soft: #33291a;
-  --c-overlay: rgba(0, 0, 0, .6);
+  --c-overlay: rgb(0 0 0 / 60%);
 
-  --shadow-card: 0 0.25rem 1.5rem rgba(0, 0, 0, .5);
-  --shadow-menu: 0 0.75rem 2.5rem rgba(0, 0, 0, .55);
+  --shadow-card: 0 0.25rem 1.5rem rgb(0 0 0 / 50%);
+  --shadow-menu: 0 0.75rem 2.5rem rgb(0 0 0 / 55%);
+  color-scheme: dark;
 }
 
-:root[data-theme='dark'] { @include dark-palette; }
+:root[data-theme='dark'] {
+  @include dark-palette;
+}
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) { @include dark-palette; }
+  :root:not([data-theme='light']) {
+    @include dark-palette;
+  }
 }

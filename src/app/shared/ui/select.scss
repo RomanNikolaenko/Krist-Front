@@ -1,31 +1,37 @@
 :host {
-  position: relative;
   display: inline-block;
-  vertical-align: middle;
+  position: relative;
   max-width: 100%;
+  vertical-align: middle;
 }
 
-:host(.is-disabled) { opacity: .55; pointer-events: none; }
+:host(.is-disabled) {
+  opacity: 0.55;
+  pointer-events: none;
+}
 
 // ---------- trigger ----------
 .trigger {
-  width: 100%;
-  max-width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: .625rem;
-  border: 0.0625rem solid transparent;
-  border-radius: var(--r-md);
-  background: transparent;
-  color: var(--c-heading);
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 100%;
   font: inherit;
   font-size: var(--fs-body);
   line-height: 1.25;
   text-align: left;
+  color: var(--c-heading);
+  background: transparent;
+  border: 0.0625rem solid transparent;
+  border-radius: var(--r-md);
   cursor: pointer;
 
-  &:focus-visible { outline: 0.125rem solid var(--c-ink); outline-offset: 0.125rem; }
+  &:focus-visible {
+    outline: 0.125rem solid var(--c-ink);
+    outline-offset: 0.125rem;
+  }
 }
 
 .trigger__label {
@@ -35,23 +41,33 @@
   white-space: nowrap;
 }
 
-.trigger.is-empty .trigger__label { color: var(--c-placeholder); }
+.trigger.is-empty .trigger__label {
+  color: var(--c-placeholder);
+}
 
 .trigger__caret {
   color: var(--c-muted);
-  transition: transform .18s ease;
+  transition: transform 0.18s ease;
 }
 
-.trigger:hover .trigger__caret { color: var(--c-heading); }
-.trigger.is-open .trigger__caret { transform: rotate(180deg); color: var(--c-heading); }
+.trigger:hover .trigger__caret {
+  color: var(--c-heading);
+}
+.trigger.is-open .trigger__caret {
+  color: var(--c-heading);
+  transform: rotate(180deg);
+}
 
 // bordered control, matching .control in the global sheet
-:host(.field) { display: block; width: 100%; }
+:host(.field) {
+  display: block;
+  width: 100%;
+}
 
 :host(.field) .trigger {
-  border-color: var(--c-line-strong);
-  background: var(--c-panel);
   padding: 0.875rem 1rem;
+  background: var(--c-panel);
+  border-color: var(--c-line-strong);
 }
 
 :host(.field) .trigger.is-open,
@@ -62,51 +78,63 @@
 
 // grey pill used by the settings rows
 :host(.soft) .trigger {
-  background: var(--c-surface);
   padding: 0.5rem 0.875rem;
   font-size: var(--fs-sm);
-  &:hover { background: var(--c-line); }
+  background: var(--c-surface);
+  &:hover {
+    background: var(--c-line);
+  }
 }
 
 // bare text + caret used by the shop toolbar
 :host(.plain) .trigger {
+  gap: 1rem;
   padding: 0.375rem 0;
   font-size: var(--fs-sm);
-  gap: 1rem;
 }
 
 // ---------- panel ----------
 .panel {
   position: absolute;
-  z-index: 40;
   top: calc(100% + 0.5rem);
   right: 0;
+  z-index: 40;
   /* readable even when the trigger is a short label, never wider than the
      viewport minus the page gutters */
   /* wide enough that option labels do not wrap, capped to the viewport gutters */
   min-width: max(100%, 15rem);
   max-width: min(22rem, calc(100vw - 2.5rem));
   max-height: 17.5rem;
+  padding: 0.375rem;
+  margin: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  margin: 0;
-  padding: 0.375rem;
   list-style: none;
   background: var(--c-panel);
   border: 0.0625rem solid var(--c-line);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-menu);
-  animation: select-in .14s ease-out;
+  animation: select-in 0.14s ease-out;
 }
 
 @keyframes select-in {
-  from { opacity: 0; transform: translateY(-0.25rem); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel { animation: none; }
-  .trigger__caret { transition: none; }
+  .panel {
+    animation: none;
+  }
+  .trigger__caret {
+    transition: none;
+  }
 }
 
 .option {
@@ -115,20 +143,26 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.625rem 0.75rem;
-  border-radius: var(--r-sm);
   font-size: var(--fs-sm);
   line-height: 1.35;
-  color: var(--c-heading);
   /* long labels wrap at spaces inside the capped width rather than widening it */
   overflow-wrap: break-word;
+  color: var(--c-heading);
+  border-radius: var(--r-sm);
   cursor: pointer;
 
-  app-icon { color: var(--c-muted); }
+  app-icon {
+    color: var(--c-muted);
+  }
 }
 
-.option.is-active { background: var(--c-surface); }
+.option.is-active {
+  background: var(--c-surface);
+}
 
 .option.is-selected {
   font-weight: 600;
-  app-icon { color: var(--c-heading); }
+  app-icon {
+    color: var(--c-heading);
+  }
 }

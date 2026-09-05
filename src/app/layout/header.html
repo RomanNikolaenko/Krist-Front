@@ -1,48 +1,96 @@
 <header class="header">
   <div class="container container--wide header__bar">
-    <a class="header__brand" routerLink="/" [attr.aria-label]="'header.brandHome' | t" (click)="closeAll()">
+    <a
+      class="header__brand"
+      routerLink="/"
+      [attr.aria-label]="'header.brandHome' | t"
+      (click)="closeAll()"
+    >
       <app-logo />
     </a>
 
     <nav class="header__nav" aria-label="Main">
-      <a class="header__link" routerLink="/" routerLinkActive="header__link--active"
-         [routerLinkActiveOptions]="{ exact: true }" (click)="closeAll()">{{ 'nav.home' | t }}</a>
+      <a
+        class="header__link"
+        routerLink="/"
+        routerLinkActive="header__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeAll()"
+        >{{ 'nav.home' | t }}</a
+      >
 
       <span class="header__shop" (mouseenter)="onShopEnter()" (mouseleave)="onShopLeave()">
-        <button type="button" class="header__link header__link--button" (click)="toggleShop()"
-                [class.header__link--active]="shopOpen()" [attr.aria-expanded]="shopOpen()">
+        <button
+          type="button"
+          class="header__link header__link--button"
+          (click)="toggleShop()"
+          [class.header__link--active]="shopOpen()"
+          [attr.aria-expanded]="shopOpen()"
+        >
           {{ 'nav.shop' | t }}
-          <app-icon class="header__caret" [class.header__caret--up]="shopOpen()"
-                    [name]="'chevron-down'" [size]="20" />
+          <app-icon
+            class="header__caret"
+            [class.header__caret--up]="shopOpen()"
+            [name]="'chevron-down'"
+            [size]="20"
+          />
         </button>
       </span>
 
-      <a class="header__link" routerLink="/our-story" routerLinkActive="header__link--active"
-         (click)="closeAll()">{{ 'nav.ourStory' | t }}</a>
-      <a class="header__link" routerLink="/blog" routerLinkActive="header__link--active"
-         (click)="closeAll()">{{ 'nav.blog' | t }}</a>
-      <a class="header__link" routerLink="/contact" routerLinkActive="header__link--active"
-         (click)="closeAll()">{{ 'nav.contact' | t }}</a>
+      <a
+        class="header__link"
+        routerLink="/our-story"
+        routerLinkActive="header__link--active"
+        (click)="closeAll()"
+        >{{ 'nav.ourStory' | t }}</a
+      >
+      <a
+        class="header__link"
+        routerLink="/blog"
+        routerLinkActive="header__link--active"
+        (click)="closeAll()"
+        >{{ 'nav.blog' | t }}</a
+      >
+      <a
+        class="header__link"
+        routerLink="/contact"
+        routerLinkActive="header__link--active"
+        (click)="closeAll()"
+        >{{ 'nav.contact' | t }}</a
+      >
     </nav>
 
     <div class="header__tools">
-      <button type="button" class="header__tool tool" (click)="toggleSearch()"
-              [attr.aria-expanded]="searchOpen()" [attr.aria-label]="'header.search' | t">
+      <button
+        type="button"
+        class="header__tool tool"
+        (click)="toggleSearch()"
+        [attr.aria-expanded]="searchOpen()"
+        [attr.aria-label]="'header.search' | t"
+      >
         <app-icon [name]="searchOpen() ? 'close' : 'search'" [size]="24" />
       </button>
 
       <!-- the wishlist lives on the profile, so it only appears with a session -->
       @if (auth.isAuthenticated()) {
-        <a class="header__tool tool" routerLink="/profile/wishlists" [attr.aria-label]="'header.wishlist' | t">
+        <a
+          class="header__tool tool"
+          routerLink="/profile/wishlists"
+          [attr.aria-label]="'header.wishlist' | t"
+        >
           <app-icon [name]="'heart'" [size]="24" />
-          @if (wishlist.count()) { <span class="header__dot">{{ wishlist.count() }}</span> }
+          @if (wishlist.count()) {
+            <span class="header__dot">{{ wishlist.count() }}</span>
+          }
         </a>
       }
 
       <!-- the cart stays open to guests: you can fill one before signing in -->
       <a class="header__tool tool" routerLink="/cart" [attr.aria-label]="'header.cart' | t">
         <app-icon [name]="'bag'" [size]="24" />
-        @if (cart.count()) { <span class="header__dot">{{ cart.count() }}</span> }
+        @if (cart.count()) {
+          <span class="header__dot">{{ cart.count() }}</span>
+        }
       </a>
 
       @if (auth.isAuthenticated()) {
@@ -54,8 +102,13 @@
       }
     </div>
 
-    <button type="button" class="header__burger tool" (click)="toggleDrawer()"
-            [attr.aria-expanded]="drawerOpen()" [attr.aria-label]="'header.toggleNav' | t">
+    <button
+      type="button"
+      class="header__burger tool"
+      (click)="toggleDrawer()"
+      [attr.aria-expanded]="drawerOpen()"
+      [attr.aria-label]="'header.toggleNav' | t"
+    >
       <app-icon [name]="drawerOpen() ? 'close' : 'menu'" [size]="24" />
     </button>
   </div>
@@ -65,7 +118,7 @@
       <div class="container container--wide">
         <label class="header__search-field">
           <app-icon [name]="'search'" [size]="24" />
-          <input type="search" [placeholder]="'header.searchPlaceholder' | t" autofocus />
+          <input #searchInput type="search" [placeholder]="'header.searchPlaceholder' | t" />
         </label>
       </div>
     </div>
@@ -76,21 +129,43 @@
     slide-out animates as well as the slide-in; `inert` keeps the shut panel out of
     the tab order and the accessibility tree.
   -->
-  <div class="header__backdrop" [class.header__backdrop--open]="drawerOpen()"
-       (click)="closeAll()" aria-hidden="true"></div>
+  <div
+    class="header__backdrop"
+    [class.header__backdrop--open]="drawerOpen()"
+    (click)="closeAll()"
+    aria-hidden="true"
+  ></div>
 
-  <nav class="drawer" [class.drawer--open]="drawerOpen()" [attr.inert]="drawerOpen() ? null : ''"
-       [attr.aria-label]="'header.toggleNav' | t">
+  <nav
+    class="drawer"
+    [class.drawer--open]="drawerOpen()"
+    [attr.inert]="drawerOpen() ? null : ''"
+    [attr.aria-label]="'header.toggleNav' | t"
+  >
     <div class="container container--wide drawer__inner">
       <div class="drawer__nav">
-        <a class="drawer__item" routerLink="/" routerLinkActive="drawer__item--active"
-           [routerLinkActiveOptions]="{ exact: true }" (click)="closeAll()">{{ 'nav.home' | t }}</a>
+        <a
+          class="drawer__item"
+          routerLink="/"
+          routerLinkActive="drawer__item--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeAll()"
+          >{{ 'nav.home' | t }}</a
+        >
 
-        <button type="button" class="drawer__item drawer__item--button" (click)="toggleShop()"
-                [attr.aria-expanded]="shopOpen()">
+        <button
+          type="button"
+          class="drawer__item drawer__item--button"
+          (click)="toggleShop()"
+          [attr.aria-expanded]="shopOpen()"
+        >
           {{ 'nav.shop' | t }}
-          <app-icon class="drawer__caret" [class.drawer__caret--up]="shopOpen()"
-                    [name]="'chevron-down'" [size]="20" />
+          <app-icon
+            class="drawer__caret"
+            [class.drawer__caret--up]="shopOpen()"
+            [name]="'chevron-down'"
+            [size]="20"
+          />
         </button>
 
         <!-- height animates via grid-template-rows; the content stays mounted -->
@@ -98,21 +173,34 @@
           <div class="drawer__reveal-inner">
             <div class="drawer__sub">
               @for (group of menuGroups(); track group.titleKey) {
-                <div class="drawer__group" [class.drawer__group--open]="openGroup() === group.titleKey">
-                  <button type="button" class="drawer__group-head" (click)="toggleGroup(group.titleKey)"
-                          [attr.aria-expanded]="openGroup() === group.titleKey"
-                          [attr.tabindex]="shopOpen() ? null : -1">
+                <div
+                  class="drawer__group"
+                  [class.drawer__group--open]="openGroup() === group.titleKey"
+                >
+                  <button
+                    type="button"
+                    class="drawer__group-head"
+                    (click)="toggleGroup(group.titleKey)"
+                    [attr.aria-expanded]="openGroup() === group.titleKey"
+                    [attr.tabindex]="shopOpen() ? null : -1"
+                  >
                     {{ group.titleKey | t }}
                     <app-icon class="drawer__caret" [name]="'chevron-down'" [size]="20" />
                   </button>
 
-                  <div class="drawer__reveal"
-                       [class.drawer__reveal--open]="openGroup() === group.titleKey">
+                  <div
+                    class="drawer__reveal"
+                    [class.drawer__reveal--open]="openGroup() === group.titleKey"
+                  >
                     <div class="drawer__reveal-inner">
                       <div class="drawer__links">
                         @for (link of group.links; track link) {
-                          <a class="drawer__sub-link" routerLink="/shop" (click)="closeAll()"
-                             [attr.tabindex]="openGroup() === group.titleKey ? null : -1">
+                          <a
+                            class="drawer__sub-link"
+                            routerLink="/shop"
+                            (click)="closeAll()"
+                            [attr.tabindex]="openGroup() === group.titleKey ? null : -1"
+                          >
                             {{ link | t }}
                           </a>
                         }
@@ -125,12 +213,27 @@
           </div>
         </div>
 
-        <a class="drawer__item" routerLink="/our-story" routerLinkActive="drawer__item--active"
-           (click)="closeAll()">{{ 'nav.ourStory' | t }}</a>
-        <a class="drawer__item" routerLink="/blog" routerLinkActive="drawer__item--active"
-           (click)="closeAll()">{{ 'nav.blog' | t }}</a>
-        <a class="drawer__item" routerLink="/contact" routerLinkActive="drawer__item--active"
-           (click)="closeAll()">{{ 'nav.contact' | t }}</a>
+        <a
+          class="drawer__item"
+          routerLink="/our-story"
+          routerLinkActive="drawer__item--active"
+          (click)="closeAll()"
+          >{{ 'nav.ourStory' | t }}</a
+        >
+        <a
+          class="drawer__item"
+          routerLink="/blog"
+          routerLinkActive="drawer__item--active"
+          (click)="closeAll()"
+          >{{ 'nav.blog' | t }}</a
+        >
+        <a
+          class="drawer__item"
+          routerLink="/contact"
+          routerLinkActive="drawer__item--active"
+          (click)="closeAll()"
+          >{{ 'nav.contact' | t }}</a
+        >
       </div>
 
       @if (auth.isAuthenticated()) {
@@ -155,7 +258,11 @@
                 <h2 class="mega__title">{{ group.titleKey | t }}</h2>
                 <ul class="mega__list">
                   @for (link of group.links; track link) {
-                    <li><a class="mega__link" routerLink="/shop" (click)="closeAll()">{{ link | t }}</a></li>
+                    <li>
+                      <a class="mega__link" routerLink="/shop" (click)="closeAll()">{{
+                        link | t
+                      }}</a>
+                    </li>
                   }
                 </ul>
               </div>

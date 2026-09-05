@@ -11,8 +11,8 @@
 
 .art {
   position: relative;
-  background: var(--c-surface);
   overflow: hidden;
+  background: var(--c-surface);
 }
 
 .art img {
@@ -28,16 +28,16 @@
   z-index: 1;
   /* the artwork can be light or dark, so the mark carries its own contrast */
   color: var(--c-fixed-white);
-  filter: drop-shadow(0 0.0625rem 0.125rem rgba(0, 0, 0, 0.45))
-    drop-shadow(0 0.5rem 1.5rem rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 0.0625rem 0.125rem rgb(0 0 0 / 45%))
+    drop-shadow(0 0.5rem 1.5rem rgb(0 0 0 / 35%));
 }
 
 .panel {
   display: grid;
   place-items: center;
   padding: 3.75rem 2.5rem;
-  background: var(--c-page);
   overflow-y: auto;
+  background: var(--c-page);
 }
 
 .inner {
@@ -45,19 +45,22 @@
   max-width: 27.8125rem;
 }
 
-@media (max-width: 56.25rem) {
+@media (width <= 56.25rem) {
   .split {
     grid-template-columns: 1fr;
     height: auto;
     min-height: 100dvh;
   }
+
   .art {
     height: 15rem;
   }
+
   .art__logo {
     top: 1.5rem;
     left: 1.5rem;
   }
+
   .panel {
     padding: 2.5rem 1.5rem 3.75rem;
   }

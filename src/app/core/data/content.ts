@@ -23,14 +23,26 @@ export const MEGA_MENU: { titleKey: string; links: string[] }[][] = [
   [
     {
       titleKey: 'mega.men',
-      links: ['mega.tshirts', 'mega.casualShirts', 'mega.formalShirts', 'mega.jackets', 'mega.blazersCoats'],
+      links: [
+        'mega.tshirts',
+        'mega.casualShirts',
+        'mega.formalShirts',
+        'mega.jackets',
+        'mega.blazersCoats',
+      ],
     },
     { titleKey: 'mega.indianFestive', links: ['mega.kurtaSets', 'mega.sherwanis'] },
   ],
   [
     {
       titleKey: 'mega.women',
-      links: ['mega.kurtasSuits', 'mega.sarees', 'mega.ethnicWear', 'mega.lehengaCholis', 'mega.jackets'],
+      links: [
+        'mega.kurtasSuits',
+        'mega.sarees',
+        'mega.ethnicWear',
+        'mega.lehengaCholis',
+        'mega.jackets',
+      ],
     },
     { titleKey: 'mega.westernWear', links: ['mega.dresses', 'mega.jumpsuits'] },
   ],
@@ -45,18 +57,40 @@ export const MEGA_MENU: { titleKey: string; links: string[] }[][] = [
     {
       titleKey: 'mega.kids',
       links: [
-        'mega.tshirts', 'mega.shirts', 'mega.jeans', 'mega.trousers',
-        'mega.partyWear', 'mega.innerwear', 'mega.trackPants', 'mega.valuePack',
+        'mega.tshirts',
+        'mega.shirts',
+        'mega.jeans',
+        'mega.trousers',
+        'mega.partyWear',
+        'mega.innerwear',
+        'mega.trackPants',
+        'mega.valuePack',
       ],
     },
   ],
 ];
 
 export const HOME_CATEGORIES: Category[] = [
-  { slug: 'casual', titleKey: 'home.cat.casual', image: 'https://picsum.photos/seed/krist-cat-casual/540/700' },
-  { slug: 'western', titleKey: 'home.cat.western', image: 'https://picsum.photos/seed/krist-cat-western/540/700' },
-  { slug: 'ethnic', titleKey: 'home.cat.ethnic', image: 'https://picsum.photos/seed/krist-cat-ethnic/540/700' },
-  { slug: 'kids', titleKey: 'home.cat.kids', image: 'https://picsum.photos/seed/krist-cat-kids/540/700' },
+  {
+    slug: 'casual',
+    titleKey: 'home.cat.casual',
+    image: 'https://picsum.photos/seed/krist-cat-casual/540/700',
+  },
+  {
+    slug: 'western',
+    titleKey: 'home.cat.western',
+    image: 'https://picsum.photos/seed/krist-cat-western/540/700',
+  },
+  {
+    slug: 'ethnic',
+    titleKey: 'home.cat.ethnic',
+    image: 'https://picsum.photos/seed/krist-cat-ethnic/540/700',
+  },
+  {
+    slug: 'kids',
+    titleKey: 'home.cat.kids',
+    image: 'https://picsum.photos/seed/krist-cat-kids/540/700',
+  },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [

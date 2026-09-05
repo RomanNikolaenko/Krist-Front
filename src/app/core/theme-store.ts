@@ -30,9 +30,9 @@ export class ThemeStore {
   });
 
   constructor() {
-    globalThis.matchMedia?.(DARK_QUERY).addEventListener('change', (event) =>
-      this.systemDark.set(event.matches),
-    );
+    globalThis
+      .matchMedia?.(DARK_QUERY)
+      .addEventListener('change', (event) => this.systemDark.set(event.matches));
 
     effect(() => {
       const choice = this.state();

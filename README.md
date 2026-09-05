@@ -20,22 +20,57 @@ Every component keeps its template and its styles in files of their own next to 
 `foo.ts`, `foo.html`, `foo.scss` — so markup and styles are reachable by the tools that
 understand them rather than living inside template literals.
 
+## Formatting and linting
+
+Three tools, one job each, so none of them argues with another:
+
+|                               | owns                                                                            |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| **Prettier**                  | all whitespace — `.ts`, `.html` (Angular parser), `.scss`, and the config files |
+| **Stylelint**                 | property order and SCSS correctness                                             |
+| **ESLint** + `angular-eslint` | TypeScript, plus the templates and their accessibility                          |
+
+```bash
+npm run lint     # ts + scss + formatting, no writes
+npm run fix      # eslint --fix, stylelint --fix, then prettier
+npm run format   # prettier only
+```
+
+The division matters more than it looks. Stylelint's standard config still carries a few
+whitespace rules, and left on they fight Prettier forever: one inserts a blank line, the
+other removes it, and the pipeline never settles. They are off here, so Prettier has the
+only opinion about whitespace and the order of the two commands stops mattering.
+
+**Property order** is the point of Stylelint in this project, and it reads top-down as the
+questions you ask about a box: what kind of box it is (`display`, flex and grid), where it
+sits (`position`, `inset`, `z-index`), how much room it takes (sizes, padding, margin,
+overflow), the text inside it (`font`, `color`), how it is painted (`background`, borders,
+shadows), how it answers the pointer (`cursor`, `visibility`), and what moves — transitions
+and transforms last, since they only describe how the rest gets there. Anything not on the
+list sorts alphabetically at the bottom. The list is in `stylelint.config.js`; the groups
+are named, so changing your mind is a matter of moving a line.
+
+Two rules are deliberately relaxed. `selector-class-pattern` takes a BEM pattern rather than
+the default kebab-case, or all 225 `block__element--modifier` names would be errors. And
+`number-max-precision` is 5, because `0.09375rem` is exactly 1.5px — rounding it to four
+places would put error into the very scale that exists to avoid it.
+
 ## Screens
 
-| Route | Screen |
-| --- | --- |
-| `/` | Home — hero, categories rail, bestsellers, deals countdown, testimonials, Instagram |
-| `/shop` | Catalogue — category / price / colour / size facets, sorting, grid–list toggle, pagination |
-| `/product/:slug` | Product — gallery, colour & size pickers, Descriptions / Additional Information / Reviews tabs, related products |
-| `/cart` | Cart table with quantity steppers and the order summary |
-| `/checkout/address` | Shipping address — saved addresses plus the "add a new address" form |
-| `/checkout/payment` | Payment method — card form, Google Pay, Paypal, Cash on Delivery |
-| `/checkout/review` | Review order, then the "Your order is confirmed" dialog |
-| `/profile/*` | Personal Information, My Orders (search + status filter), My Wishlists, Manage Addresses, Saved Cards, Notifications feed, Settings (working theme + language) |
-| `/login`, `/signup`, `/forgot-password`, `/otp`, `/password-changed` | Auth split-screens |
-| `/our-story` | Story — lead, hero, mission, values, stats, CTA |
-| `/blog` | Blog — post grid with tag, date and read time |
-| `/contact` | Contact — details plus a validated message form |
+| Route                                                                | Screen                                                                                                                                                         |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                                  | Home — hero, categories rail, bestsellers, deals countdown, testimonials, Instagram                                                                            |
+| `/shop`                                                              | Catalogue — category / price / colour / size facets, sorting, grid–list toggle, pagination                                                                     |
+| `/product/:slug`                                                     | Product — gallery, colour & size pickers, Descriptions / Additional Information / Reviews tabs, related products                                               |
+| `/cart`                                                              | Cart table with quantity steppers and the order summary                                                                                                        |
+| `/checkout/address`                                                  | Shipping address — saved addresses plus the "add a new address" form                                                                                           |
+| `/checkout/payment`                                                  | Payment method — card form, Google Pay, Paypal, Cash on Delivery                                                                                               |
+| `/checkout/review`                                                   | Review order, then the "Your order is confirmed" dialog                                                                                                        |
+| `/profile/*`                                                         | Personal Information, My Orders (search + status filter), My Wishlists, Manage Addresses, Saved Cards, Notifications feed, Settings (working theme + language) |
+| `/login`, `/signup`, `/forgot-password`, `/otp`, `/password-changed` | Auth split-screens                                                                                                                                             |
+| `/our-story`                                                         | Story — lead, hero, mission, values, stats, CTA                                                                                                                |
+| `/blog`                                                              | Blog — post grid with tag, date and read time                                                                                                                  |
+| `/contact`                                                           | Contact — details plus a validated message form                                                                                                                |
 
 ## Structure
 
@@ -57,7 +92,7 @@ Four things are stand-ins for artwork we could not export from Figma:
 - **Photography** — `src/app/core/data/products.ts` and `content.ts` point at
   `picsum.photos` seeds. Replace the `img()` helper and the seed URLs with your own
   paths (e.g. `/assets/products/…`) once the exports are available.
-- **Typography** — the kit uses *Causten*, which is not a free web font. The app loads
+- **Typography** — the kit uses _Causten_, which is not a free web font. The app loads
   **Jost** from Google Fonts as the closest geometric match. To switch, change the
   `<link>` in `src/index.html` and `--font` in `src/styles/_tokens.scss`.
 - **Logo** — `src/app/shared/ui/logo.ts` draws a geometric approximation of the Krist
@@ -87,12 +122,12 @@ kit gives it no visible title.
 
 What the checker still reports is not ours to fix:
 
-| Count | Cause |
-| --- | --- |
-| 4745 | `_ngcontent-*` / `_nghost-*` — Angular's style-scoping attributes, present in production too |
-| 915 | `routerlink`, `routerlinkactive` — directive selectors written as attributes |
-| 99 | Nu's CSS parser does not yet know `@container`, `container-type` or `cqi` units |
-| 28 | `formcontrolname`, `formgroup` — same as routerLink |
+| Count | Cause                                                                                        |
+| ----- | -------------------------------------------------------------------------------------------- |
+| 4745  | `_ngcontent-*` / `_nghost-*` — Angular's style-scoping attributes, present in production too |
+| 915   | `routerlink`, `routerlinkactive` — directive selectors written as attributes                 |
+| 99    | Nu's CSS parser does not yet know `@container`, `container-type` or `cqi` units              |
+| 28    | `formcontrolname`, `formgroup` — same as routerLink                                          |
 
 The directive attributes disappear if every one is rewritten as a property binding
 (`[routerLink]="'/shop'"`), but the 4745 scoping attributes do not, so the pages would still
@@ -101,7 +136,7 @@ not validate clean. No Angular app with emulated view encapsulation does.
 ## Sessions
 
 `core/auth-store.ts` records who is signed in, persisted like the cart so a reload keeps
-the session. There is no backend, so it only records *that* someone signed in — any
+the session. There is no backend, so it only records _that_ someone signed in — any
 well-formed credentials are accepted. Swap the body of `signIn` for the real call and every
 reader of `isAuthenticated` keeps working.
 
@@ -112,11 +147,11 @@ visitor to sign in should not also cost them the page they were going to.
 
 What changes with a session:
 
-| | Guest | Signed in |
-| --- | --- | --- |
-| Header | Sign In button | wishlist tool + profile tool |
-| `/profile/*` | redirected to `/login?returnUrl=…` | reachable |
-| Cart | open | open |
+|              | Guest                              | Signed in                    |
+| ------------ | ---------------------------------- | ---------------------------- |
+| Header       | Sign In button                     | wishlist tool + profile tool |
+| `/profile/*` | redirected to `/login?returnUrl=…` | reachable                    |
+| Cart         | open                               | open                         |
 
 The cart deliberately stays open to guests: filling one before signing in is normal, and
 checkout is where an account would be asked for. The wishlist is the other way round — it
@@ -129,11 +164,11 @@ Both are driven from **Profile → Settings** and persist per browser.
 
 **Appearance** (`core/theme-store.ts`) stamps `data-theme` on `<html>`:
 
-| Choice | Attribute | Palette |
-| --- | --- | --- |
-| Light | `data-theme="light"` | light tokens |
-| Dark | `data-theme="dark"` | dark tokens |
-| System | none | follows `prefers-color-scheme`, live |
+| Choice | Attribute            | Palette                              |
+| ------ | -------------------- | ------------------------------------ |
+| Light  | `data-theme="light"` | light tokens                         |
+| Dark   | `data-theme="dark"`  | dark tokens                          |
+| System | none                 | follows `prefers-color-scheme`, live |
 
 The kit ships no dark frames, so the dark palette is derived: neutrals invert around the
 same steps, and the primary action flips to a light chip on a dark ground so buttons keep
@@ -240,10 +275,10 @@ assets are ever registered; nothing user-supplied reaches it.
 
 `app-icon` takes `size` in px and emits it as rem. Two tiers:
 
-| Tier | Size | Where |
-| --- | --- | --- |
-| Icon | 24 | everything that carries meaning — icon-only buttons and links, block icons, and icons sharing a line with a label |
-| State caret | 20 | chevrons reporting open/closed — select, accordions, filter panels, breadcrumb separator |
+| Tier        | Size | Where                                                                                                             |
+| ----------- | ---- | ----------------------------------------------------------------------------------------------------------------- |
+| Icon        | 24   | everything that carries meaning — icon-only buttons and links, block icons, and icons sharing a line with a label |
+| State caret | 20   | chevrons reporting open/closed — select, accordions, filter panels, breadcrumb separator                          |
 
 Every control holding one is at least 48×48, so the boxes are sized for the hit area rather
 than the glyph: pagination, quantity steppers, the cart's remove button and the footer's
@@ -278,7 +313,7 @@ behaves correctly inside a full-width page and inside the narrower profile panel
 
 The profile shell uses that context for a layout change, not just a resize, and works the
 way `mat-sidenav-container` does. Above 56rem the rail is simply the first grid column of
-`.profile`, sticky under the header. Below it the rail switches to *over* mode: it parks off
+`.profile`, sticky under the header. Below it the rail switches to _over_ mode: it parks off
 the left edge, slides across the content on `transform`, and sits on a backdrop. Neither the
 drawer nor the backdrop is in the flow, so opening the rail never moves the page, and the
 trigger sits above the container so the drawer cannot cover it. It closes on a link, the

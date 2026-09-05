@@ -3,15 +3,15 @@
 }
 
 button {
+  flex: none;
   position: relative;
   width: 3.25rem;
   height: 1.8125rem;
-  flex: none;
+  padding: 0;
+  background: var(--c-line);
   border: none;
   border-radius: var(--r-pill);
-  background: var(--c-line);
   transition: background 0.18s ease;
-  padding: 0;
 
   &::after {
     content: '';
@@ -20,17 +20,19 @@ button {
     left: 0.1875rem;
     width: 1.4375rem;
     height: 1.4375rem;
-    border-radius: 50%;
     background: var(--c-fixed-white);
+    border-radius: 50%;
     transition: transform 0.18s ease;
   }
 
   &.is-on {
     background: var(--c-toggle-on);
   }
+
   &.is-on::after {
     transform: translateX(1.4375rem);
   }
+
   &:focus-visible {
     outline: 0.125rem solid var(--c-ink);
     outline-offset: 0.125rem;

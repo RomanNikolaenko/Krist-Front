@@ -8,6 +8,7 @@ import {
   HostListener,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '../core/auth-store';
@@ -31,6 +32,7 @@ const CLOSE_DELAY = 160;
 })
 export class Header {
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   protected readonly auth = inject(AuthStore);
   protected readonly cart = inject(CartStore);
@@ -57,6 +59,12 @@ export class Header {
     // the drawer covers the page, so the page behind it must not scroll
     const scrollLock = inject(ScrollLock);
     effect(() => scrollLock.toggle(this, this.drawerOpen()));
+    // focus from code rather than the autofocus attribute, which fires on load
+    // and drags the reader somewhere they did not ask to go
+    effect(() => {
+      if (this.searchOpen()) this.searchInput()?.nativeElement.focus();
+    });
+
     inject(DestroyRef).onDestroy(() => clearTimeout(this.closeTimer));
   }
 

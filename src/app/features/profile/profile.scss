@@ -1,6 +1,8 @@
 @use '../../../styles/mixins' as *;
 
-:host { display: block; }
+:host {
+  display: block;
+}
 
 .profile__head {
   display: flex;
@@ -27,36 +29,46 @@
   gap: 0.875rem;
   width: 20rem;
   padding: 0.9375rem 1.25rem;
+  color: var(--c-muted);
   border: 0.0625rem solid var(--c-line);
   border-radius: var(--r-md);
-  color: var(--c-muted);
 
   input {
     flex: 1;
     min-width: 0;
-    border: none;
-    background: transparent;
     font: inherit;
     color: var(--c-heading);
-    &::placeholder { color: var(--c-placeholder); }
-    &:focus { outline: none; }
+    background: transparent;
+    border: none;
+    &::placeholder {
+      color: var(--c-placeholder);
+    }
+    &:focus {
+      outline: none;
+    }
   }
 
-  &:focus-within { border-color: var(--c-ink); }
+  &:focus-within {
+    border-color: var(--c-ink);
+  }
 }
 
-.profile__filter { position: relative; }
+.profile__filter {
+  position: relative;
+}
 
-.profile__filter-btn { padding: 1.0625rem 1.625rem; }
+.profile__filter-btn {
+  padding: 1.0625rem 1.625rem;
+}
 
 .profile__filter-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
   z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
   min-width: 11.875rem;
   padding: 1rem;
   background: var(--c-panel);
@@ -67,36 +79,41 @@
 .profile__filter-clear {
   align-self: flex-start;
   padding: 0;
-  border: none;
-  background: none;
   font-size: var(--fs-sm);
   color: var(--c-muted);
+  background: none;
+  border: none;
 
-  &:hover { color: var(--c-heading); text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+    color: var(--c-heading);
+  }
 }
 
 // ---------- shell ----------
 .profile {
   display: grid;
   grid-template-columns: 16.375rem minmax(0, 1fr);
-  gap: 3.125rem;
   align-items: start;
+  gap: 3.125rem;
   padding-bottom: 3.75rem;
 }
 
 .profile__side {
   position: sticky;
   top: calc(var(--header-h) + 1.25rem);
-  border: 0.0625rem solid var(--c-line);
-  border-radius: var(--r-md);
   overflow: hidden;
   background: var(--c-panel);
+  border: 0.0625rem solid var(--c-line);
+  border-radius: var(--r-md);
 }
 
 // the trigger, the backdrop and the in-drawer close button are "over" mode only
 .profile__toggle,
 .profile__backdrop,
-.profile__close { display: none; }
+.profile__close {
+  display: none;
+}
 
 .profile__user {
   display: flex;
@@ -107,14 +124,17 @@
 }
 
 .profile__avatar {
+  flex: none;
   width: 3.25rem;
   height: 3.25rem;
   border-radius: 50%;
   object-fit: cover;
-  flex: none;
 }
 
-.profile__identity { flex: 1; min-width: 0; }
+.profile__identity {
+  flex: 1;
+  min-width: 0;
+}
 
 .profile__greeting {
   display: block;
@@ -124,11 +144,11 @@
 
 .profile__name {
   display: block;
-  font-size: 1.125rem;
-  color: var(--c-heading);
   overflow: hidden;
+  font-size: 1.125rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--c-heading);
 }
 
 /*
@@ -142,49 +162,59 @@
 }
 
 .profile__nav-item {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  position: relative;
   padding: 0.75rem 0.875rem;
-  border-radius: var(--r-sm);
   font-size: var(--fs-body);
   color: var(--c-body);
-  transition: background .16s ease, color .16s ease;
+  border-radius: var(--r-sm);
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
 
-  &:hover { background: var(--c-surface); color: var(--c-heading); }
+  &:hover {
+    color: var(--c-heading);
+    background: var(--c-surface);
+  }
 
   &--active {
-    background: var(--c-surface);
-    color: var(--c-heading);
     font-weight: 600;
+    color: var(--c-heading);
+    background: var(--c-surface);
 
     &::before {
       content: '';
       position: absolute;
-      left: 0;
       top: 0.5rem;
       bottom: 0.5rem;
+      left: 0;
       width: 0.1875rem;
-      border-radius: var(--r-pill);
       background: var(--c-ink);
+      border-radius: var(--r-pill);
     }
   }
 }
 
-.profile__nav-icon { color: currentColor; }
+.profile__nav-icon {
+  color: currentcolor;
+}
 
 /* the sign-out sits with the sections but reads as an exit, not a destination */
 .profile__nav-item--out {
   width: 100%;
-  border: none;
-  background: none;
   font: inherit;
   text-align: left;
   color: var(--c-muted);
+  background: none;
+  border: none;
   cursor: pointer;
 
-  &:hover { color: var(--c-danger); background: var(--c-surface); }
+  &:hover {
+    color: var(--c-danger);
+    background: var(--c-surface);
+  }
 }
 
 .profile__nav-label {
@@ -195,9 +225,9 @@
 
 /* the panel is its own container so its cards size to the column, not the page */
 .profile__content {
+  min-width: 0;
   container-type: inline-size;
   container-name: panel;
-  min-width: 0;
 }
 
 // ---------- responsive ----------
@@ -221,18 +251,24 @@
 
   .profile__toggle {
     display: inline-grid;
-    place-items: center;
     flex: none;
+    place-items: center;
     width: 3rem;
     height: 3rem;
+    color: var(--c-heading);
+    background: var(--c-panel);
     border: 0.0625rem solid var(--c-line);
     border-radius: var(--r-md);
-    background: var(--c-panel);
-    color: var(--c-heading);
-    transition: border-color .16s ease, background .16s ease;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease;
 
-    &:hover { background: var(--c-surface); }
-    &[aria-expanded='true'] { border-color: var(--c-ink); }
+    &:hover {
+      background: var(--c-surface);
+    }
+    &[aria-expanded='true'] {
+      border-color: var(--c-ink);
+    }
   }
 
   .profile__backdrop {
@@ -243,85 +279,115 @@
     background: var(--c-overlay);
     opacity: 0;
     visibility: hidden;
-    transition: opacity .3s ease, visibility 0s linear .3s;
+    transition:
+      opacity 0.3s ease,
+      visibility 0s linear 0.3s;
 
     &--open {
       opacity: 1;
       visibility: visible;
-      transition: opacity .3s ease, visibility 0s;
+      transition:
+        opacity 0.3s ease,
+        visibility 0s;
     }
   }
 
   .profile__side {
+    display: flex;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 70;
-    display: flex;
     width: min(25rem, 100vw);
     border: none;
     border-right: 0.0625rem solid var(--c-line);
     border-radius: 0;
     box-shadow: var(--shadow-menu);
+    visibility: hidden;
 
     transform: translateX(-100%);
-    visibility: hidden;
     transition:
-      transform .3s cubic-bezier(.4, 0, .2, 1),
-      visibility 0s linear .3s;
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0s linear 0.3s;
 
     &--open {
-      transform: none;
       visibility: visible;
-      transition: transform .3s cubic-bezier(.4, 0, .2, 1), visibility 0s;
+      transform: none;
+      transition:
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s;
     }
   }
 
   .profile__close {
     display: inline-grid;
-    place-items: center;
     flex: none;
+    place-items: center;
     width: 3rem;
     height: 3rem;
     margin-right: -0.625rem; // optical: the glyph lines up with the padding, not the box
+    color: var(--c-muted);
+    background: none;
     border: none;
     border-radius: 50%;
-    background: none;
-    color: var(--c-muted);
-    transition: background .16s ease, color .16s ease;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
 
-    &:hover { background: var(--c-surface); color: var(--c-heading); }
+    &:hover {
+      color: var(--c-heading);
+      background: var(--c-surface);
+    }
   }
 
   /* the drawer owns the screen height; the rail scrolls inside it if it must */
   .profile__side-inner {
-    flex: 1;
-    min-height: 0;
     display: flex;
+    flex: 1;
     flex-direction: column;
+    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
 
   /* stays a single-column list here too — two columns made the rows cramped */
-  .profile__nav { padding: 0.375rem; }
+  .profile__nav {
+    padding: 0.375rem;
+  }
 
   /* the toggle and the title share a row; the toolbar drops to its own */
-  .profile__head { flex-wrap: wrap; gap: 1rem; }
+  .profile__head {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
   // min-width:0 or the row keeps its content width and pushes past the gutter
-  .profile__tools { flex: 1 1 100%; min-width: 0; margin-left: 0; }
-  .profile__search { flex: 1; min-width: 0; width: auto; }
+  .profile__tools {
+    flex: 1 1 100%;
+    min-width: 0;
+    margin-left: 0;
+  }
+  .profile__search {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
 }
 
 @container page (max-width: 32rem) {
-  .profile__title { font-size: 2rem; }
-  .profile__filter-btn { padding: 0.9375rem 1.25rem; }
+  .profile__title {
+    font-size: 2rem;
+  }
+  .profile__filter-btn {
+    padding: 0.9375rem 1.25rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .profile__side,
   .profile__backdrop,
   .profile__toggle,
-  .profile__nav-item { transition: none; }
+  .profile__nav-item {
+    transition: none;
+  }
 }

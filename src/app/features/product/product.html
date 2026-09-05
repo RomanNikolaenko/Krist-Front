@@ -1,7 +1,6 @@
 @if (product(); as p) {
   <div class="container page">
-    <app-breadcrumbs
-      [items]="crumbs()" />
+    <app-breadcrumbs [items]="crumbs()" />
 
     <div class="detail">
       <!-- gallery -->
@@ -11,9 +10,19 @@
         </div>
         <div class="gallery__thumbs">
           @for (image of p.images; track image; let i = $index) {
-            <button type="button" [class.is-on]="i === activeImage()" (click)="pick(i)"
-                    [attr.aria-label]="'product.viewImage' | t: { index: i + 1 }">
-              <img [src]="image" [alt]="p.name + ' view ' + (i + 1)" width="103" height="109" loading="lazy" />
+            <button
+              type="button"
+              [class.is-on]="i === activeImage()"
+              (click)="pick(i)"
+              [attr.aria-label]="'product.viewImage' | t: { index: i + 1 }"
+            >
+              <img
+                [src]="image"
+                [alt]="p.name + ' view ' + (i + 1)"
+                width="103"
+                height="109"
+                loading="lazy"
+              />
             </button>
           }
         </div>
@@ -23,17 +32,26 @@
       <div class="info">
         <div class="info__head">
           <h1>{{ p.brand }}</h1>
-          @if (p.inStock) { <span class="badge badge--success">{{ 'product.inStock' | t }}</span> }
+          @if (p.inStock) {
+            <span class="badge badge--success">{{ 'product.inStock' | t }}</span>
+          }
         </div>
 
         <p class="info__name">{{ p.name }}</p>
 
-        <app-star-rating [value]="p.rating" [size]="24"
-                         [label]="p.rating.toFixed(1) + ' · ' + ('product.reviewCount' | t: { count: p.reviewCount })" />
+        <app-star-rating
+          [value]="p.rating"
+          [size]="24"
+          [label]="
+            p.rating.toFixed(1) + ' · ' + ('product.reviewCount' | t: { count: p.reviewCount })
+          "
+        />
 
         <p class="prices">
           <span class="price">{{ p.price | currency: 'USD' }}</span>
-          @if (p.oldPrice > p.price) { <span class="old">{{ p.oldPrice | currency: 'USD' }}</span> }
+          @if (p.oldPrice > p.price) {
+            <span class="old">{{ p.oldPrice | currency: 'USD' }}</span>
+          }
         </p>
 
         <p class="desc">{{ p.description }}</p>
@@ -43,10 +61,15 @@
             <h2>{{ 'product.color' | t }}</h2>
             <div class="swatches">
               @for (swatch of availableSwatches(); track swatch.name) {
-                <button type="button" class="swatch" [class.is-on]="chosenColor() === swatch.name"
-                        [style.background]="swatch.token" (click)="color.set(swatch.name)"
-                        [attr.aria-label]="swatch.name" [attr.aria-pressed]="chosenColor() === swatch.name">
-                </button>
+                <button
+                  type="button"
+                  class="swatch"
+                  [class.is-on]="chosenColor() === swatch.name"
+                  [style.background]="swatch.token"
+                  (click)="color.set(swatch.name)"
+                  [attr.aria-label]="swatch.name"
+                  [attr.aria-pressed]="chosenColor() === swatch.name"
+                ></button>
               }
             </div>
           </div>
@@ -56,8 +79,15 @@
           <h2>{{ 'product.size' | t }}</h2>
           <div class="sizes">
             @for (s of p.sizes; track s) {
-              <button type="button" class="size" [class.is-on]="chosenSize() === s" (click)="size.set(s)"
-                      [attr.aria-pressed]="chosenSize() === s">{{ s }}</button>
+              <button
+                type="button"
+                class="size"
+                [class.is-on]="chosenSize() === s"
+                (click)="size.set(s)"
+                [attr.aria-pressed]="chosenSize() === s"
+              >
+                {{ s }}
+              </button>
             }
           </div>
         </div>
@@ -67,8 +97,13 @@
           <button type="button" class="btn btn--primary add" (click)="addToCart()">
             {{ (added() ? 'product.addedToCart' : 'product.addToCart') | t }}
           </button>
-          <button type="button" class="heart" [class.is-on]="wishlist.has(p.id)"
-                  (click)="wishlist.toggle(p.id)" [attr.aria-label]="'product.wishlist' | t">
+          <button
+            type="button"
+            class="heart"
+            [class.is-on]="wishlist.has(p.id)"
+            (click)="wishlist.toggle(p.id)"
+            [attr.aria-label]="'product.wishlist' | t"
+          >
             <app-icon [name]="wishlist.has(p.id) ? 'heart-filled' : 'heart'" [size]="24" />
           </button>
         </div>
@@ -77,15 +112,39 @@
 
     <!-- tabs -->
     <div class="tabs" role="tablist">
-      <button type="button" role="tab" id="tab-descriptions" aria-controls="tabpanel"
-              [class.is-on]="tab() === 'descriptions'"
-              [attr.aria-selected]="tab() === 'descriptions'" (click)="tab.set('descriptions')">{{ 'product.tabDescriptions' | t }}</button>
-      <button type="button" role="tab" id="tab-additional" aria-controls="tabpanel"
-              [class.is-on]="tab() === 'additional'"
-              [attr.aria-selected]="tab() === 'additional'" (click)="tab.set('additional')">{{ 'product.tabAdditional' | t }}</button>
-      <button type="button" role="tab" id="tab-reviews" aria-controls="tabpanel"
-              [class.is-on]="tab() === 'reviews'"
-              [attr.aria-selected]="tab() === 'reviews'" (click)="tab.set('reviews')">{{ 'product.tabReviews' | t }}</button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-descriptions"
+        aria-controls="tabpanel"
+        [class.is-on]="tab() === 'descriptions'"
+        [attr.aria-selected]="tab() === 'descriptions'"
+        (click)="tab.set('descriptions')"
+      >
+        {{ 'product.tabDescriptions' | t }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-additional"
+        aria-controls="tabpanel"
+        [class.is-on]="tab() === 'additional'"
+        [attr.aria-selected]="tab() === 'additional'"
+        (click)="tab.set('additional')"
+      >
+        {{ 'product.tabAdditional' | t }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-reviews"
+        aria-controls="tabpanel"
+        [class.is-on]="tab() === 'reviews'"
+        [attr.aria-selected]="tab() === 'reviews'"
+        (click)="tab.set('reviews')"
+      >
+        {{ 'product.tabReviews' | t }}
+      </button>
     </div>
 
     <!-- one panel swapped by the active tab, so it is labelled by whichever tab is on -->
@@ -98,8 +157,14 @@
 
         @case ('additional') {
           <dl class="specs">
-            <div><dt>{{ 'product.color' | t }}</dt><dd>{{ p.colors.join(', ') }}</dd></div>
-            <div><dt>{{ 'product.size' | t }}</dt><dd>{{ p.sizes.join(', ') }}</dd></div>
+            <div>
+              <dt>{{ 'product.color' | t }}</dt>
+              <dd>{{ p.colors.join(', ') }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'product.size' | t }}</dt>
+              <dd>{{ p.sizes.join(', ') }}</dd>
+            </div>
           </dl>
         }
 
@@ -110,7 +175,13 @@
             @for (review of reviews; track review.id) {
               <li class="review">
                 <div class="review__head">
-                  <img [src]="review.avatar" [alt]="review.author" width="38" height="38" loading="lazy" />
+                  <img
+                    [src]="review.avatar"
+                    [alt]="review.author"
+                    width="38"
+                    height="38"
+                    loading="lazy"
+                  />
                   <div>
                     <span class="review__author">{{ review.author }}</span>
                     <app-star-rating [value]="review.rating" [size]="18" />
@@ -130,8 +201,13 @@
               <span class="field__label">{{ 'product.yourRating' | t }}</span>
               <div class="rating-picker">
                 @for (option of ratingOptions; track option) {
-                  <button type="button" class="rating-option" [class.is-on]="draft.rating === option"
-                          (click)="draft.rating = option" [attr.aria-label]="'product.stars' | t: { count: option }">
+                  <button
+                    type="button"
+                    class="rating-option"
+                    [class.is-on]="draft.rating === option"
+                    (click)="draft.rating = option"
+                    [attr.aria-label]="'product.stars' | t: { count: option }"
+                  >
                     @for (i of [].constructor(option); track $index) {
                       <app-icon [name]="'star'" [size]="24" />
                     }
@@ -142,20 +218,39 @@
 
             <label class="field">
               <span class="field__label">{{ 'product.name' | t }}</span>
-              <input class="control" type="text" [placeholder]="'product.namePlaceholder' | t" [(ngModel)]="draft.name" name="name" />
+              <input
+                class="control"
+                type="text"
+                [placeholder]="'product.namePlaceholder' | t"
+                [(ngModel)]="draft.name"
+                name="name"
+              />
             </label>
 
             <label class="field">
               <span class="field__label">{{ 'product.email' | t }}</span>
-              <input class="control" type="email" [placeholder]="'product.emailPlaceholder' | t" [(ngModel)]="draft.email" name="email" />
+              <input
+                class="control"
+                type="email"
+                [placeholder]="'product.emailPlaceholder' | t"
+                [(ngModel)]="draft.email"
+                name="email"
+              />
             </label>
 
             <label class="field">
               <span class="field__label">{{ 'product.review' | t }}</span>
-              <textarea class="control" [placeholder]="'product.reviewPlaceholder' | t" [(ngModel)]="draft.body" name="body"></textarea>
+              <textarea
+                class="control"
+                [placeholder]="'product.reviewPlaceholder' | t"
+                [(ngModel)]="draft.body"
+                name="body"
+              ></textarea>
             </label>
 
-            <button type="submit" class="btn btn--primary submit">{{ 'product.submit' | t }}</button>
+            <button type="submit" class="btn btn--primary submit">
+              {{ 'product.submit' | t }}
+            </button>
 
             @if (submitted()) {
               <p class="thanks">{{ 'product.thanks' | t }}</p>

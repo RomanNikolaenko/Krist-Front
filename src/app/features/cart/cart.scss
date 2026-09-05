@@ -15,8 +15,8 @@
 
   display: grid;
   grid-template-columns: minmax(var(--table-min), 1fr) 21.25rem;
-  gap: 3.75rem;
   align-items: start;
+  gap: 3.75rem;
 }
 
 .head,
@@ -28,9 +28,9 @@
 }
 
 .head {
+  padding-bottom: 1.125rem;
   font-size: var(--fs-body);
   color: var(--c-heading);
-  padding-bottom: 1.125rem;
   border-bottom: 0.0625rem solid var(--c-line);
 }
 
@@ -55,11 +55,11 @@
 }
 
 .item img {
+  flex: none;
   width: 4.375rem;
   height: 5.25rem;
-  object-fit: cover;
   background: var(--c-surface);
-  flex: none;
+  object-fit: cover;
 }
 
 .item__name {
@@ -67,6 +67,7 @@
   font-weight: 600;
   color: var(--c-heading);
 }
+
 .item__meta {
   font-size: var(--fs-sm);
   color: var(--c-body);
@@ -80,25 +81,26 @@
 .drop {
   display: grid;
   place-items: center;
+  justify-self: end;
   width: 3rem;
   height: 3rem;
-  border: none;
-  background: none;
-  color: var(--c-muted);
   padding: 0;
-  justify-self: end;
+  color: var(--c-muted);
+  background: none;
+  border: none;
+
   &:hover {
     color: var(--c-danger);
   }
 }
 
 .empty {
-  text-align: center;
-  padding: 4.375rem 0 5.625rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.875rem;
+  padding: 4.375rem 0 5.625rem;
+  text-align: center;
 }
 
 /*
@@ -130,24 +132,30 @@
   .head {
     display: none;
   }
+
   .row {
-    grid-template-columns: 1fr auto;
     grid-template-areas: 'item drop' 'qty money';
+    grid-template-columns: 1fr auto;
     row-gap: 0.875rem;
   }
+
   .row .item {
     grid-area: item;
   }
+
   .row .price {
     display: none;
   }
+
   .row app-qty-stepper {
     grid-area: qty;
   }
+
   .row .subtotal {
     grid-area: money;
     justify-self: end;
   }
+
   .row .drop {
     grid-area: drop;
   }

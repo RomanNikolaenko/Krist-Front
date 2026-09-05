@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  ViewEncapsulation,
+} from '@angular/core';
 import { IconName, IconRegistry } from './icon-registry';
 
 export type { IconName } from './icon-registry';

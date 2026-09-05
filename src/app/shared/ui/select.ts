@@ -31,9 +31,7 @@ export interface SelectOption {
   selector: 'app-select',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Select), multi: true },
-  ],
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Select), multi: true }],
   styleUrl: './select.scss',
   templateUrl: './select.html',
   host: {
@@ -99,7 +97,8 @@ export class Select implements ControlValueAccessor {
   }
 
   protected toggle(): void {
-    this.open() ? this.close() : this.openPanel();
+    if (this.open()) this.close();
+    else this.openPanel();
   }
 
   protected choose(value: string): void {
@@ -126,10 +125,16 @@ export class Select implements ControlValueAccessor {
         return;
       }
       case 'Home':
-        if (this.open()) { event.preventDefault(); this.activeIndex.set(0); }
+        if (this.open()) {
+          event.preventDefault();
+          this.activeIndex.set(0);
+        }
         return;
       case 'End':
-        if (this.open()) { event.preventDefault(); this.activeIndex.set(count - 1); }
+        if (this.open()) {
+          event.preventDefault();
+          this.activeIndex.set(count - 1);
+        }
         return;
       case 'Enter':
       case ' ':

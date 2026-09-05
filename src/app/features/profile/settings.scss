@@ -10,6 +10,7 @@
   padding-block: 1.375rem;
   border-bottom: 0.0625rem solid var(--c-line);
 }
+
 .row:last-child {
   border-bottom: none;
 }
@@ -19,10 +20,11 @@
   font-weight: 600;
   color: var(--c-heading);
 }
+
 .text {
+  margin-top: 0.125rem;
   font-size: var(--fs-sm);
   color: var(--c-muted);
-  margin-top: 0.125rem;
 }
 
 app-select {

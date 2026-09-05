@@ -16,17 +16,25 @@ export class AccountStore {
     'krist.checkout.address',
     ADDRESSES.find((a) => a.isDefault)?.id ?? null,
   );
-  private readonly paymentMethod = persistentSignal<PaymentMethod>('krist.checkout.payment', 'card');
+  private readonly paymentMethod = persistentSignal<PaymentMethod>(
+    'krist.checkout.payment',
+    'card',
+  );
 
   readonly addresses = this.addressList.asReadonly();
   readonly cards = this.cardList.asReadonly();
   readonly profile = this.profileState.asReadonly();
   readonly payment = this.paymentMethod.asReadonly();
 
-  readonly fullName = computed(() => `${this.profileState().firstName} ${this.profileState().lastName}`);
+  readonly fullName = computed(
+    () => `${this.profileState().firstName} ${this.profileState().lastName}`,
+  );
 
   readonly selectedAddress = computed<Address | null>(
-    () => this.addressList().find((a) => a.id === this.selectedAddressId()) ?? this.addressList()[0] ?? null,
+    () =>
+      this.addressList().find((a) => a.id === this.selectedAddressId()) ??
+      this.addressList()[0] ??
+      null,
   );
 
   addAddress(address: Omit<Address, 'id'>): Address {

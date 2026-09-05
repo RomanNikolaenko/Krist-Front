@@ -16,11 +16,12 @@
  * photo in with it — the height stays put and the circle turns into an egg.
  */
 .avatar {
-  position: relative;
   flex: none;
+  position: relative;
   width: 6.25rem;
   height: 6.25rem;
 }
+
 .avatar img {
   width: 100%;
   height: 100%;
@@ -29,19 +30,19 @@
 }
 
 .avatar button {
+  display: grid;
+  place-items: center;
   position: absolute;
   // tangent to the rim from the inside: 3.125rem radius less the badge's 1.25rem
   right: 0.5rem;
   bottom: 0.5rem;
   width: 2.5rem;
   height: 2.5rem;
-  display: grid;
-  place-items: center;
+  padding: 0;
+  color: var(--c-on-ink);
+  background: var(--c-ink);
   border: 0.125rem solid var(--c-panel);
   border-radius: 50%;
-  background: var(--c-ink);
-  color: var(--c-on-ink);
-  padding: 0;
 }
 
 form {
@@ -49,20 +50,21 @@ form {
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+
 .full {
   grid-column: 1 / -1;
 }
 
 .control:disabled {
-  background: var(--c-panel);
   color: var(--c-heading);
-  -webkit-text-fill-color: var(--c-heading);
+  background: var(--c-panel);
   opacity: 1;
+  -webkit-text-fill-color: var(--c-heading);
 }
 
 .saved {
-  color: var(--c-success);
   font-size: var(--fs-sm);
+  color: var(--c-success);
 }
 
 @container panel (max-width: 32rem) {

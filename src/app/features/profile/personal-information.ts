@@ -21,7 +21,10 @@ export class PersonalInformation {
   protected readonly form = this.fb.nonNullable.group({
     firstName: [this.account.profile().firstName, Validators.required],
     lastName: [this.account.profile().lastName, Validators.required],
-    phone: [this.account.profile().phone, [Validators.required, Validators.pattern(/^[\d\s()+-]{7,}$/)]],
+    phone: [
+      this.account.profile().phone,
+      [Validators.required, Validators.pattern(/^[\d\s()+-]{7,}$/)],
+    ],
     email: [this.account.profile().email, [Validators.required, Validators.email]],
     address: [this.account.profile().address],
   });

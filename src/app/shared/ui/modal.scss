@@ -1,23 +1,25 @@
 .backdrop {
-  position: fixed;
-  inset: 0;
-  background: var(--c-overlay);
   display: grid;
   place-items: center;
-  padding: 1.5rem;
+  position: fixed;
+  inset: 0;
   z-index: 100;
+  padding: 1.5rem;
   overflow-y: auto;
+  background: var(--c-overlay);
 }
+
 .panel {
-  background: var(--c-panel);
   width: 100%;
   max-width: var(--modal-width, 30.625rem);
-  padding: 2rem;
-  box-shadow: var(--shadow-card);
   max-height: calc(100vh - 3rem);
+  padding: 2rem;
   overflow-y: auto;
+  background: var(--c-panel);
+  box-shadow: var(--shadow-card);
 }
-@media (max-width: 37.5rem) {
+
+@media (width <= 37.5rem) {
   .panel {
     padding: 1.375rem;
   }

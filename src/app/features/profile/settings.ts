@@ -35,12 +35,15 @@ export class Settings {
     { key: 'email', titleKey: 'settings.email', textKey: 'settings.emailText' },
   ];
 
-  protected readonly toggles = persistentSignal<Record<ToggleKey, boolean>>('krist.settings.toggles', {
-    twoFactor: true,
-    push: true,
-    desktop: true,
-    email: true,
-  });
+  protected readonly toggles = persistentSignal<Record<ToggleKey, boolean>>(
+    'krist.settings.toggles',
+    {
+      twoFactor: true,
+      push: true,
+      desktop: true,
+      email: true,
+    },
+  );
 
   protected setAppearance(value: string): void {
     this.theme.set(value as Appearance);

@@ -4,17 +4,17 @@
 
 .lead {
   max-width: 44rem;
-  font-size: 1.125rem;
-  color: var(--c-body);
   margin-bottom: 2.5rem;
+  font-size: 1.125rem;
   text-wrap: balance;
+  color: var(--c-body);
 }
 
 .hero {
   aspect-ratio: 21 / 9;
+  margin-bottom: 4rem;
   overflow: hidden;
   background: var(--c-surface);
-  margin-bottom: 4rem;
 
   img {
     width: 100%;
@@ -26,13 +26,14 @@
 .mission {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 3.75rem;
   align-items: start;
+  gap: 3.75rem;
   margin-bottom: 4.5rem;
 
   h2 {
     font-size: var(--fs-h2);
   }
+
   p {
     color: var(--c-body);
   }
@@ -41,6 +42,7 @@
 .values {
   margin-bottom: 4.5rem;
 }
+
 .values h2 {
   margin-bottom: 2rem;
 }
@@ -52,25 +54,27 @@
 }
 
 .value {
-  border: 0.0625rem solid var(--c-line);
-  padding: 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
+  padding: 1.75rem;
+  border: 0.0625rem solid var(--c-line);
 
   app-icon {
-    color: var(--c-heading);
     margin-bottom: 0.5rem;
+    color: var(--c-heading);
   }
+
   h3 {
     font-size: var(--fs-h3);
     font-weight: 600;
     text-wrap: balance;
   }
+
   p {
     font-size: var(--fs-sm);
-    color: var(--c-body);
     text-wrap: balance;
+    color: var(--c-body);
   }
 }
 
@@ -78,9 +82,9 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.5rem;
-  background: var(--c-surface-alt);
   padding: 3rem 2.5rem;
   margin-bottom: 4.5rem;
+  background: var(--c-surface-alt);
 }
 
 .stat {
@@ -91,9 +95,10 @@
   strong {
     font-size: 2.5rem;
     font-weight: 600;
-    color: var(--c-heading);
     line-height: 1.1;
+    color: var(--c-heading);
   }
+
   span {
     font-size: var(--fs-sm);
     color: var(--c-body);
@@ -102,10 +107,10 @@
 
 .cta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  flex-wrap: wrap;
   padding-bottom: 3rem;
 
   h2 {
@@ -118,13 +123,16 @@
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+
   .values__grid {
     grid-template-columns: 1fr;
   }
+
   .stats {
     grid-template-columns: repeat(2, 1fr);
     padding: 2rem 1.5rem;
   }
+
   .hero {
     aspect-ratio: 3 / 2;
     margin-bottom: 2.5rem;

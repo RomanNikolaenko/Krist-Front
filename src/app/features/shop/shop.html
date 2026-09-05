@@ -4,10 +4,16 @@
 
   <app-breadcrumbs [items]="crumbs()" />
 
-  <button type="button" class="btn btn--outline filters-toggle" (click)="filtersOpen.set(!filtersOpen())">
+  <button
+    type="button"
+    class="btn btn--outline filters-toggle"
+    (click)="filtersOpen.set(!filtersOpen())"
+  >
     <app-icon [name]="'filter'" [size]="24" />
     {{ 'shop.filters' | t }}
-    @if (activeCount()) { <span class="pill">{{ activeCount() }}</span> }
+    @if (activeCount()) {
+      <span class="pill">{{ activeCount() }}</span>
+    }
   </button>
 
   <div class="layout">
@@ -20,8 +26,12 @@
       <!-- categories -->
       <section class="panel">
         <h2 class="panel__title">
-          <button type="button" class="panel__head" (click)="togglePanel('categories')"
-                  [attr.aria-expanded]="panels().categories">
+          <button
+            type="button"
+            class="panel__head"
+            (click)="togglePanel('categories')"
+            [attr.aria-expanded]="panels().categories"
+          >
             {{ 'shop.productCategories' | t }}
             <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().categories" />
           </button>
@@ -32,8 +42,11 @@
             @for (category of categories; track category) {
               <li class="opt">
                 <label class="check">
-                  <input type="checkbox" [checked]="filters().categories.includes(category)"
-                         (change)="toggleCategory(category)" />
+                  <input
+                    type="checkbox"
+                    [checked]="filters().categories.includes(category)"
+                    (change)="toggleCategory(category)"
+                  />
                   <span>{{ 'category.' + category | t }}</span>
                 </label>
                 @if (expandable.includes(category)) {
@@ -48,8 +61,12 @@
       <!-- price -->
       <section class="panel">
         <h2 class="panel__title">
-          <button type="button" class="panel__head" (click)="togglePanel('price')"
-                  [attr.aria-expanded]="panels().price">
+          <button
+            type="button"
+            class="panel__head"
+            (click)="togglePanel('price')"
+            [attr.aria-expanded]="panels().price"
+          >
             {{ 'shop.filterByPrice' | t }}
             <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().price" />
           </button>
@@ -61,8 +78,16 @@
               {{ 'shop.price' | t }}: {{ 0 | currency: 'USD' : 'symbol' : '1.0-0' }} -
               {{ filters().maxPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
             </p>
-            <input class="range" type="range" min="0" [max]="maxPrice" step="10"
-                   [value]="filters().maxPrice" (input)="setPrice($event)" [attr.aria-label]="'shop.maxPrice' | t" />
+            <input
+              class="range"
+              type="range"
+              min="0"
+              [max]="maxPrice"
+              step="10"
+              [value]="filters().maxPrice"
+              (input)="setPrice($event)"
+              [attr.aria-label]="'shop.maxPrice' | t"
+            />
           </div>
         }
       </section>
@@ -70,8 +95,12 @@
       <!-- colour -->
       <section class="panel">
         <h2 class="panel__title">
-          <button type="button" class="panel__head" (click)="togglePanel('color')"
-                  [attr.aria-expanded]="panels().color">
+          <button
+            type="button"
+            class="panel__head"
+            (click)="togglePanel('color')"
+            [attr.aria-expanded]="panels().color"
+          >
             {{ 'shop.filterByColor' | t }}
             <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().color" />
           </button>
@@ -81,8 +110,12 @@
           <ul class="panel__body">
             @for (color of colors; track color.name) {
               <li class="opt">
-                <button type="button" class="swatch-row" [class.is-on]="filters().colors.includes(color.name)"
-                        (click)="toggleColor(color.name)">
+                <button
+                  type="button"
+                  class="swatch-row"
+                  [class.is-on]="filters().colors.includes(color.name)"
+                  (click)="toggleColor(color.name)"
+                >
                   <span class="swatch" [style.background]="color.token"></span>
                   <span>{{ 'color.' + color.name | t }}</span>
                 </button>
@@ -96,8 +129,12 @@
       <!-- size -->
       <section class="panel">
         <h2 class="panel__title">
-          <button type="button" class="panel__head" (click)="togglePanel('size')"
-                  [attr.aria-expanded]="panels().size">
+          <button
+            type="button"
+            class="panel__head"
+            (click)="togglePanel('size')"
+            [attr.aria-expanded]="panels().size"
+          >
             {{ 'shop.filterBySize' | t }}
             <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().size" />
           </button>
@@ -108,8 +145,11 @@
             @for (size of sizes; track size.name) {
               <li class="opt">
                 <label class="check">
-                  <input type="checkbox" [checked]="filters().sizes.includes(size.name)"
-                         (change)="toggleSize(size.name)" />
+                  <input
+                    type="checkbox"
+                    [checked]="filters().sizes.includes(size.name)"
+                    (change)="toggleSize(size.name)"
+                  />
                   <span>{{ size.name }}</span>
                 </label>
                 <span class="count">({{ size.count }})</span>
@@ -120,22 +160,36 @@
       </section>
 
       @if (activeCount()) {
-        <button type="button" class="btn btn--outline btn--sm btn--block" (click)="reset()">{{ 'shop.clearFilters' | t }}</button>
+        <button type="button" class="btn btn--outline btn--sm btn--block" (click)="reset()">
+          {{ 'shop.clearFilters' | t }}
+        </button>
       }
     </aside>
 
     <div class="content">
       <div class="toolbar">
         <div class="views">
-          <button type="button" [class.is-on]="view() === 'grid'" (click)="view.set('grid')" [attr.aria-label]="'shop.gridView' | t">
+          <button
+            type="button"
+            [class.is-on]="view() === 'grid'"
+            (click)="view.set('grid')"
+            [attr.aria-label]="'shop.gridView' | t"
+          >
             <app-icon [name]="'grid'" [size]="24" />
           </button>
-          <button type="button" [class.is-on]="view() === 'list'" (click)="view.set('list')" [attr.aria-label]="'shop.listView' | t">
+          <button
+            type="button"
+            [class.is-on]="view() === 'list'"
+            (click)="view.set('list')"
+            [attr.aria-label]="'shop.listView' | t"
+          >
             <app-icon [name]="'list'" [size]="24" />
           </button>
         </div>
 
-        <p class="count">{{ 'shop.showing' | t: { from: result().from, to: result().to, total: result().total } }}</p>
+        <p class="count">
+          {{ 'shop.showing' | t: { from: result().from, to: result().to, total: result().total } }}
+        </p>
 
         <app-select
           class="sort"
@@ -143,7 +197,8 @@
           [options]="sortOptions()"
           [value]="filters().sort"
           [ariaLabel]="'shop.sortLabel' | t"
-          (valueChange)="setSort($event)" />
+          (valueChange)="setSort($event)"
+        />
       </div>
 
       @if (result().items.length) {
@@ -155,14 +210,20 @@
 
         @if (result().pages > 1) {
           <div class="pager">
-            <app-pagination [page]="filters().page" [pages]="result().pages" (pageChange)="setPage($event)" />
+            <app-pagination
+              [page]="filters().page"
+              [pages]="result().pages"
+              (pageChange)="setPage($event)"
+            />
           </div>
         }
       } @else {
         <div class="empty">
           <h2>{{ 'shop.emptyTitle' | t }}</h2>
           <p class="muted">{{ 'shop.emptyText' | t }}</p>
-          <button type="button" class="btn btn--primary" (click)="reset()">{{ 'shop.clearFilters' | t }}</button>
+          <button type="button" class="btn btn--primary" (click)="reset()">
+            {{ 'shop.clearFilters' | t }}
+          </button>
         </div>
       }
     </div>

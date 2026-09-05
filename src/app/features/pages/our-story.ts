@@ -13,6 +13,10 @@ import { T } from '../../shared/t.pipe';
   templateUrl: './our-story.html',
 })
 export class OurStory {
-  protected readonly values = STORY_VALUES as { icon: IconName; titleKey: string; textKey: string }[];
+  protected readonly values = STORY_VALUES as {
+    icon: IconName;
+    titleKey: string;
+    textKey: string;
+  }[];
   protected readonly stats = STORY_STATS;
 }

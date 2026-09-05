@@ -10,8 +10,6 @@ import { Modal } from '../../shared/ui/modal';
 import { I18n } from '../../core/i18n/i18n';
 import { T } from '../../shared/t.pipe';
 
-
-
 @Component({
   selector: 'app-review-order',
   changeDetection: ChangeDetectionStrategy.OnPush,

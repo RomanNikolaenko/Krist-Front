@@ -35,8 +35,7 @@ function read<T>(key: string, fallback: T, version: number): T {
     if (!raw) return fallback;
 
     const parsed: unknown = JSON.parse(raw);
-    const isEnvelope =
-      !!parsed && typeof parsed === 'object' && 'v' in parsed && 'd' in parsed;
+    const isEnvelope = !!parsed && typeof parsed === 'object' && 'v' in parsed && 'd' in parsed;
 
     // Anything unversioned predates the envelope, so treat it as stale.
     if (!isEnvelope) return fallback;

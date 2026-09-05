@@ -3,19 +3,23 @@ form {
   flex-direction: column;
   gap: 1.125rem;
 }
+
 .pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.125rem;
 }
+
 .actions {
   display: flex;
   gap: 1rem;
   margin-top: 0.375rem;
 }
+
 .actions .btn {
   flex: 1;
 }
+
 @container page (max-width: 32rem) {
   .pair {
     grid-template-columns: 1fr;

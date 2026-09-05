@@ -40,7 +40,9 @@ export class Catalog {
   }
 
   related(product: Product, count = 4): Product[] {
-    const sameCategory = this.all().filter((p) => p.id !== product.id && p.category === product.category);
+    const sameCategory = this.all().filter(
+      (p) => p.id !== product.id && p.category === product.category,
+    );
     const rest = this.all().filter((p) => p.id !== product.id && p.category !== product.category);
     return [...sameCategory, ...rest].slice(0, count);
   }

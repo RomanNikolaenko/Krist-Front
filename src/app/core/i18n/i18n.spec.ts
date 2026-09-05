@@ -63,7 +63,9 @@ describe('I18n', () => {
   });
 
   it('has no empty translations', () => {
-    const blank = (Object.keys(en) as TranslationKey[]).filter((k) => !en[k].trim() || !uk[k].trim());
+    const blank = (Object.keys(en) as TranslationKey[]).filter(
+      (k) => !en[k].trim() || !uk[k].trim(),
+    );
     expect(blank).toEqual([]);
   });
 

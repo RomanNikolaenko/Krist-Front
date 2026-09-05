@@ -22,10 +22,11 @@
   font-weight: 600;
   color: var(--c-heading);
 }
+
 .lines {
+  margin: 0.5rem 0 0.625rem;
   font-size: var(--fs-sm);
   color: var(--c-body);
-  margin: 0.5rem 0 0.625rem;
 }
 
 .phone {
@@ -35,8 +36,10 @@
   font-size: var(--fs-sm);
   color: var(--c-heading);
 }
+
 .phone a {
   color: inherit;
+
   &:hover {
     text-decoration: underline;
   }
@@ -45,26 +48,29 @@
 .row__actions {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
   align-items: stretch;
+  gap: 0.625rem;
 }
+
 .row__actions .action {
   justify-content: center;
 }
 
 h2 {
+  margin-bottom: 1.375rem;
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 1.375rem;
 }
 
 @container panel (max-width: 32rem) {
   .row {
     grid-template-columns: 1fr;
   }
+
   .row__actions {
     flex-direction: row;
   }
+
   .row__actions .action {
     flex: 1;
   }

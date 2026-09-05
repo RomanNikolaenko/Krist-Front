@@ -1,36 +1,42 @@
 :host {
   display: inline-flex;
 }
+
 .box {
   display: inline-flex;
   align-items: center;
+  overflow: hidden;
   border: 0.0625rem solid var(--c-line-strong);
   border-radius: var(--r-md);
-  overflow: hidden;
 }
+
 button {
-  border: none;
-  background: transparent;
-  color: var(--c-heading);
   display: grid;
   place-items: center;
   width: 3rem;
   height: 3rem;
+  color: var(--c-heading);
+  background: transparent;
+  border: none;
+
   &:hover:not(:disabled) {
     background: var(--c-surface);
   }
+
   &:disabled {
     color: var(--c-placeholder);
     cursor: not-allowed;
   }
 }
+
 .value {
   min-width: 1.75rem;
-  text-align: center;
   font-size: var(--fs-body);
+  text-align: center;
   color: var(--c-heading);
   user-select: none;
 }
+
 :host(.sm) button {
   width: 3rem;
   height: 3rem;

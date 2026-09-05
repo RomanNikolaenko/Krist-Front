@@ -432,12 +432,14 @@ export const en = {
   'auth.changedText': 'Your password has been updated successfully',
   'auth.backToLogin': 'Back to Login',
 
-// ---------- our story ----------
+  // ---------- our story ----------
   'story.title': 'Our Story',
-  'story.lead': 'Krist began in a single studio with one idea: clothes that feel considered, not disposable. Today the same small team picks every fabric and signs off every fit.',
+  'story.lead':
+    'Krist began in a single studio with one idea: clothes that feel considered, not disposable. Today the same small team picks every fabric and signs off every fit.',
   'story.heroAlt': 'The Krist studio',
   'story.missionTitle': 'What we are building',
-  'story.missionText': 'We work in small runs with mills we visit in person. It means fewer pieces each season, and it means we can tell you where every one of them came from.',
+  'story.missionText':
+    'We work in small runs with mills we visit in person. It means fewer pieces each season, and it means we can tell you where every one of them came from.',
   'story.valuesTitle': 'What we hold to',
   'story.value1': 'Made to last',
   'story.value1Text': 'Fabrics chosen for the fifth year of wear, not the first wash.',
@@ -460,7 +462,8 @@ export const en = {
 
   // ---------- contact ----------
   'contact.title': 'Contact Us',
-  'contact.lead': 'Questions about an order, a size or a fabric? Write to us and a person will answer.',
+  'contact.lead':
+    'Questions about an order, a size or a fabric? Write to us and a person will answer.',
   'contact.reachUs': 'Reach us',
   'contact.phone': 'Phone',
   'contact.email': 'Email',
@@ -482,7 +485,6 @@ export const en = {
   'contact.messageRequired': 'Please write a message',
   'contact.send': 'Send Message',
   'contact.sent': 'Thanks — your message has been recorded for this demo.',
-
 };
 
 export type TranslationKey = keyof typeof en;

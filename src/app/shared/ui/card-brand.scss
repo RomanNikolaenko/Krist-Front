@@ -1,15 +1,17 @@
 :host {
   display: grid;
+  flex: none;
   place-items: center;
   width: 3.625rem;
   height: 2.875rem;
   background: var(--c-brand-plate);
-  flex: none;
 }
+
 svg {
   width: 2.375rem;
   height: 1.5rem;
 }
+
 .visa {
   font-family: var(--font);
   font-size: 0.8125rem;

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChildren } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,7 +33,9 @@ export class Otp {
   private readonly inputs = viewChildren<ElementRef<HTMLInputElement>>('slot');
 
   protected readonly email = toSignal(
-    inject(ActivatedRoute).queryParamMap.pipe(map((p) => p.get('email') ?? 'robertfox@example.com')),
+    inject(ActivatedRoute).queryParamMap.pipe(
+      map((p) => p.get('email') ?? 'robertfox@example.com'),
+    ),
     { initialValue: 'robertfox@example.com' },
   );
 

@@ -14,13 +14,13 @@
   flex-direction: column;
   gap: 0.625rem;
   padding: 1.25rem;
-  border: 0.0625rem solid var(--c-line);
   color: var(--c-heading);
+  border: 0.0625rem solid var(--c-line);
 }
 
 .features__icon {
-  color: var(--c-heading);
   margin-bottom: 0.5rem;
+  color: var(--c-heading);
 }
 
 .features__title {
@@ -32,8 +32,8 @@
 
 .features__text {
   font-size: var(--fs-sm);
-  color: var(--c-body);
   text-wrap: balance;
+  color: var(--c-body);
 }
 
 @container page (max-width: 56rem) {
@@ -47,6 +47,7 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
   .features__item {
     padding: 1.25rem;
   }

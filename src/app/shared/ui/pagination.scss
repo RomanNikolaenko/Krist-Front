@@ -4,25 +4,29 @@ nav {
   justify-content: center;
   gap: 0.625rem;
 }
+
 button {
-  min-width: 3rem;
-  height: 3rem;
   display: grid;
   place-items: center;
+  min-width: 3rem;
+  height: 3rem;
+  font-size: var(--fs-sm);
+  color: var(--c-heading);
+  background: transparent;
   border: none;
   border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--c-heading);
-  font-size: var(--fs-sm);
-  &:hover:not(:disabled):not(.is-active) {
+
+  &:hover:not(:disabled, .is-active) {
     background: var(--c-surface);
   }
+
   &:disabled {
     color: var(--c-placeholder);
     cursor: not-allowed;
   }
 }
+
 .is-active {
-  background: var(--c-ink);
   color: var(--c-on-ink);
+  background: var(--c-ink);
 }

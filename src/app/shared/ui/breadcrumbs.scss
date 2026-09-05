@@ -1,21 +1,25 @@
 nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
   font-size: var(--fs-sm);
 }
+
 a {
   color: var(--c-heading);
+
   &:hover {
-    color: var(--c-ink);
     text-decoration: underline;
+    color: var(--c-ink);
   }
 }
+
 .sep {
-  color: var(--c-muted);
   display: inline-flex;
+  color: var(--c-muted);
 }
+
 .current {
   color: var(--c-muted);
 }

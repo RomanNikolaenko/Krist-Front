@@ -29,7 +29,7 @@ export interface Review {
 }
 
 export interface CartItem {
-  id: string;          // productId + size + color
+  id: string; // productId + size + color
   productId: number;
   brand: string;
   name: string;
@@ -56,9 +56,9 @@ export type CardBrand = 'visa' | 'mastercard';
 
 export interface SavedCard {
   id: number;
-  label: string;    // "Master Card"
+  label: string; // "Master Card"
   holder: string;
-  number: string;   // masked
+  number: string; // masked
   expiry: string;
   brand: CardBrand;
 }

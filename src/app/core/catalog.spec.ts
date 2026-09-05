@@ -65,7 +65,9 @@ describe('Catalog', () => {
   it('combines facets as AND across facet groups', () => {
     const result = catalog.search(filters({ categories: ['Winter Wear'], sizes: ['XXXL'] }));
 
-    expect(result.items.every((p) => p.category === 'Winter Wear' && p.sizes.includes('XXXL'))).toBe(true);
+    expect(
+      result.items.every((p) => p.category === 'Winter Wear' && p.sizes.includes('XXXL')),
+    ).toBe(true);
   });
 
   it('drops products above the price ceiling', () => {

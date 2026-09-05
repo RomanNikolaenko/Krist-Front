@@ -3,14 +3,17 @@
   align-items: center;
   gap: 0.375rem;
 }
+
 .stars {
   display: inline-flex;
   gap: 0.125rem;
   color: var(--c-star);
 }
+
 .stars .off {
   color: var(--c-line);
 }
+
 .meta {
   font-size: var(--fs-sm);
   color: var(--c-muted);

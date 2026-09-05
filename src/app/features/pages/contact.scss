@@ -4,24 +4,24 @@
 
 .lead {
   max-width: 38rem;
-  font-size: 1.125rem;
-  color: var(--c-body);
   margin-bottom: 2.5rem;
+  font-size: 1.125rem;
   text-wrap: balance;
+  color: var(--c-body);
 }
 
 .layout {
   display: grid;
   grid-template-columns: 20rem 1fr;
-  gap: 3.75rem;
   align-items: start;
+  gap: 3.75rem;
   margin-bottom: 3rem;
 }
 
 h2 {
+  margin-bottom: 1.5rem;
   font-size: var(--fs-h3);
   font-weight: 600;
-  margin-bottom: 1.5rem;
 }
 
 .info {
@@ -36,15 +36,15 @@ h2 {
   gap: 0.875rem;
 
   app-icon {
-    color: var(--c-heading);
     margin-top: 0.125rem;
+    color: var(--c-heading);
   }
 }
 
 .info__label {
+  display: block;
   font-size: var(--fs-xs);
   color: var(--c-muted);
-  display: block;
 }
 
 .info__value {
@@ -53,6 +53,7 @@ h2 {
 
   a {
     color: inherit;
+
     &:hover {
       text-decoration: underline;
     }
@@ -64,16 +65,19 @@ form {
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+
 .full {
   grid-column: 1 / -1;
 }
+
 .submit {
   justify-self: start;
   padding-inline: 2.5rem;
 }
+
 .sent {
-  color: var(--c-success);
   font-size: var(--fs-sm);
+  color: var(--c-success);
 }
 
 @container page (max-width: 52rem) {
@@ -81,6 +85,7 @@ form {
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
+
   form {
     grid-template-columns: 1fr;
   }

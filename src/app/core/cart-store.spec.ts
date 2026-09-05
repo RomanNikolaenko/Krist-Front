@@ -4,8 +4,8 @@ import { CartStore } from './cart-store';
 import { PRODUCTS } from './data/products';
 import { DELIVERY_CHARGE } from './data/content';
 
-const dress = PRODUCTS[7];   // Girls Pink Moana Printed Dress — $80
-const shirt = PRODUCTS[5];   // Tailored Cotton Casual Shirt — $40
+const dress = PRODUCTS[7]; // Girls Pink Moana Printed Dress — $80
+const shirt = PRODUCTS[5]; // Tailored Cotton Casual Shirt — $40
 
 describe('CartStore', () => {
   let cart: CartStore;

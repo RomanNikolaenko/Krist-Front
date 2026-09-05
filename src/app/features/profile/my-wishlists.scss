@@ -21,11 +21,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 @container panel (max-width: 30rem) {
   .grid {
     gap: 1.375rem 0.875rem;
   }
 }
+
 @container panel (max-width: 27rem) {
   .grid {
     grid-template-columns: 1fr;
