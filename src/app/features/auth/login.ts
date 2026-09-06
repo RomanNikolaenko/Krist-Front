@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthStore } from '../../core/auth-store';
+import { AuthService } from '../../core/auth/auth.service';
 import { AuthLayout } from './auth-layout';
 import { T } from '../../shared/t.pipe';
 
@@ -16,8 +16,10 @@ export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly auth = inject(AuthStore);
-  protected readonly sent = signal(false);
+  private readonly auth = inject(AuthService);
+
+  protected readonly submitting = signal(false);
+  protected readonly error = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['robertfox@example.com', [Validators.required, Validators.email]],
@@ -30,15 +32,39 @@ export class Login {
     return !!c && c.invalid && (c.dirty || c.touched);
   }
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.auth.signIn(this.form.getRawValue().email);
 
-    // the guard parks the attempted url here, so a blocked visit resumes
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    this.router.navigateByUrl(returnUrl ?? '/profile/personal-information');
+    this.submitting.set(true);
+    this.error.set(null);
+
+    const { email, password } = this.form.getRawValue();
+
+    try {
+      await this.auth.login(email, password);
+
+      // the guard parks the attempted url here, so a blocked visit resumes
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      await this.router.navigateByUrl(returnUrl ?? '/profile/personal-information');
+    } catch (failure) {
+      // One message for a wrong password and an unknown address — the server
+      // deliberately does not distinguish them, and neither should the form.
+      this.error.set(messageFrom(failure));
+    } finally {
+      this.submitting.set(false);
+    }
   }
+}
+
+/** Pulls the server's message out of an HttpErrorResponse, with a fallback. */
+export function messageFrom(failure: unknown): string {
+  const body = (failure as { error?: { message?: string | string[] } } | null)?.error;
+  const message = body?.message;
+
+  if (Array.isArray(message)) return message[0];
+  if (typeof message === 'string') return message;
+  return 'Something went wrong. Please try again.';
 }

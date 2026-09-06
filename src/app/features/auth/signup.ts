@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthStore } from '../../core/auth-store';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
+import { messageFrom } from './login';
 import { AuthLayout } from './auth-layout';
 import { T } from '../../shared/t.pipe';
 
@@ -14,14 +15,17 @@ import { T } from '../../shared/t.pipe';
 })
 export class Signup {
   private readonly fb = inject(FormBuilder);
-  private readonly router = inject(Router);
-  private readonly auth = inject(AuthStore);
+  private readonly auth = inject(AuthService);
+
+  protected readonly submitting = signal(false);
+  protected readonly error = signal<string | null>(null);
+  protected readonly sent = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(10)]],
     terms: [true, Validators.requiredTrue],
   });
 
@@ -30,12 +34,32 @@ export class Signup {
     return !!c && c.invalid && (c.dirty || c.touched);
   }
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.auth.signIn(this.form.getRawValue().email);
-    this.router.navigate(['/profile/personal-information']);
+
+    this.submitting.set(true);
+    this.error.set(null);
+
+    const { email, password, firstName, lastName } = this.form.getRawValue();
+
+    try {
+      const result = await this.auth.register({ email, password, firstName, lastName });
+
+      /*
+       * No navigation to the profile: registration does not sign anyone in,
+       * and the answer is deliberately the same whether or not the address was
+       * already taken. Sending them to a profile they may not have would leak
+       * exactly what the server took care not to say.
+       */
+      this.sent.set(result.message);
+      this.form.reset();
+    } catch (failure) {
+      this.error.set(messageFrom(failure));
+    } finally {
+      this.submitting.set(false);
+    }
   }
 }

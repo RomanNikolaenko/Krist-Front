@@ -11,7 +11,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { AccountStore } from '../../core/account-store';
-import { AuthStore } from '../../core/auth-store';
+import { AuthService } from '../../core/auth/auth.service';
 import { ScrollLock } from '../../core/scroll-lock';
 import { OrderStatus } from '../../core/models';
 import { Icon, IconName } from '../../shared/ui/icon';
@@ -39,7 +39,7 @@ const STATUSES: OrderStatus[] = ['Delivered', 'In Process', 'Cancelled'];
 })
 export class Profile {
   protected readonly account = inject(AccountStore);
-  private readonly auth = inject(AuthStore);
+  private readonly auth = inject(AuthService);
   protected readonly toolbar = inject(ProfileToolbar);
   private readonly router = inject(Router);
 
@@ -67,10 +67,10 @@ export class Profile {
     effect(() => scrollLock.toggle(this, this.sideOpen()));
   }
 
-  protected signOut(): void {
+  protected async signOut(): Promise<void> {
     this.sideOpen.set(false);
-    this.auth.signOut();
-    this.router.navigate(['/']);
+    await this.auth.logout();
+    await this.router.navigate(['/']);
   }
 
   protected onSearch(event: Event): void {

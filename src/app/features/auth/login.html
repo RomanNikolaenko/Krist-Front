@@ -39,7 +39,13 @@
       <a class="auth-link" routerLink="/forgot-password">{{ 'auth.forgotPassword' | t }}</a>
     </div>
 
-    <button type="submit" class="btn btn--primary auth-submit">{{ 'auth.login' | t }}</button>
+    @if (error(); as message) {
+      <p class="auth-error" role="alert">{{ message }}</p>
+    }
+
+    <button type="submit" class="btn btn--primary auth-submit" [disabled]="submitting()">
+      {{ (submitting() ? 'auth.signingIn' : 'auth.login') | t }}
+    </button>
 
     <p class="auth-row" style="justify-content: center">
       <span class="muted">{{ 'auth.newHere' | t }}&nbsp;</span

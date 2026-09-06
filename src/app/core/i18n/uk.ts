@@ -399,6 +399,8 @@ export const uk: Record<TranslationKey, string> = {
   'auth.rememberMe': 'Запам’ятати мене',
   'auth.forgotPassword': 'Забули пароль?',
   'auth.login': 'Увійти',
+  'auth.signingIn': 'Входимо…',
+  'auth.creating': 'Створюємо акаунт…',
   'auth.newHere': 'Ще не з нами?',
   'auth.createAccount': 'Створити акаунт',
   'auth.createTitle': 'Створення акаунта',

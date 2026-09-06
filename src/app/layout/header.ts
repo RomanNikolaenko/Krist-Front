@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthStore } from '../core/auth-store';
+import { AuthService } from '../core/auth/auth.service';
 import { CartStore } from '../core/cart-store';
 import { ScrollLock } from '../core/scroll-lock';
 import { WishlistStore } from '../core/wishlist-store';
@@ -34,7 +34,7 @@ export class Header {
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
-  protected readonly auth = inject(AuthStore);
+  protected readonly auth = inject(AuthService);
   protected readonly cart = inject(CartStore);
   protected readonly wishlist = inject(WishlistStore);
 

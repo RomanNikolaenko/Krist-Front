@@ -405,6 +405,8 @@ export const en = {
   'auth.rememberMe': 'Remember Me',
   'auth.forgotPassword': 'Forgot Password?',
   'auth.login': 'Login',
+  'auth.signingIn': 'Signing in…',
+  'auth.creating': 'Creating account…',
   'auth.newHere': 'New here?',
   'auth.createAccount': 'Create an account',
   'auth.createTitle': 'Create New Account',
