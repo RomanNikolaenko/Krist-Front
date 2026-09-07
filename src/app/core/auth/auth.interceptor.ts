@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { API_BASE_URL } from './api.config';
@@ -44,23 +44,28 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   return next(outbound).pipe(
     catchError((error: HttpErrorResponse) => {
       /*
-       * 401 means the session is not valid — expired, revoked, or never there.
-       *
-       * `/auth/me` is exempt because it is the question itself: answering it
-       * with a redirect to login would fire on every first visit. And the login
-       * endpoint is exempt because a wrong password is a 401 the form should
-       * show, not a reason to navigate away from the form.
+       * 401 usually means the session is not valid — expired, revoked, or
+       * never there. Not always, though: a handful of endpoints check a
+       * password carried in the request body and answer 401 when it is wrong,
+       * and there the session is perfectly fine. Signing the person out for
+       * mistyping their own password would be absurd, so those answer for
+       * themselves and the screen shows the message.
        */
-      if (error.status === 401 && !isAuthProbe(request.url, api)) {
+      if (error.status === 401 && !checksAPasswordItself(request.url, api)) {
         auth.clear();
 
-        // Guard against the loop: only navigate if we are not already there.
-        const onAuthScreen = /\/(login|signup|forgot-password|otp|reset-password)/.test(router.url);
-        if (!onAuthScreen) {
+        /*
+         * A session can lapse while the tab sits open. Forgetting it is right
+         * either way; moving the person is not. Somebody reading the catalogue
+         * simply becomes a guest where they stand — being thrown to a sign-in
+         * form because a cookie quietly expired is the rudest thing an app can
+         * do to a reader. Only a screen that needed a session to reach sends
+         * them on, and with a returnUrl so they come back to it.
+         */
+        if (onGuardedRoute(router)) {
           void router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
         }
       }
-
       /*
        * 403 is different in kind: the session is fine, the account simply may
        * not do this. Signing the user out or bouncing them to login would be
@@ -71,8 +76,44 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   );
 };
 
-function isAuthProbe(url: string, api: string): boolean {
-  return url.startsWith(`${api}/auth/me`) || url.startsWith(`${api}/auth/login`);
+/**
+ * Whether the screen in front of the user needed a session to reach.
+ *
+ * Taken from the router's own state rather than a list of paths kept in step
+ * by hand: a route is protected because it declares a guard, and reading that
+ * stays correct when the routes change.
+ */
+function onGuardedRoute(router: Router): boolean {
+  let route: ActivatedRouteSnapshot | null = router.routerState.snapshot.root;
+
+  while (route) {
+    if (route.routeConfig?.canActivate?.length) return true;
+    route = route.firstChild;
+  }
+
+  return false;
+}
+
+/**
+ * Endpoints whose 401 is about the credentials in the body rather than the
+ * session carrying the request.
+ *
+ * `/auth/me` is here for a different reason: it is the question itself, and
+ * answering it with a redirect would fire on every first visit by a guest.
+ *
+ * Matched exactly rather than by prefix, because `DELETE /account` checks a
+ * password while everything under `/account/…` is ordinary session-protected
+ * data that should still redirect when the session really has gone.
+ */
+function checksAPasswordItself(url: string, api: string): boolean {
+  const path = url.split('?')[0];
+
+  return (
+    path === `${api}/auth/me` ||
+    path === `${api}/auth/login` ||
+    path === `${api}/auth/change-password` ||
+    path === `${api}/account`
+  );
 }
 
 function readCookie(name: string): string | null {

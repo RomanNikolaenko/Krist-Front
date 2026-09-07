@@ -2,10 +2,17 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   position: relative;
-  margin-bottom: 2.25rem;
+  padding: 0;
+  margin: 0 0 2.25rem;
+  list-style: none;
 }
 
-.rule {
+/*
+ * The dashed line behind the badges. A pseudo-element rather than a <span>,
+ * because the track is an ordered list now and a list may only hold list items.
+ */
+.track::before {
+  content: '';
   position: absolute;
   top: 1.75rem;
   right: 1.25rem;
@@ -21,12 +28,12 @@
   position: relative;
 }
 
-.step:last-child {
-  align-items: flex-end;
+.step:nth-child(2) {
+  align-items: center;
 }
 
-.step:nth-child(3) {
-  align-items: center;
+.step:last-child {
+  align-items: flex-end;
 }
 
 .badge {
@@ -50,6 +57,11 @@
 .label {
   font-size: var(--fs-sm);
   color: var(--c-heading);
+}
+
+/* A step still out of reach reads as one, rather than as one you may click. */
+.step:not(.is-done):not(.is-current) .label {
+  color: var(--c-muted);
 }
 
 @container page (max-width: 32rem) {

@@ -6,7 +6,7 @@
       <app-checkout-steps current="review" />
 
       <p class="eta">
-        {{ 'review.eta' | t }} <span>{{ eta | date: 'd MMM y' }}</span>
+        {{ 'review.eta' | t }} <span>{{ eta | d: 'd MMM y' }}</span>
       </p>
 
       @for (item of cart.items(); track item.id) {
@@ -28,7 +28,7 @@
         <div class="block__head">
           <div>
             <h2>{{ 'review.shippingAddress' | t }}</h2>
-            @if (account.selectedAddress(); as address) {
+            @if (checkout.address(); as address) {
               <p class="who">{{ address.name }}</p>
               <p class="where">
                 {{ address.line1 }} {{ address.area }}, {{ address.state }} {{ address.pin }}
@@ -65,14 +65,34 @@
     </div>
 
     <app-order-summary>
-      <button
-        type="button"
-        class="btn btn--primary btn--block"
-        (click)="placeOrder()"
-        [disabled]="!cart.items().length"
-      >
-        {{ 'review.placeOrder' | t }}
-      </button>
+      <!--
+        An order belongs to somebody: it has to be findable later, cancellable,
+        and chargeable to a person. A guest can get this far, and is asked here
+        rather than at the door.
+      -->
+      @if (auth.isAuthenticated()) {
+        <button
+          type="button"
+          class="btn btn--primary btn--block"
+          (click)="placeOrder()"
+          [disabled]="!cart.items().length || placing()"
+        >
+          {{ (placing() ? 'review.placing' : 'review.placeOrder') | t }}
+        </button>
+      } @else {
+        <p class="gate">{{ 'review.signInToOrder' | t }}</p>
+        <a
+          class="btn btn--primary btn--block"
+          routerLink="/login"
+          [queryParams]="{ returnUrl: '/checkout/review' }"
+        >
+          {{ 'review.signIn' | t }}
+        </a>
+      }
+
+      @if (failure()) {
+        <p class="failure">{{ failure() }}</p>
+      }
     </app-order-summary>
   </div>
 </div>

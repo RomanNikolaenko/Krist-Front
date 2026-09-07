@@ -7,94 +7,135 @@
 
       <h2>{{ 'pay.select' | t }}</h2>
 
-      @for (option of options; track option.key) {
-        <div class="option">
+      <div class="methods">
+        @for (option of options; track option.key) {
           <label class="option__label check check--radio">
             <input
               type="radio"
               name="payment"
               [value]="option.key"
-              [checked]="account.payment() === option.key"
-              (change)="account.selectPayment(option.key)"
+              [checked]="method() === option.key"
+              (change)="method.set(option.key)"
             />
             <span>{{ option.labelKey | t }}</span>
           </label>
+        }
+      </div>
 
-          @if (option.key === 'card' && account.payment() === 'card') {
-            <form class="card-form" [formGroup]="form" (ngSubmit)="addCard()">
-              <label class="field">
-                <span class="field__label">{{ 'pay.cardNumber' | t }}</span>
+      @if (method() === 'card') {
+        <!--
+          The same shape as the address step: the cards already on file when
+          there are any to offer, and underneath, the form for one that is not.
+        -->
+        @if (canPickSaved()) {
+          <h2 class="cards__title">{{ 'pay.savedCards' | t }}</h2>
+
+          <div class="cards">
+            @for (card of account.cards(); track card.id) {
+              <label class="saved check check--radio" [class.is-on]="pickedCard() === card.id">
                 <input
-                  class="control"
-                  type="text"
-                  formControlName="number"
-                  placeholder="0000 0000 0000 0000"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  [class.is-invalid]="invalid('number')"
+                  type="radio"
+                  name="saved-card"
+                  [checked]="pickedCard() === card.id"
+                  (change)="pickCard(card.id)"
+                  [attr.aria-label]="'pay.useCard' | t: { label: card.label, last4: card.last4 }"
                 />
-                @if (invalid('number')) {
-                  <span class="field__error">{{ 'pay.cardNumberInvalid' | t }}</span>
-                }
+                <app-card-brand [brand]="card.brand" />
+                <span class="saved__text">
+                  <span class="saved__label">{{ card.label }}</span>
+                  <span class="saved__number">•••• {{ card.last4 }}</span>
+                </span>
               </label>
+            }
+          </div>
 
-              <label class="field">
-                <span class="field__label">{{ 'pay.cardName' | t }}</span>
-                <input
-                  class="control"
-                  type="text"
-                  formControlName="holder"
-                  [placeholder]="'pay.cardNamePlaceholder' | t"
-                  [class.is-invalid]="invalid('holder')"
-                />
-                @if (invalid('holder')) {
-                  <span class="field__error">{{ 'pay.cardNameRequired' | t }}</span>
-                }
-              </label>
+          <hr />
+        }
 
-              <div class="pair">
-                <label class="field">
-                  <span class="field__label">{{ 'pay.expiry' | t }}</span>
-                  <input
-                    class="control"
-                    type="text"
-                    formControlName="expiry"
-                    placeholder="MM/YY"
-                    [class.is-invalid]="invalid('expiry')"
-                  />
-                  @if (invalid('expiry')) {
-                    <span class="field__error">{{ 'pay.expiryInvalid' | t }}</span>
-                  }
-                </label>
+        <form class="card-form" [formGroup]="form" (ngSubmit)="addCard()">
+          <h2>{{ 'pay.newCard' | t }}</h2>
 
-                <label class="field">
-                  <span class="field__label">{{ 'pay.cvv' | t }}</span>
-                  <input
-                    class="control"
-                    type="password"
-                    formControlName="cvv"
-                    placeholder="•••"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    [class.is-invalid]="invalid('cvv')"
-                  />
-                  @if (invalid('cvv')) {
-                    <span class="field__error">{{ 'pay.cvvInvalid' | t }}</span>
-                  }
-                </label>
-              </div>
+          <label class="field">
+            <span class="field__label">{{ 'pay.cardNumber' | t }}</span>
+            <input
+              class="control"
+              type="text"
+              formControlName="number"
+              placeholder="0000 0000 0000 0000"
+              inputmode="numeric"
+              autocomplete="off"
+              [class.is-invalid]="invalid('number')"
+            />
+            @if (invalid('number')) {
+              <span class="field__error">{{ 'pay.cardNumberInvalid' | t }}</span>
+            }
+          </label>
 
-              <button type="submit" class="btn btn--primary add-card">
-                {{ 'pay.addCard' | t }}
-              </button>
-            </form>
-          }
-        </div>
+          <label class="field">
+            <span class="field__label">{{ 'pay.cardName' | t }}</span>
+            <input
+              class="control"
+              type="text"
+              formControlName="holder"
+              [placeholder]="'pay.cardNamePlaceholder' | t"
+              [class.is-invalid]="invalid('holder')"
+            />
+            @if (invalid('holder')) {
+              <span class="field__error">{{ 'pay.cardNameRequired' | t }}</span>
+            }
+          </label>
+
+          <div class="pair">
+            <label class="field">
+              <span class="field__label">{{ 'pay.expiry' | t }}</span>
+              <input
+                class="control"
+                type="text"
+                formControlName="expiry"
+                placeholder="MM/YY"
+                [class.is-invalid]="invalid('expiry')"
+              />
+              @if (invalid('expiry')) {
+                <span class="field__error">{{ 'pay.expiryInvalid' | t }}</span>
+              }
+            </label>
+
+            <label class="field">
+              <span class="field__label">{{ 'pay.cvv' | t }}</span>
+              <input
+                class="control"
+                type="password"
+                formControlName="cvv"
+                placeholder="•••"
+                inputmode="numeric"
+                autocomplete="off"
+                [class.is-invalid]="invalid('cvv')"
+              />
+              @if (invalid('cvv')) {
+                <span class="field__error">{{ 'pay.cvvInvalid' | t }}</span>
+              }
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn--outline add-card">
+            {{ 'pay.addCard' | t }}
+          </button>
+        </form>
       }
 
-      <button type="button" class="btn btn--primary continue" (click)="continue()">
+      <button
+        type="button"
+        class="btn btn--primary continue"
+        (click)="continue()"
+        [disabled]="!ready()"
+      >
         {{ 'pay.continue' | t }}
       </button>
+
+      <!-- A disabled button that says nothing is a dead end; this says why. -->
+      @if (!ready()) {
+        <p class="need-card">{{ 'pay.needCard' | t }}</p>
+      }
     </div>
 
     <app-order-summary />

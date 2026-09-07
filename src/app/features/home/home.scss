@@ -297,8 +297,11 @@
 
   figcaption {
     display: flex;
+    // Pinned to the bottom, so the author line sits level across the rail
+    // however many lines the quote above it runs to.
     align-items: center;
     gap: 0.75rem;
+    margin-top: auto;
 
     img {
       width: 2.75rem;

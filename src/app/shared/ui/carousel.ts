@@ -9,6 +9,7 @@ import {
   inject,
   input,
   signal,
+  ViewEncapsulation,
   viewChild,
 } from '@angular/core';
 import { register } from 'swiper/element/bundle';
@@ -44,6 +45,16 @@ const STATE_EVENTS = [
   selector: 'app-carousel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  /*
+   * Encapsulation is off on purpose. The slides are written in the host's
+   * template and projected in, so they carry the host's scope attribute — a
+   * scoped `swiper-slide` rule here matched none of them, which is why every
+   * rail rendered its cards at different heights. Each selector in the
+   * stylesheet is prefixed with .app-carousel, keeping the reach as tight as
+   * scoping would.
+   */
+  encapsulation: ViewEncapsulation.None,
+  host: { class: 'app-carousel' },
   styleUrl: './carousel.scss',
   templateUrl: './carousel.html',
 })
@@ -96,7 +107,25 @@ export class Carousel {
       STATE_EVENTS.forEach((event) => swiper.on(event, sync));
       sync();
 
-      this.destroyRef.onDestroy(() => swiper.destroy());
+      /*
+       * Slides can arrive long after this runs — the testimonial rail fills
+       * itself from an API call — and a Swiper that measured an empty container
+       * keeps the widths it worked out then. That is how three cards end up a
+       * thousand pixels wide apiece instead of a third of the rail.
+       *
+       * Swiper's own `observer` option does not catch it: the slides are
+       * projected through a slot, so they never become children of the shadow
+       * wrapper it watches. Watching the element's own child list does, and it
+       * keeps the fix inside the carousel rather than asking every host with
+       * asynchronous content to remember to call `update()`.
+       */
+      const slides = new MutationObserver(() => swiper.update());
+      slides.observe(element, { childList: true });
+
+      this.destroyRef.onDestroy(() => {
+        slides.disconnect();
+        swiper.destroy();
+      });
     });
   }
 

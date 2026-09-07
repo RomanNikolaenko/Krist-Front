@@ -233,39 +233,38 @@
   transform: translateX(-50%);
 }
 
+/*
+ * Departments across, their contents down. The columns come from the number
+ * of departments rather than from hand-cut groups, so adding one re-flows the
+ * panel instead of unbalancing it.
+ */
 .mega__inner {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.75rem 2rem;
   width: 100%;
 }
 
-.mega__col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
-  padding-inline: 1.75rem;
-
-  & + & {
-    border-left: 0.0625rem solid var(--c-line);
-  }
-  &:first-child {
-    padding-left: 0;
-  }
-  &:last-child {
-    padding-right: 0;
-  }
+.mega__group {
+  min-width: 0;
 }
 
+// The department heading is itself a link: it filters to the whole of it.
 .mega__title {
-  margin-bottom: 0.875rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
   font-size: var(--fs-body);
   font-weight: 600;
+  color: var(--c-heading);
+
+  &:hover {
+    color: var(--c-ink);
+  }
 }
 
 .mega__list li + li {
-  margin-top: 0.625rem;
+  margin-top: 0.5rem;
 }
-
 .mega__link {
   display: inline-block;
   position: relative;
@@ -331,8 +330,8 @@
   z-index: 2;
   width: min(100%, 25rem); // 400px
   height: calc(100dvh - 100%);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  // The panel itself no longer scrolls; the list inside it does.
+  overflow: hidden;
   background: var(--c-panel);
   border-top: 0.0625rem solid var(--c-line);
   border-left: 0.0625rem solid var(--c-line);
@@ -357,17 +356,27 @@
   }
 }
 
+/*
+ * A fixed-height column: the links scroll, the button does not. Scrolling
+ * the whole panel took the one action people open the menu for off the
+ * bottom of a long list.
+ */
 .drawer__inner {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
   padding-block: 0.5rem 1.5rem;
 }
 
 .drawer__nav {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  // `min-height: 0` is what lets a flex child actually shrink and scroll.
+  min-height: 0;
   margin-bottom: 1.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   > *:last-child {
     border-bottom: none;
@@ -408,28 +417,10 @@
  * mounted, so closing animates too; visibility keeps it out of the tab order
  * while it is shut.
  */
+// The same collapse the shop filters use — one definition, one feel.
 .drawer__reveal {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--open {
-    grid-template-rows: 1fr;
-  }
+  @include reveal;
 }
-
-.drawer__reveal-inner {
-  min-height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  transition: visibility 0s linear 0.28s;
-}
-
-.drawer__reveal--open > .drawer__reveal-inner {
-  visibility: visible;
-  transition-delay: 0s;
-}
-
 .drawer__sub {
   display: flex;
   flex-direction: column;
@@ -488,6 +479,8 @@
 }
 
 .drawer__sub-link {
+  display: flex;
+  align-items: center;
   padding: 0.75rem 0;
   font-size: var(--fs-sm);
   color: var(--c-body);
@@ -507,11 +500,11 @@
 }
 
 .drawer__login {
+  flex: none;
   width: 100%;
   max-width: 15.625rem; // 250px
   padding-block: 0.9375rem;
-  // auto top margin parks the action at the bottom of a short menu
-  margin: auto auto 0;
+  margin-inline: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -522,8 +515,7 @@
   .header__link::after,
   .header__caret,
   .drawer__caret,
-  .drawer__group,
-  .drawer__reveal {
+  .drawer__group {
     transition: none;
   }
 }

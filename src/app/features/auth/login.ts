@@ -22,7 +22,7 @@ export class Login {
   protected readonly error = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    email: ['robertfox@example.com', [Validators.required, Validators.email]],
+    email: ['roma.nikolaenko.91@gmail.com', [Validators.required, Validators.email]],
     password: ['', Validators.required],
     remember: [true],
   });

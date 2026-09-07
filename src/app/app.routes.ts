@@ -1,8 +1,43 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/auth.guard';
+import { authGuard, permissionGuard } from './core/auth/auth.guard';
+import { checkoutStepGuard } from './core/checkout.guard';
 import { Shell } from './layout/shell';
 
 export const routes: Routes = [
+  /*
+   * Outside the storefront shell on purpose: this is not a page of the shop but
+   * the tool that fills it, and it carries its own chrome. Declared first so the
+   * empty-path shell below does not try to match "admin" as one of its own.
+   */
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin-shell').then((m) => m.AdminShell),
+    canActivate: [permissionGuard('products.write')],
+    title: 'Krist — Admin',
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'products' },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./features/admin/products-list').then((m) => m.AdminProductsList),
+      },
+      // Before ":id", or "new" is read as the id of a product that does not exist.
+      {
+        path: 'products/new',
+        loadComponent: () =>
+          import('./features/admin/product-form').then((m) => m.AdminProductForm),
+      },
+      {
+        path: 'products/:id',
+        loadComponent: () =>
+          import('./features/admin/product-form').then((m) => m.AdminProductForm),
+      },
+      {
+        path: 'taxonomy',
+        loadComponent: () => import('./features/admin/taxonomy').then((m) => m.AdminTaxonomy),
+      },
+    ],
+  },
   {
     path: '',
     component: Shell,
@@ -40,12 +75,14 @@ export const routes: Routes = [
             path: 'payment',
             loadComponent: () =>
               import('./features/checkout/payment-method').then((m) => m.PaymentMethodPage),
+            canActivate: [checkoutStepGuard('payment')],
             title: 'Payment Method — Krist',
           },
           {
             path: 'review',
             loadComponent: () =>
               import('./features/checkout/review-order').then((m) => m.ReviewOrder),
+            canActivate: [checkoutStepGuard('review')],
             title: 'Review Your Order — Krist',
           },
         ],
@@ -65,6 +102,11 @@ export const routes: Routes = [
           {
             path: 'orders',
             loadComponent: () => import('./features/profile/my-orders').then((m) => m.MyOrders),
+          },
+          {
+            path: 'orders/:id',
+            loadComponent: () =>
+              import('./features/profile/order-detail').then((m) => m.OrderDetail),
           },
           {
             path: 'wishlists',

@@ -39,6 +39,7 @@ export class CartStore {
       {
         id,
         productId: product.id,
+        slug: product.slug,
         brand: product.brand,
         name: product.name,
         image: product.images[0],

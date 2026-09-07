@@ -1,10 +1,34 @@
 <div class="head">
   <div class="avatar">
-    <img [src]="account.profile().avatar" [alt]="account.fullName()" width="100" height="100" />
-    <button type="button" [attr.aria-label]="'personal.changePhoto' | t">
-      <app-icon [name]="'edit'" [size]="24" />
-    </button>
+    @if (account.profile().avatar; as photo) {
+      <img [src]="photo" [alt]="account.fullName()" width="100" height="100" />
+    } @else {
+      <!-- no photo on the account: a glyph rather than a stock face, which
+           would be one more thing on screen that is not the user's -->
+      <span class="avatar__blank"><app-icon [name]="'avatar-placeholder'" [size]="52" /></span>
+    }
+    <!--
+      A label rather than a button: it is the file input's own control, so it
+      opens the picker without a click handler and stays reachable by keyboard.
+    -->
+    <label class="avatar__edit" [attr.aria-label]="'personal.changePhoto' | t">
+      <app-icon [name]="uploading() ? 'check' : 'edit'" [size]="24" />
+      <input
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        [disabled]="uploading()"
+        (change)="onPhoto($event)"
+      />
+    </label>
   </div>
+
+  @if (photoError()) {
+    <p class="photo-error">{{ photoError() }}</p>
+  } @else if (account.profile().avatar) {
+    <button type="button" class="photo-remove" (click)="removePhoto()">
+      {{ 'personal.removePhoto' | t }}
+    </button>
+  }
 
   <button type="button" class="btn btn--primary" (click)="toggleEdit()">
     <app-icon [name]="'edit'" [size]="24" />

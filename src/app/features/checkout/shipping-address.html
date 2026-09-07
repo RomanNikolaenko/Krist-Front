@@ -5,53 +5,51 @@
     <div>
       <app-checkout-steps current="address" />
 
-      <h2>{{ 'ship.selectAddress' | t }}</h2>
-      <p class="lead">
-        {{ 'ship.lead' | t }}
-      </p>
+      <!--
+        Two ways to answer one question. The saved ones are a shortcut for
+        people who have some — a guest, or somebody who has never saved an
+        address, sees only the form and is not told about a list they cannot
+        have.
+      -->
+      @if (canPickSaved()) {
+        <h2>{{ 'ship.selectAddress' | t }}</h2>
+        <p class="lead">{{ 'ship.lead' | t }}</p>
 
-      <div class="cards">
-        @for (address of account.addresses(); track address.id) {
-          <div class="card" [class.is-on]="account.selectedAddress()?.id === address.id">
-            <div class="card__head">
-              <span class="card__name">{{ address.name }}</span>
-              <label class="check">
-                <input
-                  type="checkbox"
-                  [checked]="account.selectedAddress()?.id === address.id"
-                  (change)="account.selectAddress(address.id)"
-                  [attr.aria-label]="'ship.deliverTo' | t: { name: address.name }"
-                />
-              </label>
+        <div class="cards">
+          @for (address of account.addresses(); track address.id) {
+            <div class="card" [class.is-on]="picked() === address.id">
+              <div class="card__head">
+                <label class="check check--radio card__pick">
+                  <input
+                    type="radio"
+                    name="ship-to"
+                    [checked]="picked() === address.id"
+                    (change)="picked.set(address.id)"
+                    [attr.aria-label]="'ship.deliverTo' | t: { name: address.name }"
+                  />
+                  <span class="card__name">{{ address.name }}</span>
+                </label>
+              </div>
+
+              <p class="card__lines">{{ line(address) }}</p>
             </div>
+          }
+        </div>
 
-            <p class="card__lines">{{ line(address) }}</p>
+        <button type="button" class="btn btn--primary deliver" (click)="deliverHere()">
+          {{ 'ship.deliverHere' | t }}
+        </button>
 
-            <div class="card__actions">
-              <button type="button" class="action">
-                <app-icon [name]="'edit'" [size]="24" /> {{ 'addr.edit' | t }}
-              </button>
-              <button
-                type="button"
-                class="action action--danger"
-                (click)="account.removeAddress(address.id)"
-              >
-                <app-icon [name]="'trash'" [size]="24" /> {{ 'addr.delete' | t }}
-              </button>
-            </div>
-          </div>
-        }
-      </div>
-
-      <button type="button" class="btn btn--primary deliver" (click)="deliverHere()">
-        {{ 'ship.deliverHere' | t }}
-      </button>
-
-      <hr />
+        <hr />
+      }
 
       <div class="form-wrap">
-        <h2>{{ 'ship.addNew' | t }}</h2>
-        <app-address-form (saved)="add($event)" />
+        <h2>{{ (canPickSaved() ? 'ship.addNew' : 'ship.enterAddress') | t }}</h2>
+        <!--
+          Submitting is the answer, not a detour: it takes the order to the next
+          step. Signed in, the address is kept in the account on the way past.
+        -->
+        <app-address-form [submitLabel]="'ship.deliverHere'" (saved)="useNew($event)" />
       </div>
     </div>
 

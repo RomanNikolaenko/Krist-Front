@@ -1,5 +1,6 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,6 +9,18 @@ import { authInterceptor } from './auth.interceptor';
 import { AuthService } from './auth.service';
 
 const API = 'http://api.test/api';
+
+@Component({ template: '' })
+class Blank {}
+
+/**
+ * One open screen and one behind a guard: the interceptor decides whether to
+ * move the user by reading which of the two they are standing on.
+ */
+const routes = [
+  { path: 'shop', component: Blank },
+  { path: 'profile', component: Blank, canActivate: [() => true] },
+];
 
 describe('authInterceptor', () => {
   let http: HttpClient;
@@ -20,7 +33,7 @@ describe('authInterceptor', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([]),
+        provideRouter(routes),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
         { provide: API_BASE_URL, useValue: API },
@@ -73,10 +86,24 @@ describe('authInterceptor', () => {
     request.flush('<svg></svg>');
   });
 
-  it('clears the session and redirects on a 401', async () => {
+  it('clears the session but leaves a reader where they are', async () => {
+    await router.navigate(['/shop']);
     const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
-    http.get(`${API}/auth/sessions`).subscribe({ error: () => undefined });
 
+    http.get(`${API}/auth/sessions`).subscribe({ error: () => undefined });
+    controller
+      .expectOne(`${API}/auth/sessions`)
+      .flush({ message: 'Authentication required' }, { status: 401, statusText: 'Unauthorized' });
+
+    expect(auth.isAuthenticated()).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('sends them to sign in when the screen needed a session', async () => {
+    await router.navigate(['/profile']);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    http.get(`${API}/auth/sessions`).subscribe({ error: () => undefined });
     controller
       .expectOne(`${API}/auth/sessions`)
       .flush({ message: 'Authentication required' }, { status: 401, statusText: 'Unauthorized' });
@@ -103,6 +130,44 @@ describe('authInterceptor', () => {
       .flush({ message: 'Email or password is incorrect' }, { status: 401, statusText: 'x' });
 
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('does not sign anyone out for mistyping their current password', async () => {
+    await router.navigate(['/profile']);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    http.post(`${API}/auth/change-password`, {}).subscribe({ error: () => undefined });
+    controller
+      .expectOne(`${API}/auth/change-password`)
+      .flush({ message: 'Current password is incorrect' }, { status: 401, statusText: 'x' });
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('does not sign anyone out for mistyping the password that confirms deletion', async () => {
+    await router.navigate(['/profile']);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    http.delete(`${API}/account`).subscribe({ error: () => undefined });
+    controller
+      .expectOne(`${API}/account`)
+      .flush({ message: 'That password is not correct' }, { status: 401, statusText: 'x' });
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  // The exemption above is an exact match, so the rest of the account API is
+  // still ordinary session-protected data.
+  it('still redirects when a real session lapse hits an account screen', async () => {
+    await router.navigate(['/profile']);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    http.get(`${API}/account/profile`).subscribe({ error: () => undefined });
+    controller
+      .expectOne(`${API}/account/profile`)
+      .flush({ message: 'Authentication required' }, { status: 401, statusText: 'x' });
+
+    expect(navigate).toHaveBeenCalledWith(['/login'], expect.anything());
   });
 
   it('leaves a 403 alone — the session is fine, the account simply may not', () => {

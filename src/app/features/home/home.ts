@@ -1,4 +1,5 @@
 import {
+  computed,
   ChangeDetectionStrategy,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -9,7 +10,9 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Catalog } from '../../core/catalog';
-import { HOME_CATEGORIES, INSTAGRAM_STORIES, TESTIMONIALS } from '../../core/data/content';
+import { INSTAGRAM_STORIES } from '../../core/data/content';
+import { injectMediaUrl } from '../../core/media';
+import { ReviewsApi } from '../../core/reviews.api';
 import { Icon } from '../../shared/ui/icon';
 import { ProductCard } from '../../shared/ui/product-card';
 import { StarRating } from '../../shared/ui/star-rating';
@@ -37,11 +40,22 @@ const OFFER_MS = ((120 * 24 + 18) * 60 + 15) * 60_000 + 10_000;
 })
 export class Home {
   private readonly catalog = inject(Catalog);
+  private readonly reviewsApi = inject(ReviewsApi);
+  protected readonly media = injectMediaUrl();
 
-  protected readonly categories = HOME_CATEGORIES;
-  protected readonly testimonials = TESTIMONIALS;
+  /**
+   * The real categories, with their real counts and pictures.
+   *
+   * The rail used to show four invented departments that linked to an
+   * unfiltered shop; each card now names something in the catalogue and
+   * carries the filter that shows it.
+   */
+  protected readonly categories = computed(() => this.catalog.facets.value().categories);
+
+  /** Every review customers have written, not a curated three. */
+  protected readonly testimonials = this.reviewsApi.all().value;
   protected readonly stories = INSTAGRAM_STORIES;
-  protected readonly bestsellers = this.catalog.bestsellers(8);
+  protected readonly bestsellers = this.catalog.bestsellersResource(8).value;
 
   // optional: the arrows render before the carousel exists on the first pass
   protected readonly categoryRail = viewChild<Carousel>('catRailEl');

@@ -23,7 +23,7 @@
   </div>
 
   @if (error()) {
-    <p class="error">{{ 'auth.otpIncomplete' | t: { count: slots.length } }}</p>
+    <p class="alert alert--danger">{{ 'auth.otpIncomplete' | t: { count: slots.length } }}</p>
   }
 
   <button type="button" class="btn btn--primary btn--block auth-submit" (click)="verify()">

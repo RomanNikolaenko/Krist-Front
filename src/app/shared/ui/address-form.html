@@ -53,20 +53,20 @@
     }
   </label>
 
-  <div class="field">
+  <label class="field">
     <span class="field__label">{{ 'form.city' | t }}</span>
-    <app-select
-      variant="field"
+    <input
+      class="control"
+      type="text"
       formControlName="city"
-      [options]="cityOptions"
-      [placeholder]="'form.selectCity' | t"
-      [ariaLabel]="'form.city' | t"
+      autocomplete="address-level2"
+      [placeholder]="'form.cityPlaceholder' | t"
       [class.is-invalid]="invalid('city')"
     />
     @if (invalid('city')) {
       <span class="field__error">{{ 'form.cityRequired' | t }}</span>
     }
-  </div>
+  </label>
 
   <label class="field">
     <span class="field__label">{{ 'form.pin' | t }}</span>
@@ -82,20 +82,20 @@
     }
   </label>
 
-  <div class="field">
+  <label class="field">
     <span class="field__label">{{ 'form.state' | t }}</span>
-    <app-select
-      variant="field"
+    <input
+      class="control"
+      type="text"
       formControlName="state"
-      [options]="stateOptions"
-      [placeholder]="'form.selectState' | t"
-      [ariaLabel]="'form.state' | t"
+      autocomplete="address-level1"
+      [placeholder]="'form.statePlaceholder' | t"
       [class.is-invalid]="invalid('state')"
     />
     @if (invalid('state')) {
       <span class="field__error">{{ 'form.stateRequired' | t }}</span>
     }
-  </div>
+  </label>
 
   <label class="check">
     <input type="checkbox" formControlName="isDefault" />

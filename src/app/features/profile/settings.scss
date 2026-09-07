@@ -39,3 +39,32 @@ app-select {
     gap: 0.75rem;
   }
 }
+
+/*
+ * Set apart from the rows above by a gap rather than another hairline: the
+ * point is that this one is not the same kind of setting as the rest.
+ */
+.row--danger {
+  margin-top: 1rem;
+  border-bottom: none;
+
+  .title {
+    color: var(--c-danger);
+  }
+}
+
+/*
+ * The dialog chrome, the field and the control all live in the shared layer
+ * now — this screen used to redraw every one of them.
+ */
+.loses {
+  padding-left: 1.125rem;
+  margin: 0.875rem 0 1.25rem;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+  list-style: disc;
+
+  li + li {
+    margin-top: 0.25rem;
+  }
+}

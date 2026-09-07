@@ -1,11 +1,34 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CartStore } from './cart-store';
-import { PRODUCTS } from './data/products';
+import { Product } from './models';
 import { DELIVERY_CHARGE } from './data/content';
 
-const dress = PRODUCTS[7]; // Girls Pink Moana Printed Dress — $80
-const shirt = PRODUCTS[5]; // Tailored Cotton Casual Shirt — $40
+/**
+ * The catalogue lives on the server now, so the cart is tested against two
+ * products built here. That is the better test anyway: it fixes the prices the
+ * arithmetic depends on instead of reading them out of whatever the shop
+ * happens to be selling.
+ */
+const product = (id: string, name: string, price: number): Product => ({
+  id,
+  slug: id,
+  brand: 'Krist',
+  name,
+  price,
+  oldPrice: null,
+  categories: ['Men'],
+  colors: ['Black'],
+  sizes: ['S', 'M', 'L'],
+  rating: null,
+  reviewCount: 0,
+  inStock: true,
+  images: ['/img.png'],
+  description: '',
+});
+
+const dress = product('dress', 'Girls Pink Moana Printed Dress', 80);
+const shirt = product('shirt', 'Tailored Cotton Casual Shirt', 40);
 
 describe('CartStore', () => {
   let cart: CartStore;

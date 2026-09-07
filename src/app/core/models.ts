@@ -1,36 +1,94 @@
-export type ColorName = 'Red' | 'Blue' | 'Orange' | 'Black' | 'Green' | 'Yellow';
-export type SizeName = 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL' | 'Regular';
+/**
+ * Colours and sizes are rows in the database an administrator can add to, so
+ * neither can be a union of the ones that happened to exist when this file was
+ * written. They are names, and the catalogue is the only thing that knows which
+ * ones are real.
+ */
+export type ColorName = string;
+export type SizeName = string;
 
+/**
+ * The shapes the API answers with.
+ *
+ * Ids are strings because the server hands out uuids — the numeric ids these
+ * types used to carry belonged to a hard-coded array and did not survive the
+ * move to a database.
+ */
 export interface Product {
-  id: number;
+  id: string;
   slug: string;
   brand: string;
   name: string;
   price: number;
-  oldPrice: number;
-  category: string;
+  oldPrice: number | null;
+  /** Every category it is sold under. */
+  categories: string[];
   colors: ColorName[];
   sizes: SizeName[];
-  rating: number;
+  /** Null when nobody has reviewed it, which is not the same as zero stars. */
+  rating: number | null;
   reviewCount: number;
   inStock: boolean;
   images: string[];
   description: string;
 }
 
+export interface ProductPage {
+  items: Product[];
+  total: number;
+  pages: number;
+  from: number;
+  to: number;
+}
+
+export interface Facets {
+  /** Departments, each carrying whatever sits inside it. One level deep. */
+  categories: {
+    key: string;
+    slug: string;
+    name: string;
+    image: string | null;
+    count: number;
+    children: { key: string; slug: string; name: string; count: number }[];
+  }[];
+  /**
+   * `name` is the value the shop filters on and never changes with the
+   * language; `label` is what the reader sees.
+   */
+  colors: { name: ColorName; label: string; hex: string; count: number }[];
+  sizes: { name: SizeName; count: number }[];
+  /** The range the catalogue actually spans — the ends of the price slider. */
+  minPrice: number;
+  maxPrice: number;
+}
+
 export interface Review {
-  id: number;
-  author: string;
-  avatar: string;
+  id: string;
   rating: number;
   title: string;
   body: string;
-  postedOn: string;
+  createdAt: string;
+  author: { name: string; avatarUrl: string | null };
+  likes: number;
+  likedByMe: boolean;
+  mine: boolean;
+}
+
+/** A review on the home page rail, with the product it was written about. */
+export interface ShopReview {
+  id: string;
+  rating: number;
+  title: string;
+  body: string;
+  author: { name: string; avatarUrl: string | null };
+  product: { slug: string; name: string };
 }
 
 export interface CartItem {
-  id: string; // productId + size + color
-  productId: number;
+  /** productId + size + colour, so two variants of one product are two lines. */
+  id: string;
+  productId: string;
+  slug: string;
   brand: string;
   name: string;
   image: string;
@@ -40,8 +98,10 @@ export interface CartItem {
   qty: number;
 }
 
+export type PaymentMethod = 'card' | 'gpay' | 'paypal' | 'cod';
+
 export interface Address {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   line1: string;
@@ -52,56 +112,78 @@ export interface Address {
   isDefault: boolean;
 }
 
-export type CardBrand = 'visa' | 'mastercard';
+export type CardBrand = 'VISA' | 'MASTERCARD';
 
+/**
+ * A saved card as the server is willing to know it — no number, because only
+ * the last four digits are ever stored or shown.
+ */
 export interface SavedCard {
-  id: number;
-  label: string; // "Master Card"
+  id: string;
+  label: string;
   holder: string;
-  number: string; // masked
-  expiry: string;
   brand: CardBrand;
+  last4: string;
+  expiryMonth: number;
+  expiryYear: number;
+  isDefault: boolean;
 }
 
-export type OrderStatus = 'Delivered' | 'In Process' | 'Cancelled';
+export type OrderStatus = 'PROCESSING' | 'DELIVERED' | 'CANCELLED';
 
-/** One purchased line — the Orders screen lists these, each with its own status. */
-export interface OrderItem {
+export interface OrderLine {
   id: string;
+  productId: string | null;
+  slug: string | null;
   name: string;
   image: string;
-  size: SizeName;
-  qty: number;
   price: number;
+  size: SizeName;
+  /** As the line recorded it, which is the shop's own name for the colour. */
+  color: ColorName | null;
+  /** The same colour in the language being read, when it is still listed. */
+  colorLabel: string | null;
+  qty: number;
   status: OrderStatus;
-  statusTextKey: string;
 }
 
-export type NotificationIcon = 'avatar' | 'box' | 'box-check' | 'lock';
+/** The address an order went to, kept flat: it is a record, not a live row. */
+export interface OrderAddress {
+  name: string;
+  phone: string;
+  line1: string;
+  area: string;
+  city: string;
+  pin: string;
+  state: string;
+}
 
+export interface Order {
+  id: string;
+  number: string;
+  placedAt: string;
+  subtotal: number;
+  delivery: number;
+  discount: number;
+  total: number;
+  /** Null once the address it was sent to has been deleted from the account. */
+  address: OrderAddress | null;
+  items: OrderLine[];
+}
+
+export type NotificationKind =
+  'PROFILE_UPDATED' | 'ORDER_PLACED' | 'ORDER_DELIVERED' | 'REVIEW_POSTED' | 'PASSWORD_CHANGED';
+
+/**
+ * The event, not the sentence. The wording lives in the i18n files, so the
+ * same row reads correctly in either language.
+ */
 export interface AppNotification {
-  id: number;
-  icon: NotificationIcon;
-  image?: string;
-  titleKey: string;
-  textKey: string;
-  /** Absolute times stay literal; relative ones use a translation key. */
-  time?: string;
-  timeKey?: string;
-}
-
-export interface Category {
-  slug: string;
-  titleKey: string;
-  image: string;
-}
-
-export interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  avatar: string;
-  rating: number;
+  id: string;
+  kind: NotificationKind;
+  metadata: Record<string, string>;
+  read: boolean;
+  createdAt: string;
 }
 
 export type SortKey = 'latest' | 'price-asc' | 'price-desc' | 'rating';
@@ -110,6 +192,7 @@ export interface ShopFilters {
   categories: string[];
   colors: ColorName[];
   sizes: SizeName[];
+  minPrice: number;
   maxPrice: number;
   sort: SortKey;
   page: number;

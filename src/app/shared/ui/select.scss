@@ -1,3 +1,5 @@
+@use '../../../styles/mixins' as *;
+
 :host {
   display: inline-block;
   position: relative;
@@ -114,24 +116,10 @@
   border: 0.0625rem solid var(--c-line);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-menu);
-  animation: select-in 0.14s ease-out;
-}
-
-@keyframes select-in {
-  from {
-    opacity: 0;
-    transform: translateY(-0.25rem);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  @include pop-in;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel {
-    animation: none;
-  }
   .trigger__caret {
     transition: none;
   }

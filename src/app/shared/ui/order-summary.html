@@ -17,7 +17,7 @@
     <button type="button" (click)="apply()">{{ 'summary.apply' | t }}</button>
   </div>
   @if (failed()) {
-    <p class="error">{{ 'summary.invalidCode' | t }}</p>
+    <p class="alert alert--danger">{{ 'summary.invalidCode' | t }}</p>
   }
 
   @if (cart.discount(); as off) {

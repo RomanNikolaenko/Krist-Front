@@ -37,3 +37,54 @@
     outline-offset: 0.125rem;
   }
 }
+
+/// A region that collapses to nothing and expands to whatever height its
+/// content happens to be.
+///
+/// `grid-template-rows: 0fr → 1fr` is what makes that animatable at all: a
+/// height nobody measured cannot be transitioned any other way. `max-height`
+/// needs a number picked in advance, and a number too small clips the content
+/// while one too large spends most of the animation easing through empty space.
+///
+/// The single child does the clipping, and its `visibility` flips only once the
+/// collapse has finished — a closed panel whose links are still focusable is a
+/// keyboard trap nobody can see.
+///
+/// Expects exactly one element inside, and `.is-open` on the container.
+@mixin reveal($duration: 0.28s) {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows $duration cubic-bezier(0.4, 0, 0.2, 1);
+
+  > * {
+    min-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: visibility 0s linear $duration;
+  }
+
+  &.is-open {
+    grid-template-rows: 1fr;
+
+    > * {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/// The entrance a popup makes: a short rise and fade, and nothing else.
+///
+/// Menus and dialogs appear where the pointer already is, so they need to be
+/// noticed rather than announced — anything longer reads as lag.
+@mixin pop-in($duration: 0.14s) {
+  animation: pop-in $duration ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

@@ -18,64 +18,79 @@
   gap: 1.75rem;
 }
 
-.panel {
-  padding-bottom: 1.375rem;
+/*
+ * The chrome the four filter groups used to each draw for themselves — the
+ * heading, the button, the chevron and the reveal — now belongs to
+ * <app-accordion>. What is left here is the divider between groups and the
+ * shape of the lists inside them.
+ */
+app-accordion {
+  padding-bottom: 0.5rem;
+  border-bottom: 0.0625rem solid var(--c-line);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+/*
+ * A department with no subcategories, wearing the accordion head's row so the
+ * column keeps one rhythm: same height, same rule underneath, no chevron.
+ */
+.filter__plain {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+  // matches the accordion head's own padding plus the 0.5rem below it
+  padding: 0.875rem 0 1.375rem;
   border-bottom: 0.0625rem solid var(--c-line);
 }
-.panel:last-of-type {
-  border-bottom: none;
-}
 
-.panel__title {
-  margin: 0;
-  font: inherit;
-}
-
-.panel__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0 0 1rem;
-
+.filter__plain-name {
+  flex: 1;
   font-size: var(--fs-body);
   font-weight: 600;
+  // 1.25 so the row is exactly as tall as an accordion head above it
+  line-height: 1.25;
   color: var(--c-heading);
-  background: none;
-  border: none;
-
-  app-icon {
-    transition: transform 0.18s ease;
-  }
-  app-icon.is-up {
-    transform: rotate(180deg);
-  }
 }
 
-.panel__body {
+/*
+ * The count carries its own 1.55 line box, which was the tallest thing in the
+ * row and left it 1.5px taller than the accordion heads it sits between.
+ */
+.filter__plain .filter__count {
+  line-height: 1.25;
+}
+
+.filter__list {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-.opt {
+.filter__opt {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.625rem;
 }
 
-.opt__more {
-  color: var(--c-muted);
-}
-
-.count {
+.filter__count {
   font-size: var(--fs-sm);
   color: var(--c-muted);
 }
 
-.swatch-row {
+.filter__price {
+  margin: 0 0 1rem;
+  font-size: var(--fs-sm);
+  color: var(--c-heading);
+}
+.filter__swatch-row {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
@@ -85,50 +100,94 @@
   background: none;
   border: none;
 
-  &.is-on .swatch {
+  &.is-on .filter__swatch {
     box-shadow:
       0 0 0 0.125rem var(--c-panel),
       0 0 0 0.21875rem var(--c-ink);
   }
 }
 
-.swatch {
+.filter__swatch {
   display: inline-block;
   width: 1.25rem;
   height: 1.25rem;
   border-radius: var(--r-sm);
 }
 
-.price-label {
-  margin-bottom: 0.875rem;
-  font-size: var(--fs-sm);
-  color: var(--c-body);
+/*
+ * Two range inputs sharing one track.
+ *
+ * The inputs sit on top of each other and are invisible apart from their
+ * thumbs; the track and the filled span between them are drawn underneath. The
+ * inputs themselves ignore the pointer so a click on the bar does not jump the
+ * wrong thumb — only the thumbs take it back.
+ */
+.range {
+  display: grid;
+  align-items: center;
+  position: relative;
+  height: 1.5rem;
 }
 
-.range {
-  width: 100%;
+.range__track {
+  position: absolute;
+  right: 0;
+  left: 0;
   height: 0.25rem;
   background: var(--c-line-strong);
   border-radius: var(--r-pill);
+}
+
+.range__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--c-ink);
+  border-radius: inherit;
+}
+
+.range__input {
+  position: absolute;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5rem;
+  margin: 0;
+  background: none;
+  border: none;
   outline: none;
   appearance: none;
+  pointer-events: none;
 
   &::-webkit-slider-thumb {
     width: 1rem;
     height: 1rem;
     background: var(--c-ink);
+    border: 0.125rem solid var(--c-panel);
     border-radius: 50%;
     appearance: none;
     cursor: pointer;
+    pointer-events: auto;
   }
 
   &::-moz-range-thumb {
     width: 1rem;
     height: 1rem;
     background: var(--c-ink);
-    border: none;
+    border: 0.125rem solid var(--c-panel);
     border-radius: 50%;
     cursor: pointer;
+    pointer-events: auto;
+  }
+
+  &:focus-visible::-webkit-slider-thumb {
+    outline: 0.125rem solid var(--c-line-strong);
+    outline-offset: 0.125rem;
+  }
+
+  &:focus-visible::-moz-range-thumb {
+    outline: 0.125rem solid var(--c-line-strong);
+    outline-offset: 0.125rem;
   }
 }
 

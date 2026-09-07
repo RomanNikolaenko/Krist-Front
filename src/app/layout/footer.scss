@@ -16,6 +16,17 @@
   grid-template-columns: 1.4fr 1fr 1fr 1.5fr;
   gap: 2.5rem;
   padding-bottom: 2.5rem;
+
+  /*
+   * A grid item will not shrink below its own content, and the subscribe
+   * form is as wide as a text input says it wants to be — around twenty
+   * characters, whatever the column offers. That widened the track itself, so
+   * on a 320px screen the last column reached past the padding every other
+   * row respects. Zero lets the track decide instead.
+   */
+  > * {
+    min-width: 0;
+  }
 }
 
 .brand {

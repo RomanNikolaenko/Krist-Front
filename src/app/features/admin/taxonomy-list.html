@@ -1,0 +1,236 @@
+<section class="taxonomy-list">
+  <h2 class="taxonomy-list__title">{{ heading() }}</h2>
+
+  <!-- Before the first one is made the list is a 1rem gap above the form. -->
+  @if (rows().length) {
+    <ul class="taxonomy-list__rows">
+      @for (row of rows(); track row.id) {
+        <li class="taxonomy-list__group">
+          <ng-container
+            *ngTemplateOutlet="
+              line;
+              context: { $implicit: row, hasChildren: !!row.children?.length }
+            "
+          />
+
+          <!--
+            A department folds its own contents away. Nine of them holding five
+            each is a list nobody reads to the bottom of.
+          -->
+          @if (row.children?.length) {
+            <div class="taxonomy-list__reveal reveal" [class.is-open]="isOpen(row.id)">
+              <div class="taxonomy-list__clip">
+                <ul class="taxonomy-list__rows taxonomy-list__rows--nested">
+                  @for (child of row.children; track child.id) {
+                    <ng-container
+                      *ngTemplateOutlet="line; context: { $implicit: child, hasChildren: false }"
+                    />
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <form class="taxonomy-list__add" (submit)="$event.preventDefault(); add()">
+    <!--
+      Where it goes is asked first, because it changes what is being made: a
+      department, or something inside one. Answering that after typing the name
+      is answering it in the wrong order.
+    -->
+    @if (parents().length) {
+      <label class="taxonomy-list__field">
+        <span class="taxonomy-list__field-label">{{ 'admin.inDepartment' | t }}</span>
+        <select class="control control--sm" [(ngModel)]="newParentId" name="newParentId">
+          <option value="">{{ 'admin.noParent' | t }}</option>
+          @for (parent of parents(); track parent.id) {
+            <option [value]="parent.id">{{ parent.name }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    <div class="taxonomy-list__fields">
+      @if (withColor()) {
+        <input
+          class="control control--sm control--color"
+          type="color"
+          [(ngModel)]="newHex"
+          name="newHex"
+          [attr.aria-label]="'admin.swatch' | t"
+        />
+      }
+      <input
+        class="control control--sm"
+        type="text"
+        [(ngModel)]="newName"
+        name="newName"
+        [placeholder]="addPlaceholder()"
+      />
+    </div>
+
+    <!-- One field per other language. Blank is fine: the shop falls back. -->
+    @if (translatable()) {
+      @for (language of otherLanguages; track language.code) {
+        <label class="taxonomy-list__lang">
+          <span class="taxonomy-list__lang-code">{{ language.code }}</span>
+          <input
+            class="control control--sm"
+            type="text"
+            [value]="nameFor(newNames(), language.code)"
+            (input)="setNewName(language.code, $event)"
+            [placeholder]="language.label"
+          />
+        </label>
+      }
+    }
+
+    <button type="submit" class="btn btn--primary btn--sm" [disabled]="!newName.trim()">
+      {{ 'admin.add' | t }}
+    </button>
+  </form>
+
+  <ng-content />
+</section>
+
+<!--
+  One row, whether it is a department or something inside one. Written once and
+  used twice rather than duplicated, because the editing form is the larger half
+  of it and keeping two copies in step is how the dash bug happened.
+-->
+<ng-template #line let-row let-hasChildren="hasChildren">
+  <div class="taxonomy-list__row" [class.taxonomy-list__row--child]="row.depth">
+    @if (editingId() === row.id) {
+      <div class="taxonomy-list__edit">
+        <div class="taxonomy-list__fields">
+          @if (withColor()) {
+            <input
+              class="control control--sm control--color"
+              type="color"
+              [ngModel]="draftHex()"
+              (ngModelChange)="draftHex.set($event)"
+              [attr.aria-label]="'admin.swatch' | t"
+            />
+          }
+          <input
+            class="control control--sm"
+            type="text"
+            [ngModel]="draftName()"
+            (ngModelChange)="draftName.set($event)"
+            (keyup.enter)="saveEdit()"
+            (keyup.escape)="editingId.set(null)"
+            [attr.aria-label]="'admin.name' | t"
+          />
+          <button
+            type="button"
+            class="icon-btn"
+            (click)="saveEdit()"
+            [attr.aria-label]="'admin.save' | t"
+          >
+            <app-icon [name]="'check'" [size]="18" />
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            (click)="editingId.set(null)"
+            [attr.aria-label]="'admin.cancel' | t"
+          >
+            <app-icon [name]="'close'" [size]="18" />
+          </button>
+        </div>
+
+        @if (translatable()) {
+          @for (language of otherLanguages; track language.code) {
+            <label class="taxonomy-list__lang">
+              <span class="taxonomy-list__lang-code">{{ language.code }}</span>
+              <input
+                class="control control--sm"
+                type="text"
+                [value]="nameFor(draftNames(), language.code)"
+                (input)="setDraftName(language.code, $event)"
+                (keyup.enter)="saveEdit()"
+                (keyup.escape)="editingId.set(null)"
+                [placeholder]="language.label"
+              />
+            </label>
+          }
+        }
+      </div>
+    } @else {
+      @if (hasChildren) {
+        <button
+          type="button"
+          class="taxonomy-list__caret"
+          (click)="toggleOpen(row.id)"
+          [attr.aria-expanded]="isOpen(row.id)"
+          [attr.aria-label]="row.name"
+        >
+          <app-icon
+            class="taxonomy-list__chevron"
+            [class.is-up]="isOpen(row.id)"
+            [name]="'chevron-down'"
+            [size]="18"
+          />
+        </button>
+      }
+
+      @if (withColor()) {
+        <span class="taxonomy-list__swatch" [style.background]="row.hex"></span>
+      }
+      <span class="taxonomy-list__name">{{ row.name }}</span>
+      <span class="taxonomy-list__count">{{ row.count }}</span>
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="startEdit(row)"
+        [attr.aria-label]="'admin.edit' | t"
+      >
+        <app-icon [name]="'edit'" [size]="18" />
+      </button>
+      <button
+        type="button"
+        class="icon-btn icon-btn--danger"
+        (click)="confirming.set(row)"
+        [attr.aria-label]="'admin.delete' | t"
+      >
+        <app-icon [name]="'trash'" [size]="18" />
+      </button>
+    }
+  </div>
+</ng-template>
+
+<!--
+  Delete sits next to edit, a few pixels apart, and takes a category with
+  everything filed under it. It asks first.
+-->
+<app-modal
+  [open]="confirming() !== null"
+  [label]="'admin.confirmRemove' | t"
+  (closed)="confirming.set(null)"
+>
+  @if (confirming(); as row) {
+    <h2 class="dialog__title">{{ 'admin.confirmRemove' | t }}</h2>
+    <p>{{ 'admin.confirmRemoveText' | t: { name: row.name } }}</p>
+
+    @if (row.count) {
+      <p class="dialog__warn">{{ 'admin.removeInUse' | t: { count: row.count } }}</p>
+    }
+    @if (row.children?.length) {
+      <p class="dialog__warn">
+        {{ 'admin.removeHasChildren' | t: { count: row.children!.length } }}
+      </p>
+    }
+
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--outline" (click)="confirming.set(null)">
+        {{ 'admin.cancel' | t }}
+      </button>
+      <button type="button" class="btn btn--danger" (click)="confirmRemove()">
+        {{ 'admin.delete' | t }}
+      </button>
+    </div>
+  }
+</app-modal>

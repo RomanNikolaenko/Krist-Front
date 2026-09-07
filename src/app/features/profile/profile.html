@@ -82,13 +82,13 @@
     <aside class="profile__side" id="profile-side" [class.profile__side--open]="sideOpen()">
       <div class="profile__side-inner">
         <div class="profile__user">
-          <img
-            class="profile__avatar"
-            [src]="account.profile().avatar"
-            alt=""
-            width="52"
-            height="52"
-          />
+          @if (account.profile().avatar; as photo) {
+            <img class="profile__avatar" [src]="photo" alt="" width="52" height="52" />
+          } @else {
+            <span class="profile__avatar profile__avatar--blank">
+              <app-icon [name]="'avatar-placeholder'" [size]="28" />
+            </span>
+          }
           <div class="profile__identity">
             <small class="profile__greeting">{{ 'profile.hello' | t }} 👋</small>
             <strong class="profile__name">{{ account.fullName() }}</strong>
@@ -118,6 +118,20 @@
             </a>
           }
 
+          <!--
+            Absolute, because the admin panel is not a profile screen: it has its
+            own shell and its own route guard. This is only the door.
+          -->
+          @if (isAdmin()) {
+            <a
+              class="profile__nav-item profile__nav-item--admin"
+              routerLink="/admin"
+              (click)="sideOpen.set(false)"
+            >
+              <app-icon class="profile__nav-icon" [name]="'grid'" [size]="24" />
+              <span class="profile__nav-label">{{ 'profile.adminPanel' | t }}</span>
+            </a>
+          }
           <button
             type="button"
             class="profile__nav-item profile__nav-item--out"

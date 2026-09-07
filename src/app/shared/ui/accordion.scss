@@ -1,0 +1,50 @@
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.accordion__title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.accordion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 0;
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-align: left;
+  color: var(--c-heading);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  @include focus-ring;
+}
+
+.accordion__chevron {
+  flex: none;
+  color: var(--c-muted);
+  transition: transform 0.28s ease;
+
+  &.is-up {
+    transform: rotate(180deg);
+  }
+}
+
+.accordion__body {
+  padding-bottom: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion__chevron {
+    transition: none;
+  }
+}

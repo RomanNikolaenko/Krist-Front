@@ -1,84 +1,199 @@
-import { computed, Injectable } from '@angular/core';
-import { Address, SavedCard } from './models';
-import { ADDRESSES, PROFILE, SAVED_CARDS } from './data/content';
-import { persistentSignal } from './storage';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
+import { AccountApi, AddressDraft, ProfileRecord, SavedCardDraft } from './account.api';
+import { AuthService } from './auth/auth.service';
+import { Address, AppNotification, SavedCard } from './models';
+import { injectMediaUrl } from './media';
 
-export type PaymentMethod = 'card' | 'gpay' | 'paypal' | 'cod';
+/** The flattened shape the profile screens bind to. */
+export interface ProfileView {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address: string;
+  avatar: string;
+}
 
+const EMPTY_PROFILE: ProfileView = {
+  firstName: '',
+  lastName: '',
+  phone: '',
+  email: '',
+  address: '',
+  avatar: '',
+};
+
+/**
+ * The account, as the server has it.
+ *
+ * Everything here used to be seeded from demo constants and kept in
+ * localStorage, which is why an account that had never saved a card still had
+ * two of them. Now nothing exists until the API says it does: a fresh account
+ * reads back empty, and that is the right answer rather than a missing feature.
+ *
+ * The two exceptions are the checkout selections. Which address and which
+ * payment method someone picked is a step in a flow they have not finished, not
+ * a fact about their account, so those stay in this browser until the order is
+ * placed.
+ */
 @Injectable({ providedIn: 'root' })
 export class AccountStore {
-  private readonly addressList = persistentSignal<Address[]>('krist.addresses', ADDRESSES);
-  // v2: saved cards gained a `label` and dropped the amex brand.
-  private readonly cardList = persistentSignal<SavedCard[]>('krist.cards', SAVED_CARDS, 2);
-  private readonly profileState = persistentSignal('krist.profile', PROFILE);
+  private readonly api = inject(AccountApi);
+  private readonly auth = inject(AuthService);
+  private readonly media = injectMediaUrl();
 
-  private readonly selectedAddressId = persistentSignal<number | null>(
-    'krist.checkout.address',
-    ADDRESSES.find((a) => a.isDefault)?.id ?? null,
-  );
-  private readonly paymentMethod = persistentSignal<PaymentMethod>(
-    'krist.checkout.payment',
-    'card',
-  );
+  private readonly profileState = signal<ProfileRecord | null>(null);
+  private readonly addressList = signal<Address[]>([]);
+  private readonly cardList = signal<SavedCard[]>([]);
+  private readonly notificationList = signal<AppNotification[]>([]);
+  private readonly loaded = signal(false);
 
   readonly addresses = this.addressList.asReadonly();
   readonly cards = this.cardList.asReadonly();
-  readonly profile = this.profileState.asReadonly();
-  readonly payment = this.paymentMethod.asReadonly();
+  readonly notifications = this.notificationList.asReadonly();
+  readonly ready = this.loaded.asReadonly();
 
-  readonly fullName = computed(
-    () => `${this.profileState().firstName} ${this.profileState().lastName}`,
+  readonly profile = computed<ProfileView>(() => {
+    const record = this.profileState();
+    if (!record) return EMPTY_PROFILE;
+
+    return {
+      firstName: record.firstName ?? '',
+      lastName: record.lastName ?? '',
+      phone: record.phone ?? '',
+      email: record.email,
+      address: record.addressLine ?? '',
+      // An uploaded picture is a path on the API host, not on this one.
+      avatar: this.media(record.avatarUrl),
+    };
+  });
+
+  readonly fullName = computed(() => {
+    const { firstName, lastName, email } = this.profile();
+    return [firstName, lastName].filter(Boolean).join(' ') || email;
+  });
+
+  readonly unreadCount = computed(
+    () => this.notificationList().filter((notification) => !notification.read).length,
   );
 
-  readonly selectedAddress = computed<Address | null>(
-    () =>
-      this.addressList().find((a) => a.id === this.selectedAddressId()) ??
-      this.addressList()[0] ??
-      null,
+  /** The one a screen should offer first, when it has to offer one. */
+  readonly defaultAddress = computed<Address | null>(
+    () => this.addressList().find((address) => address.isDefault) ?? this.addressList()[0] ?? null,
   );
 
-  addAddress(address: Omit<Address, 'id'>): Address {
-    const id = Math.max(0, ...this.addressList().map((a) => a.id)) + 1;
-    const created: Address = { ...address, id };
+  readonly defaultCard = computed<SavedCard | null>(
+    () => this.cardList().find((card) => card.isDefault) ?? this.cardList()[0] ?? null,
+  );
 
-    this.addressList.update((list) => {
-      const next = created.isDefault ? list.map((a) => ({ ...a, isDefault: false })) : list;
-      return [...next, created];
+  constructor() {
+    effect(() => {
+      if (!this.auth.isAuthenticated()) {
+        untracked(() => this.clear());
+        return;
+      }
+
+      void untracked(() => this.load());
+    });
+  }
+
+  async load(): Promise<void> {
+    const [profile, addresses, cards, notifications] = await Promise.all([
+      this.api.profile(),
+      this.api.addresses(),
+      this.api.cards(),
+      this.api.notifications(),
+    ]);
+
+    this.profileState.set(profile);
+    this.addressList.set(addresses);
+    this.cardList.set(cards);
+    this.notificationList.set(notifications);
+    this.loaded.set(true);
+  }
+
+  /**
+   * `address` is this screen's word for the one free-text line; the API calls
+   * it `addressLine`. The email is not sent at all — moving an account to a new
+   * address is an authentication change, not a profile edit.
+   */
+  async updateProfile(patch: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    address?: string;
+  }): Promise<void> {
+    const record = await this.api.updateProfile({
+      ...(patch.firstName === undefined ? {} : { firstName: patch.firstName }),
+      ...(patch.lastName === undefined ? {} : { lastName: patch.lastName }),
+      ...(patch.phone === undefined ? {} : { phone: patch.phone }),
+      ...(patch.address === undefined ? {} : { addressLine: patch.address }),
     });
 
-    if (created.isDefault) this.selectedAddressId.set(id);
+    this.profileState.set(record);
+    this.notificationList.set(await this.api.notifications());
+  }
+
+  /** Replaces the profile picture with an uploaded file. */
+  async uploadAvatar(file: File): Promise<void> {
+    await this.api.uploadAvatar(file);
+    this.profileState.set(await this.api.profile());
+    this.notificationList.set(await this.api.notifications());
+  }
+
+  async removeAvatar(): Promise<void> {
+    await this.api.removeAvatar();
+    this.profileState.set(await this.api.profile());
+  }
+
+  async addAddress(draft: AddressDraft): Promise<Address> {
+    const created = await this.api.addAddress(draft);
+    this.addressList.set(await this.api.addresses());
     return created;
   }
 
-  updateAddress(id: number, patch: Partial<Address>): void {
-    this.addressList.update((list) => list.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+  async updateAddress(id: string, draft: AddressDraft): Promise<void> {
+    await this.api.updateAddress(id, draft);
+    this.addressList.set(await this.api.addresses());
   }
 
-  removeAddress(id: number): void {
-    this.addressList.update((list) => list.filter((a) => a.id !== id));
-    if (this.selectedAddressId() === id) {
-      this.selectedAddressId.set(this.addressList()[0]?.id ?? null);
-    }
+  async removeAddress(id: string): Promise<void> {
+    await this.api.removeAddress(id);
+    this.addressList.set(await this.api.addresses());
   }
 
-  selectAddress(id: number): void {
-    this.selectedAddressId.set(id);
+  /** Returns the card, because the checkout needs to know which one it made. */
+  async addCard(draft: SavedCardDraft): Promise<SavedCard> {
+    const created = await this.api.addCard(draft);
+    this.cardList.set(await this.api.cards());
+    return created;
   }
 
-  addCard(card: Omit<SavedCard, 'id'>): void {
-    const id = Math.max(0, ...this.cardList().map((c) => c.id)) + 1;
-    this.cardList.update((list) => [...list, { ...card, id }]);
+  async removeCard(id: string): Promise<void> {
+    await this.api.removeCard(id);
+    this.cardList.set(await this.api.cards());
   }
 
-  removeCard(id: number): void {
-    this.cardList.update((list) => list.filter((c) => c.id !== id));
+  async setDefaultCard(id: string): Promise<void> {
+    await this.api.setDefaultCard(id);
+    this.cardList.set(await this.api.cards());
   }
 
-  selectPayment(method: PaymentMethod): void {
-    this.paymentMethod.set(method);
+  async markNotificationRead(id: string): Promise<void> {
+    await this.api.markRead(id);
+    this.notificationList.set(await this.api.notifications());
   }
 
-  updateProfile(patch: Partial<typeof PROFILE>): void {
-    this.profileState.update((p) => ({ ...p, ...patch }));
+  async markAllNotificationsRead(): Promise<void> {
+    await this.api.markAllRead();
+    this.notificationList.set(await this.api.notifications());
+  }
+
+  private clear(): void {
+    this.profileState.set(null);
+    this.addressList.set([]);
+    this.cardList.set([]);
+    this.notificationList.set([]);
+    this.loaded.set(false);
   }
 }

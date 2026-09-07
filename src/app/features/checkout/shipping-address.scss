@@ -39,10 +39,9 @@ h2 {
   border-color: var(--c-line-strong);
 }
 
-.card__head {
+.card__pick {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   gap: 0.75rem;
 }
 
@@ -80,7 +79,11 @@ hr {
 }
 
 .form-wrap {
-  max-width: 42.5rem;
+  /*
+   * No cap. A 42.5rem one left the fields stopping well short of the column
+   * they sit in, which reads as a layout that gave up rather than as a form.
+   */
+  max-width: none;
 }
 
 .form-wrap h2 {

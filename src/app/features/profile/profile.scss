@@ -74,6 +74,7 @@
   background: var(--c-panel);
   border: 0.0625rem solid var(--c-line);
   box-shadow: var(--shadow-menu);
+  @include pop-in;
 }
 
 .profile__filter-clear {
@@ -96,7 +97,6 @@
   grid-template-columns: 16.375rem minmax(0, 1fr);
   align-items: start;
   gap: 3.125rem;
-  padding-bottom: 3.75rem;
 }
 
 .profile__side {
@@ -129,6 +129,14 @@
   height: 3.25rem;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profile__avatar--blank {
+  display: grid;
+  place-items: center;
+  color: var(--c-muted);
+  background: var(--c-surface);
+  border: 0.0625rem solid var(--c-line);
 }
 
 .profile__identity {
@@ -202,6 +210,21 @@
 }
 
 /* the sign-out sits with the sections but reads as an exit, not a destination */
+/*
+ * The admin link leaves the profile entirely, so it sits apart from the
+ * screens above it rather than reading as one more of them.
+ */
+.profile__nav-item--admin {
+  margin-top: 0.5rem;
+  color: var(--c-heading);
+  border-top: 0.0625rem solid var(--c-line);
+  border-radius: 0;
+  padding-top: 1.125rem;
+
+  &:hover {
+    background: var(--c-surface);
+  }
+}
 .profile__nav-item--out {
   width: 100%;
   font: inherit;

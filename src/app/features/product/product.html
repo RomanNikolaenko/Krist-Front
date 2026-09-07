@@ -3,30 +3,36 @@
     <app-breadcrumbs [items]="crumbs()" />
 
     <div class="detail">
-      <!-- gallery -->
-      <div class="gallery">
-        <div class="gallery__main">
-          <img [src]="p.images[activeImage()]" [alt]="p.name" width="455" height="500" />
+      <!--
+        A product with no pictures is a data problem rather than a layout one,
+        but the page still has to render: indexing into an empty list hands the
+        main <img> an undefined source and draws a broken-image icon.
+      -->
+      @if (p.images.length) {
+        <div class="gallery">
+          <div class="gallery__main">
+            <img [src]="p.images[activeImage()]" [alt]="p.name" width="455" height="500" />
+          </div>
+          <div class="gallery__thumbs">
+            @for (image of p.images; track image; let i = $index) {
+              <button
+                type="button"
+                [class.is-on]="i === activeImage()"
+                (click)="pick(i)"
+                [attr.aria-label]="'product.viewImage' | t: { index: i + 1 }"
+              >
+                <img
+                  [src]="image"
+                  [alt]="p.name + ' view ' + (i + 1)"
+                  width="103"
+                  height="109"
+                  loading="lazy"
+                />
+              </button>
+            }
+          </div>
         </div>
-        <div class="gallery__thumbs">
-          @for (image of p.images; track image; let i = $index) {
-            <button
-              type="button"
-              [class.is-on]="i === activeImage()"
-              (click)="pick(i)"
-              [attr.aria-label]="'product.viewImage' | t: { index: i + 1 }"
-            >
-              <img
-                [src]="image"
-                [alt]="p.name + ' view ' + (i + 1)"
-                width="103"
-                height="109"
-                loading="lazy"
-              />
-            </button>
-          }
-        </div>
-      </div>
+      }
 
       <!-- info -->
       <div class="info">
@@ -40,16 +46,18 @@
         <p class="info__name">{{ p.name }}</p>
 
         <app-star-rating
-          [value]="p.rating"
+          [value]="p.rating ?? 0"
           [size]="24"
           [label]="
-            p.rating.toFixed(1) + ' · ' + ('product.reviewCount' | t: { count: p.reviewCount })
+            p.rating === null
+              ? ('product.noReviews' | t)
+              : p.rating.toFixed(1) + ' · ' + ('product.reviewCount' | t: { count: p.reviewCount })
           "
         />
 
         <p class="prices">
           <span class="price">{{ p.price | currency: 'USD' }}</span>
-          @if (p.oldPrice > p.price) {
+          @if (p.oldPrice && p.oldPrice > p.price) {
             <span class="old">{{ p.oldPrice | currency: 'USD' }}</span>
           }
         </p>
@@ -75,22 +83,25 @@
           </div>
         }
 
-        <div class="opt-block">
-          <h2>{{ 'product.size' | t }}</h2>
-          <div class="sizes">
-            @for (s of p.sizes; track s) {
-              <button
-                type="button"
-                class="size"
-                [class.is-on]="chosenSize() === s"
-                (click)="size.set(s)"
-                [attr.aria-pressed]="chosenSize() === s"
-              >
-                {{ s }}
-              </button>
-            }
+        <!-- The colour block above already checks; this one did not. -->
+        @if (p.sizes.length) {
+          <div class="opt-block">
+            <h2>{{ 'product.size' | t }}</h2>
+            <div class="sizes">
+              @for (s of p.sizes; track s) {
+                <button
+                  type="button"
+                  class="size"
+                  [class.is-on]="chosenSize() === s"
+                  (click)="size.set(s)"
+                  [attr.aria-pressed]="chosenSize() === s"
+                >
+                  {{ s }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
 
         <div class="buy">
           <app-qty-stepper [value]="qty()" (valueChange)="qty.set($event)" />
@@ -171,104 +182,143 @@
         @case ('reviews') {
           <h3 class="reviews__title">{{ 'product.customerReviews' | t }}</h3>
 
-          <ul class="reviews">
-            @for (review of reviews; track review.id) {
-              <li class="review">
-                <div class="review__head">
-                  <img
-                    [src]="review.avatar"
-                    [alt]="review.author"
-                    width="38"
-                    height="38"
-                    loading="lazy"
-                  />
-                  <div>
-                    <span class="review__author">{{ review.author }}</span>
-                    <app-star-rating [value]="review.rating" [size]="18" />
-                  </div>
-                </div>
-                <h4>{{ review.title }}</h4>
-                <p>{{ review.body }}</p>
-                <p class="review__meta">{{ 'product.reviewBy' | t: { date: review.postedOn } }}</p>
-              </li>
-            }
-          </ul>
-
-          <form class="review-form" (submit)="$event.preventDefault(); submitReview()">
-            <h3>{{ 'product.addReview' | t }}</h3>
-
-            <div class="field">
-              <span class="field__label">{{ 'product.yourRating' | t }}</span>
-              <div class="rating-picker">
-                @for (option of ratingOptions; track option) {
-                  <button
-                    type="button"
-                    class="rating-option"
-                    [class.is-on]="draft.rating === option"
-                    (click)="draft.rating = option"
-                    [attr.aria-label]="'product.stars' | t: { count: option }"
-                  >
-                    @for (i of [].constructor(option); track $index) {
-                      <app-icon [name]="'star'" [size]="24" />
+          @if (reviews().length) {
+            <ul class="reviews">
+              @for (review of reviews(); track review.id) {
+                <li class="review">
+                  <div class="review__head">
+                    @if (review.author.avatarUrl; as photo) {
+                      <img
+                        [src]="media(photo)"
+                        [alt]="review.author.name"
+                        width="38"
+                        height="38"
+                        loading="lazy"
+                      />
+                    } @else {
+                      <span class="review__blank">
+                        <app-icon [name]="'avatar-placeholder'" [size]="22" />
+                      </span>
                     }
-                  </button>
-                }
+                    <div>
+                      <span class="review__author">{{ review.author.name }}</span>
+                      <app-star-rating [value]="review.rating" [size]="18" />
+                    </div>
+                  </div>
+                  <h4>{{ review.title }}</h4>
+                  <p>{{ review.body }}</p>
+                  <p class="review__meta">
+                    {{ 'product.reviewBy' | t: { date: (review.createdAt | d: 'd MMMM y') ?? '' } }}
+                  </p>
+
+                  <div class="review__actions">
+                    @if (!review.mine) {
+                      <button
+                        type="button"
+                        class="review__like"
+                        [class.is-on]="review.likedByMe"
+                        [disabled]="!auth.isAuthenticated()"
+                        (click)="toggleLike(review.id, review.likedByMe)"
+                      >
+                        <app-icon
+                          [name]="review.likedByMe ? 'heart-filled' : 'heart'"
+                          [size]="18"
+                        />
+                        {{ 'product.helpful' | t }} ({{ review.likes }})
+                      </button>
+                    } @else {
+                      <span class="review__mine">
+                        {{ 'product.yourReview' | t }} · {{ review.likes }}
+                      </span>
+                      <button
+                        type="button"
+                        class="review__delete"
+                        (click)="removeReview(review.id)"
+                      >
+                        {{ 'product.deleteReview' | t }}
+                      </button>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="reviews__empty">{{ 'product.noReviewsYet' | t }}</p>
+          }
+
+          @if (auth.isAuthenticated()) {
+            <form class="review-form" (submit)="$event.preventDefault(); submitReview()">
+              <h3>{{ (myReview() ? 'product.editYourReview' : 'product.addReview') | t }}</h3>
+
+              <div class="field">
+                <span class="field__label">{{ 'product.yourRating' | t }}</span>
+                <div class="rating-picker">
+                  @for (option of ratingOptions; track option) {
+                    <button
+                      type="button"
+                      class="rating-option"
+                      [class.is-on]="draft.rating === option"
+                      (click)="draft.rating = option"
+                      [attr.aria-label]="'product.stars' | t: { count: option }"
+                    >
+                      @for (i of [].constructor(option); track $index) {
+                        <app-icon [name]="'star'" [size]="24" />
+                      }
+                    </button>
+                  }
+                </div>
               </div>
-            </div>
 
-            <label class="field">
-              <span class="field__label">{{ 'product.name' | t }}</span>
-              <input
-                class="control"
-                type="text"
-                [placeholder]="'product.namePlaceholder' | t"
-                [(ngModel)]="draft.name"
-                name="name"
-              />
-            </label>
+              <label class="field">
+                <span class="field__label">{{ 'product.reviewTitle' | t }}</span>
+                <input
+                  class="control"
+                  type="text"
+                  [placeholder]="'product.reviewTitlePlaceholder' | t"
+                  [(ngModel)]="draft.title"
+                  name="title"
+                />
+              </label>
 
-            <label class="field">
-              <span class="field__label">{{ 'product.email' | t }}</span>
-              <input
-                class="control"
-                type="email"
-                [placeholder]="'product.emailPlaceholder' | t"
-                [(ngModel)]="draft.email"
-                name="email"
-              />
-            </label>
+              <label class="field">
+                <span class="field__label">{{ 'product.review' | t }}</span>
+                <textarea
+                  class="control"
+                  [placeholder]="'product.reviewPlaceholder' | t"
+                  [(ngModel)]="draft.body"
+                  name="body"
+                ></textarea>
+              </label>
 
-            <label class="field">
-              <span class="field__label">{{ 'product.review' | t }}</span>
-              <textarea
-                class="control"
-                [placeholder]="'product.reviewPlaceholder' | t"
-                [(ngModel)]="draft.body"
-                name="body"
-              ></textarea>
-            </label>
+              <button type="submit" class="btn btn--primary submit" [disabled]="submitting()">
+                {{ 'product.submit' | t }}
+              </button>
 
-            <button type="submit" class="btn btn--primary submit">
-              {{ 'product.submit' | t }}
-            </button>
-
-            @if (submitted()) {
-              <p class="thanks">{{ 'product.thanks' | t }}</p>
-            }
-          </form>
+              @if (reviewError()) {
+                <p class="review-form__error">{{ reviewError() }}</p>
+              }
+            </form>
+          } @else {
+            <!-- A review has to be attributable, so it needs an account behind it. -->
+            <p class="reviews__gate">
+              <a routerLink="/login">{{ 'product.signInToReview' | t }}</a>
+            </p>
+          }
         }
       }
     </div>
 
-    <!-- related -->
-    <section class="related">
-      <h2>{{ 'product.related' | t }}</h2>
-      <div class="related__grid">
-        @for (item of related(); track item.id) {
-          <app-product-card [product]="item" />
-        }
-      </div>
-    </section>
+    <!-- related, when there is anything to relate it to -->
+    @if (related().length) {
+      <section class="related">
+        <h2>{{ 'product.related' | t }}</h2>
+        <div class="related__grid">
+          @for (item of related(); track item.id) {
+            <app-product-card [product]="item" />
+          }
+        </div>
+      </section>
+    }
 
     <app-feature-strip />
   </div>

@@ -1,0 +1,51 @@
+<h1 class="taxonomy__title">{{ 'admin.taxonomy' | t }}</h1>
+<p class="taxonomy__lead">{{ 'admin.taxonomyText' | t }}</p>
+
+@if (error()) {
+  <p class="alert alert--danger taxonomy__error">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="muted">{{ 'admin.loading' | t }}</p>
+} @else {
+  <!--
+    Three lists of the same shape. Only colours carry a swatch, which is the
+    single input that tells them apart.
+  -->
+  <div class="taxonomy__columns">
+    <app-taxonomy-list
+      [heading]="'admin.colors' | t"
+      [rows]="colorRows()"
+      [withColor]="true"
+      [translatable]="true"
+      [addPlaceholder]="'admin.newColor' | t"
+      (added)="addColor($event)"
+      (renamed)="renameColor($event)"
+      (removed)="remove('color', $event)"
+    />
+
+    <app-taxonomy-list
+      [heading]="'admin.sizes' | t"
+      [rows]="sizeRows()"
+      [addPlaceholder]="'admin.newSize' | t"
+      (added)="addSize($event)"
+      (renamed)="renameSize($event)"
+      (removed)="remove('size', $event)"
+    />
+
+    <app-taxonomy-list
+      [heading]="'admin.categories' | t"
+      [rows]="categoryRows()"
+      [parents]="departmentRows()"
+      [translatable]="true"
+      [addPlaceholder]="'admin.newCategory' | t"
+      (added)="addCategory($event)"
+      (renamed)="renameCategory($event)"
+      (removed)="remove('category', $event)"
+    >
+      <p class="field__hint">{{ 'admin.subcategoryHint' | t }}</p>
+      <!-- Renaming changes the label; the value the shop filters on stays put. -->
+      <p class="field__hint">{{ 'admin.categoryKeyHint' | t }}</p>
+    </app-taxonomy-list>
+  </div>
+}

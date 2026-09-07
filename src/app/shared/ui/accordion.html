@@ -1,0 +1,44 @@
+<section class="accordion">
+  <!--
+    Two branches rather than a dynamic tag, because a heading level is part of
+    the document outline and Angular has no way to write one that varies.
+  -->
+  @if (headingLevel() === 2) {
+    <h2 class="accordion__title">
+      <ng-container *ngTemplateOutlet="trigger" />
+    </h2>
+  } @else {
+    <h3 class="accordion__title">
+      <ng-container *ngTemplateOutlet="trigger" />
+    </h3>
+  }
+
+  <!--
+    Two wrappers, not one. The reveal collapses its own child to zero height
+    and clips it, but padding on that child is not clipped by its own
+    overflow — a padded body left a sliver of the first row showing through a
+    shut accordion. The clip layer carries no padding; the body inside it does.
+  -->
+  <div class="accordion__reveal reveal" [class.is-open]="open()">
+    <div class="accordion__clip">
+      <div class="accordion__body"><ng-content /></div>
+    </div>
+  </div>
+</section>
+
+<ng-template #trigger>
+  <button
+    type="button"
+    class="accordion__head"
+    [attr.aria-expanded]="open()"
+    (click)="toggled.emit()"
+  >
+    {{ title() }}
+    <app-icon
+      class="accordion__chevron"
+      [class.is-up]="open()"
+      [name]="'chevron-down'"
+      [size]="20"
+    />
+  </button>
+</ng-template>

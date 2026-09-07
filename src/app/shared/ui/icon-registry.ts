@@ -61,6 +61,7 @@ export const ICONS = [
   { name: 'lock' },
   { name: 'box-check' },
   { name: 'logout' },
+  { name: 'avatar-placeholder' },
 ] as const satisfies readonly IconModel[];
 
 export type IconName = (typeof ICONS)[number]['name'];

@@ -1,11 +1,17 @@
-:host {
+.app-carousel {
   display: block;
 }
 
-swiper-container {
+.app-carousel swiper-container {
   display: block;
 }
 
-swiper-slide {
+/*
+ * Swiper gives every slide `height: 100%`. Against a wrapper whose own height
+ * is auto that resolves back to the slide's content, which leaves a rail of
+ * cards at different heights. `auto` lets the flex row stretch them all to the
+ * tallest instead.
+ */
+.app-carousel swiper-slide {
   height: auto;
 }

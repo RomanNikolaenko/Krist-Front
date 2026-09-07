@@ -1,0 +1,360 @@
+@use '../../../styles/mixins' as *;
+
+.products__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.products__title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--c-heading);
+}
+
+.products__count {
+  margin: 0.25rem 0 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.products__note {
+  color: var(--c-muted);
+}
+
+.products__search {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  max-width: 26rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 1.5rem;
+  color: var(--c-muted);
+  border: 0.0625rem solid var(--c-line);
+  border-radius: var(--r-md);
+
+  input {
+    width: 100%;
+    min-width: 0;
+    font: inherit;
+    color: var(--c-heading);
+    background: none;
+    border: 0;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--c-line-strong);
+  }
+}
+
+.products__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products__th {
+  padding: 0.75rem;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--c-muted);
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+.products__cell {
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+/*
+ * Column widths.
+ *
+ * An auto-laid-out table gives each column its widest unbreakable word, then
+ * shares out what is left. `overflow-wrap: anywhere` on the slug makes that
+ * minimum a single character, so without a floor here the browser is free to
+ * squeeze the product name down to one word per line — which is exactly what it
+ * did. Every column that must not collapse says so.
+ */
+/*
+ * `1%` is the shrink-to-fit idiom for a table column: the browser cannot honour
+ * it, so it falls back to the column's min-content width — the picture plus its
+ * padding, exactly. A fixed width here was the bug: the box counts padding
+ * (border-box), so 3.5rem left 2.5rem of content, and the global
+ * `img { max-width: 100% }` squeezed a 3rem-wide picture into it at unchanged
+ * height. It came out stretched.
+ */
+.products__cell--thumb {
+  width: 1%;
+}
+
+.products__cell--name {
+  min-width: 11rem;
+}
+
+.products__cell--categories {
+  min-width: 6rem;
+}
+
+.products__cell--variant {
+  min-width: 5rem;
+}
+
+// Nothing here reads correctly broken across lines.
+.products__cell--price,
+.products__cell--stock,
+.products__cell--actions,
+.products__was,
+.badge {
+  white-space: nowrap;
+}
+
+.products__thumb {
+  display: block;
+  width: 3rem;
+  height: 3.625rem;
+  // Opts out of the global fluid-image rule: this one has a size of its own,
+  // and letting a narrow box override the width alone distorts it.
+  max-width: none;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+}
+
+.products__name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--c-heading);
+}
+
+.products__slug,
+.products__cell--variant,
+.products__cell--categories {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.products__slug {
+  margin: 0.125rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Stacked in the table: the column is the narrowest thing holding two numbers,
+ * and one above the other reads as a single price with its old value rather
+ * than as two figures competing for the same line. The card puts them back on
+ * one line, where the row has width to spare.
+ */
+.products__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+
+.products__was {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.products__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+  background: none;
+  border: 0;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+
+  @include focus-ring;
+
+  &:hover {
+    background: var(--c-surface);
+  }
+
+  &--danger {
+    color: var(--c-danger);
+  }
+}
+
+.products__pagination {
+  display: block;
+  margin-top: 2rem;
+}
+
+/*
+ * Seven columns of padding is 10.5rem the content could be using instead. Wide
+ * screens can afford it; the last stretch before the table gives up cannot.
+ */
+@container admin (width <= 68rem) {
+  .products__th,
+  .products__cell {
+    padding: 0.625rem 0.5rem;
+  }
+}
+
+/*
+ * Below this the seven columns stop fitting, so the table stops being one.
+ * Each row becomes a card: the picture holds the left column, everything else
+ * stacks in the right one, and the cells that lost their heading carry it back
+ * in `data-label`. Laid out this way it has no minimum width to speak of and
+ * survives 320px without a sideways scrollbar.
+ *
+ * Measured against the container rather than the viewport, because the rail
+ * beside it is 15rem the content column never gets.
+ *
+ * The number is the table's own minimum with room to spare, not a round
+ * figure: nine columns will not compress below 964px, and a threshold under
+ * that leaves a band where the table is chosen and then does not fit — which
+ * is a sideways scrollbar at exactly the widths nobody tests. The spare 92px
+ * is for a longer word in another language.
+ */
+@container admin (width <= 66rem) {
+  .products__table,
+  .products__cell {
+    display: block;
+  }
+
+  .products__thead {
+    // `sr-only` in spirit: the labels moved onto the cells themselves.
+    display: none;
+  }
+
+  /*
+   * As many cards per row as fit at 21.25rem each, and no card narrower than
+   * that. `min(…, 100%)` is what keeps the track from outgrowing its container:
+   * a bare `minmax(21.25rem, 1fr)` would hold a 21.25rem column open below that
+   * width and push a scrollbar out the side at 320px.
+   */
+  .products__body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(21.25rem, 100%), 1fr));
+    gap: 0.75rem;
+  }
+
+  /*
+   * Each card is its own container, so what is inside answers to the width of
+   * the card rather than the width of the page. Two cards abreast are half the
+   * room each, and the pairs inside them have to know that.
+   */
+  .products__row {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    column-gap: 0.875rem;
+    row-gap: 0.25rem;
+    align-items: start;
+    padding: 1rem;
+    border: 0.0625rem solid var(--c-line);
+    border-radius: var(--r-md);
+    container-type: inline-size;
+    container-name: card;
+  }
+
+  .products__cell {
+    grid-column: 2;
+    min-width: 0;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  // Spans every row of the card, so the picture sits beside the whole block.
+  .products__cell--thumb {
+    grid-row: 1 / -1;
+    grid-column: 1;
+    width: auto;
+  }
+
+  /*
+   * The heading each cell lost with the `thead`. Two columns rather than an
+   * inline prefix, so the values line up with each other down the card.
+   */
+  .products__cell[data-label] {
+    display: grid;
+    // Wide enough for the longest of them, "Colours and sizes", on one line.
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    padding-top: 0.25rem;
+    // Or the badge, being a grid item, stretches the whole width of the card.
+    justify-items: start;
+
+    &::before {
+      content: attr(data-label);
+      font-size: var(--fs-sm);
+      color: var(--c-muted);
+    }
+  }
+
+  .products__cell--price,
+  .products__cell--variant,
+  .products__cell--categories {
+    white-space: normal;
+  }
+
+  // Back on one line: a card row is wide enough for both.
+  .products__price {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.375rem;
+  }
+
+  .products__cell--actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .products__action {
+    padding-inline: 0;
+    padding-right: 0.75rem;
+  }
+}
+
+/*
+ * Measured against the card, not the page: a 340px card is 340px whether it is
+ * alone on a phone or one of three across a wide screen, and the label beside
+ * its value would leave the value about a third of a column. Above it instead.
+ */
+@container card (width <= 23rem) {
+  .products__cell[data-label] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.125rem;
+    padding-top: 0;
+  }
+}
+
+/*
+ * Narrower still, and the picture stops being worth a column of its own.
+ *
+ * Everything spans both tracks rather than the card redefining them: a
+ * container query cannot style the element it queries, and `.products__row` is
+ * that element. Setting `grid-template-columns` in here would silently do
+ * nothing while the `grid-column` below quietly worked — which is exactly the
+ * shape of the bug this replaces, every cell stacked inside the 3rem picture
+ * column.
+ */
+@container card (width <= 17rem) {
+  .products__cell,
+  .products__cell--thumb {
+    grid-column: 1 / -1;
+  }
+
+  .products__cell--thumb {
+    grid-row: auto;
+  }
+
+  .products__cell[data-label] {
+    padding-top: 0.25rem;
+  }
+}

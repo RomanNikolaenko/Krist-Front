@@ -1,0 +1,103 @@
+.product-form__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+
+  &:hover {
+    color: var(--c-heading);
+  }
+}
+
+.product-form__title {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  color: var(--c-heading);
+}
+
+.product-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  max-width: 52rem;
+}
+
+.product-form__grid-full {
+  grid-column: 1 / -1;
+}
+
+.product-form__image {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.product-form__error {
+  max-width: 52rem;
+  margin-top: 1.25rem;
+}
+
+.product-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  max-width: 52rem;
+  margin-top: 1.75rem;
+}
+
+@media (width <= 48rem) {
+  .product-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * The language tabs over the name and description. Underline rather than a
+ * pill: this switches which text you are writing, it does not filter anything,
+ * and it should read as part of the field below it.
+ */
+.product-form__langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+.product-form__lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  border-bottom: 0.125rem solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--c-heading);
+  }
+
+  &--on {
+    color: var(--c-heading);
+    border-bottom-color: var(--c-ink);
+  }
+}
+
+// Says a language has text of its own, without spending a word on it.
+.product-form__lang-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  background: var(--c-success);
+  border-radius: 50%;
+}
+
+.product-form__text + .product-form__text {
+  margin-top: 1rem;
+}

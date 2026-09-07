@@ -1,0 +1,196 @@
+<div class="products">
+  <div class="products__head">
+    <div class="products__heading">
+      <h1 class="products__title">{{ 'admin.products' | t }}</h1>
+      <p class="products__count">{{ 'admin.productCount' | t: { count: total() } }}</p>
+    </div>
+
+    <a class="btn btn--primary" routerLink="new">
+      <app-icon [name]="'plus'" [size]="20" />
+      {{ 'admin.newProduct' | t }}
+    </a>
+  </div>
+
+  <label class="products__search">
+    <app-icon [name]="'search'" [size]="20" />
+    <input
+      type="search"
+      [value]="query()"
+      (input)="search($event)"
+      [placeholder]="'admin.searchProducts' | t"
+      [attr.aria-label]="'admin.searchProducts' | t"
+    />
+  </label>
+
+  @if (error()) {
+    <p class="alert alert--danger">{{ error() | t }}</p>
+  }
+
+  @if (loading()) {
+    <p class="products__note">{{ 'admin.loading' | t }}</p>
+  } @else if (items().length) {
+    <!--
+      One table, two shapes. Wide enough and it is a real table; below that the
+      rows become cards and every cell carries its own heading, because a table
+      that scrolls sideways on a phone is a table nobody reads.
+    -->
+    <table class="products__table">
+      <thead class="products__thead">
+        <tr class="products__row products__row--head">
+          <th class="products__th" scope="col">
+            <span class="sr-only">{{ 'admin.image' | t }}</span>
+          </th>
+          <th class="products__th" scope="col">{{ 'admin.product' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.categories' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.subcategories' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.price' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.colors' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.sizes' | t }}</th>
+          <th class="products__th" scope="col">{{ 'admin.stock' | t }}</th>
+          <th class="products__th" scope="col">
+            <span class="sr-only">{{ 'admin.actions' | t }}</span>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody class="products__body">
+        @for (product of items(); track product.id) {
+          <tr class="products__row">
+            <td class="products__cell products__cell--thumb">
+              @if (product.images[0]; as image) {
+                <img
+                  class="products__thumb"
+                  [src]="image"
+                  alt=""
+                  width="48"
+                  height="58"
+                  loading="lazy"
+                />
+              }
+            </td>
+
+            <td class="products__cell products__cell--name">
+              <p class="products__name">{{ product.brand }} {{ product.name }}</p>
+              <p class="products__slug">
+                {{ product.slug }}
+                @if (product.reviewCount) {
+                  · {{ 'admin.reviewCount' | t: { count: product.reviewCount } }}
+                }
+              </p>
+            </td>
+
+            <td
+              class="products__cell products__cell--categories"
+              [attr.data-label]="'admin.categories' | t"
+            >
+              {{ departmentsOf(product) || '—' }}
+            </td>
+
+            <td
+              class="products__cell products__cell--categories"
+              [attr.data-label]="'admin.subcategories' | t"
+            >
+              {{ subcategoriesOf(product) || '—' }}
+            </td>
+
+            <td class="products__cell products__cell--price" [attr.data-label]="'admin.price' | t">
+              <!--
+                One element, not a bare text node beside an <s>. On the card
+                layout the cell is a grid, and two siblings there would become
+                two grid items sitting on separate rows.
+              -->
+              <span class="products__price">
+                {{ product.price | currency: 'USD' }}
+                @if (product.oldPrice) {
+                  <s class="products__was">{{ product.oldPrice | currency: 'USD' }}</s>
+                }
+              </span>
+            </td>
+
+            <!-- No <br>: both lists wrap on their own when the column runs out. -->
+            <td
+              class="products__cell products__cell--variant"
+              [attr.data-label]="'admin.colors' | t"
+            >
+              {{ colorsOf(product) || '—' }}
+            </td>
+
+            <td
+              class="products__cell products__cell--variant"
+              [attr.data-label]="'admin.sizes' | t"
+            >
+              {{ product.sizes.join(', ') || '—' }}
+            </td>
+
+            <td class="products__cell products__cell--stock" [attr.data-label]="'admin.stock' | t">
+              <span
+                class="badge"
+                [class.badge--success]="product.inStock"
+                [class.badge--danger]="!product.inStock"
+              >
+                {{ (product.inStock ? 'admin.inStock' : 'admin.outOfStock') | t }}
+              </span>
+            </td>
+
+            <td class="products__cell products__cell--actions">
+              <a class="products__action" [routerLink]="[product.id]">
+                <app-icon [name]="'edit'" [size]="18" />
+                {{ 'admin.edit' | t }}
+              </a>
+              <button
+                type="button"
+                class="products__action products__action--danger"
+                (click)="confirming.set(product)"
+              >
+                <app-icon [name]="'trash'" [size]="18" />
+                {{ 'admin.delete' | t }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (pages() > 1) {
+      <app-pagination
+        class="products__pagination"
+        [page]="page()"
+        [pages]="pages()"
+        (pageChange)="setPage($event)"
+      />
+    }
+  } @else {
+    <p class="products__note">{{ 'admin.noProducts' | t }}</p>
+  }
+</div>
+
+<!--
+  Deleting takes the reviews and wish lists with it, so the count is spelled out
+  rather than left for somebody to remember.
+-->
+<app-modal
+  [open]="confirming() !== null"
+  [label]="'admin.confirmDelete' | t"
+  (closed)="confirming.set(null)"
+>
+  @if (confirming(); as product) {
+    <h2 class="dialog__title">{{ 'admin.confirmDelete' | t }}</h2>
+    <p>{{ 'admin.confirmDeleteText' | t: { name: product.brand + ' ' + product.name } }}</p>
+
+    @if (product.reviewCount) {
+      <p class="dialog__warn">
+        {{ 'admin.deleteTakesReviews' | t: { count: product.reviewCount } }}
+      </p>
+    }
+    <p class="dialog__note">{{ 'admin.deleteKeepsOrders' | t }}</p>
+
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--outline" (click)="confirming.set(null)">
+        {{ 'admin.cancel' | t }}
+      </button>
+      <button type="button" class="btn btn--danger" (click)="remove()">
+        {{ 'admin.delete' | t }}
+      </button>
+    </div>
+  }
+</app-modal>

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18n, LANGUAGES } from './i18n';
 import { en, TranslationKey } from './en';
 import { uk } from './uk';
@@ -14,6 +14,49 @@ describe('I18n', () => {
     i18n.use('en');
   });
 
+  /**
+   * The service reads the browser once, at construction, so each of these
+   * builds a fresh one against a stubbed preference list.
+   */
+  describe('the first visit', () => {
+    const withLanguages = (languages: string[]): I18n => {
+      localStorage.clear();
+      vi.spyOn(navigator, 'languages', 'get').mockReturnValue(languages);
+      TestBed.resetTestingModule();
+
+      return TestBed.inject(I18n);
+    };
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('follows the browser when it asks for a language we have', () => {
+      expect(withLanguages(['uk-UA', 'en-US']).lang()).toBe('uk');
+    });
+
+    it('ignores the region — uk-UA and uk are the same language', () => {
+      expect(withLanguages(['UK']).lang()).toBe('uk');
+    });
+
+    it('walks past languages it has no dictionary for', () => {
+      expect(withLanguages(['pl-PL', 'de', 'uk']).lang()).toBe('uk');
+    });
+
+    it('falls back to English when none of them is on offer', () => {
+      expect(withLanguages(['ja', 'ko']).lang()).toBe('en');
+    });
+
+    it('falls back to English when the browser says nothing', () => {
+      expect(withLanguages([]).lang()).toBe('en');
+    });
+
+    it('lets a stored choice win over the browser', () => {
+      localStorage.setItem('krist.language', JSON.stringify({ v: 1, d: 'en' }));
+      vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['uk']);
+      TestBed.resetTestingModule();
+
+      expect(TestBed.inject(I18n).lang()).toBe('en');
+    });
+  });
   it('offers exactly the locales that have a dictionary', () => {
     expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'uk']);
   });

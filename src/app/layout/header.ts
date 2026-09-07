@@ -15,7 +15,7 @@ import { AuthService } from '../core/auth/auth.service';
 import { CartStore } from '../core/cart-store';
 import { ScrollLock } from '../core/scroll-lock';
 import { WishlistStore } from '../core/wishlist-store';
-import { MEGA_MENU } from '../core/data/content';
+import { Catalog } from '../core/catalog';
 import { Icon } from '../shared/ui/icon';
 import { Logo } from '../shared/ui/logo';
 import { T } from '../shared/t.pipe';
@@ -38,15 +38,27 @@ export class Header {
   protected readonly cart = inject(CartStore);
   protected readonly wishlist = inject(WishlistStore);
 
-  protected readonly megaMenu = MEGA_MENU;
+  private readonly catalog = inject(Catalog);
 
-  /** The drawer shows one flat accordion; the columns only matter on desktop. */
-  protected readonly menuGroups = computed(() => MEGA_MENU.flat());
+  /**
+   * The menu is the catalogue.
+   *
+   * It used to be a hand-written list of departments that existed nowhere
+   * else — a link called "Jackets" over a shop that has no such category,
+   * pointing at an unfiltered /shop. Reading the facets instead means every
+   * entry names something that is really in stock, carries its count, and
+   * cannot drift out of step with what an administrator adds.
+   */
+  protected readonly categories = computed(() => this.catalog.facets.value().categories);
+
+  protected toggleGroup(key: string): void {
+    this.openGroup.update((open) => (open === key ? null : key));
+  }
 
   protected readonly shopOpen = signal(false);
   protected readonly drawerOpen = signal(false);
   protected readonly searchOpen = signal(false);
-  /** titleKey of the expanded drawer group, or null — one open at a time. */
+  /** Key of the expanded drawer department, or null — one open at a time. */
   protected readonly openGroup = signal<string | null>(null);
 
   /** Only devices that can actually hover get hover-to-open. */
@@ -89,10 +101,6 @@ export class Header {
     this.shopOpen.update((open) => !open);
   }
 
-  protected toggleGroup(titleKey: string): void {
-    this.openGroup.update((open) => (open === titleKey ? null : titleKey));
-  }
-
   /** The drawer and the search field are alternatives, never both at once. */
   protected toggleDrawer(): void {
     const next = !this.drawerOpen();
@@ -107,7 +115,6 @@ export class Header {
     if (next) {
       this.drawerOpen.set(false);
       this.shopOpen.set(false);
-      this.openGroup.set(null);
     }
   }
 

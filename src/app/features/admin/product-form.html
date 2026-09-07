@@ -1,0 +1,181 @@
+<a class="product-form__back" routerLink="/admin/products">
+  <app-icon [name]="'arrow-left'" [size]="18" />
+  {{ 'admin.products' | t }}
+</a>
+
+<h1 class="product-form__title">
+  {{ (editing() ? 'admin.editProduct' : 'admin.newProduct') | t }}
+</h1>
+
+@if (loading()) {
+  <p class="muted">{{ 'admin.loading' | t }}</p>
+} @else {
+  <form [formGroup]="form" (submit)="$event.preventDefault(); save()">
+    <div class="product-form__grid">
+      <label class="field">
+        <span class="field__label">{{ 'admin.brand' | t }}</span>
+        <input class="control" type="text" formControlName="brand" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">{{ 'admin.price' | t }}</span>
+        <input class="control" type="number" min="0" step="0.01" formControlName="price" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">{{ 'admin.oldPrice' | t }}</span>
+        <input class="control" type="number" min="0" step="0.01" formControlName="oldPrice" />
+        <!-- Higher than the price, or the discount is not one. The server checks. -->
+        <span class="field__hint">{{ 'admin.oldPriceHint' | t }}</span>
+      </label>
+
+      <label class="field field--inline product-form__grid-full">
+        <input type="checkbox" formControlName="inStock" />
+        <span>{{ 'admin.inStock' | t }}</span>
+      </label>
+    </div>
+
+    <!--
+      The only two fields that differ per language. The tabs swap which one is
+      being written; everything else about a product is the same in every
+      language and stays in the grid above.
+    -->
+    <fieldset class="fieldset">
+      <legend class="fieldset__legend">{{ 'admin.productText' | t }}</legend>
+
+      <div class="product-form__langs" role="tablist">
+        @for (language of languages; track language.code) {
+          <button
+            type="button"
+            role="tab"
+            class="product-form__lang"
+            [class.product-form__lang--on]="editingLocale() === language.code"
+            [attr.aria-selected]="editingLocale() === language.code"
+            (click)="editingLocale.set(language.code)"
+          >
+            {{ language.label }}
+            @if (language.code !== baseLocale && hasTranslation(language.code)) {
+              <span
+                class="product-form__lang-dot"
+                [attr.aria-label]="'admin.translated' | t"
+              ></span>
+            }
+          </button>
+        }
+      </div>
+
+      @if (editingLocale() === baseLocale) {
+        <label class="field product-form__text">
+          <span class="field__label">{{ 'admin.name' | t }}</span>
+          <input class="control" type="text" formControlName="name" />
+        </label>
+
+        <label class="field product-form__text">
+          <span class="field__label">{{ 'admin.description' | t }}</span>
+          <textarea class="control" rows="4" formControlName="description"></textarea>
+        </label>
+      } @else {
+        <label class="field product-form__text">
+          <span class="field__label">{{ 'admin.name' | t }}</span>
+          <input
+            class="control"
+            type="text"
+            [value]="translationOf(editingLocale()).name"
+            (input)="setTranslation(editingLocale(), 'name', $event)"
+          />
+        </label>
+
+        <label class="field product-form__text">
+          <span class="field__label">{{ 'admin.description' | t }}</span>
+          <textarea
+            class="control"
+            rows="4"
+            [value]="translationOf(editingLocale()).description"
+            (input)="setTranslation(editingLocale(), 'description', $event)"
+          ></textarea>
+        </label>
+
+        <p class="field__hint">{{ 'admin.translationHint' | t }}</p>
+      }
+    </fieldset>
+    <!--
+      Three of the same control. A product sits in as many categories as it is
+      actually sold under — a watch is both a watch and an accessory — so this
+      is a multi-select like the other two rather than a single choice.
+    -->
+    <app-chip-select
+      [label]="'admin.categories' | t"
+      [options]="categoryOptions()"
+      [selected]="chosenCategories()"
+      [emptyText]="'admin.noCategories' | t"
+      (toggled)="toggleDepartment($event)"
+    />
+
+    <!-- Only what sits inside the departments chosen above. -->
+    @if (subcategoryOptions().length) {
+      <app-chip-select
+        [label]="'admin.subcategories' | t"
+        [options]="subcategoryOptions()"
+        [selected]="chosenSubcategories()"
+        (toggled)="toggle(chosenSubcategories, $event)"
+      />
+    }
+
+    <app-chip-select
+      [label]="'admin.colors' | t"
+      [options]="colorOptions()"
+      [selected]="chosenColors()"
+      [emptyText]="'admin.noColors' | t"
+      (toggled)="toggle(chosenColors, $event)"
+    />
+
+    <app-chip-select
+      [label]="'admin.sizes' | t"
+      [options]="sizeOptions()"
+      [selected]="chosenSizes()"
+      [emptyText]="'admin.noSizes' | t"
+      (toggled)="toggle(chosenSizes, $event)"
+    />
+
+    <fieldset class="fieldset" formArrayName="images">
+      <legend class="fieldset__legend">{{ 'admin.images' | t }}</legend>
+      <p class="field__hint">{{ 'admin.imagesHint' | t }}</p>
+
+      @for (control of images.controls; track $index) {
+        <div class="product-form__image">
+          <input
+            class="control"
+            type="url"
+            [formControlName]="$index"
+            placeholder="https://…"
+            [attr.aria-label]="'admin.imageUrl' | t"
+          />
+          <button
+            type="button"
+            class="icon-btn icon-btn--danger"
+            (click)="removeImage($index)"
+            [attr.aria-label]="'admin.removeImage' | t"
+          >
+            <app-icon [name]="'trash'" [size]="18" />
+          </button>
+        </div>
+      }
+
+      <button type="button" class="btn btn--outline btn--sm" (click)="addImage()">
+        <app-icon [name]="'plus'" [size]="18" />
+        {{ 'admin.addImage' | t }}
+      </button>
+    </fieldset>
+
+    @if (error()) {
+      <p class="alert alert--danger product-form__error">{{ error() }}</p>
+    }
+
+    <div class="product-form__actions">
+      <a class="btn btn--outline" routerLink="/admin/products">{{ 'admin.cancel' | t }}</a>
+      <button type="submit" class="btn btn--primary" [disabled]="saving()">
+        {{ (editing() ? 'admin.saveChanges' : 'admin.createProduct') | t }}
+      </button>
+    </div>
+  </form>
+}

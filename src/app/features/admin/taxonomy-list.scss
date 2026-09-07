@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  padding: 1.25rem;
+  border: 0.0625rem solid var(--c-line);
+  border-radius: var(--r-md);
+}
+
+.taxonomy-list__title {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: var(--c-heading);
+}
+
+.taxonomy-list__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0 0 1rem;
+  list-style: none;
+}
+
+.taxonomy-list__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.25rem;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+// Indented rather than prefixed, so the name stays the name.
+.taxonomy-list__row--child {
+  padding-left: 1.25rem;
+}
+
+.taxonomy-list__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--c-heading);
+}
+
+// How many products use it. Dim, because it is context rather than a value.
+.taxonomy-list__count {
+  flex: none;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.taxonomy-list__swatch {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  border: 0.0625rem solid var(--c-line);
+  border-radius: 50%;
+}
+
+.taxonomy-list__add {
+  display: flex;
+}
+
+/*
+ * Editing and adding both stack now: one line per language plus the base name
+ * does not fit beside a swatch and two buttons.
+ */
+.taxonomy-list__edit {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding-block: 0.25rem;
+}
+
+.taxonomy-list__fields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+// A labelled row: the label sits in a fixed column so the controls line up.
+.taxonomy-list__field,
+.taxonomy-list__lang {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.taxonomy-list__field-label,
+.taxonomy-list__lang-code {
+  flex: none;
+  width: 3.5rem;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+// The language code is a code, not a word.
+.taxonomy-list__lang-code {
+  text-transform: uppercase;
+}
+
+.taxonomy-list__add {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.taxonomy-list__group {
+  list-style: none;
+}
+
+// Same two-layer trick as the shop accordion: padding on a clipped element
+// is not clipped by its own overflow.
+.taxonomy-list__clip {
+  padding: 0;
+}
+
+.taxonomy-list__rows--nested {
+  margin: 0;
+}
+
+.taxonomy-list__caret {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  padding: 0.25rem;
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.taxonomy-list__chevron {
+  transition: transform 0.28s ease;
+
+  &.is-up {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .taxonomy-list__chevron {
+    transition: none;
+  }
+}

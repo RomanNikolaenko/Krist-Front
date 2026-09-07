@@ -54,8 +54,26 @@ export class I18n {
   }
 }
 
-/** First visit follows the browser, then the user's choice sticks. */
+/**
+ * First visit follows the browser, then the user's choice sticks.
+ *
+ * The whole preference list is walked, not just the first entry: a browser set
+ * to Polish first and Ukrainian second should get Ukrainian rather than falling
+ * straight through to English. Regions are dropped — `uk-UA` is Ukrainian — and
+ * anything the shop has no dictionary for is skipped, so a language we cannot
+ * actually render never wins.
+ */
 function detect(): LanguageCode {
-  const preferred = globalThis.navigator?.language ?? 'en';
-  return preferred.toLowerCase().startsWith('uk') ? 'uk' : 'en';
+  const known = new Set<string>(LANGUAGES.map((language) => language.code));
+
+  const preferences = globalThis.navigator?.languages?.length
+    ? globalThis.navigator.languages
+    : [globalThis.navigator?.language ?? ''];
+
+  for (const preference of preferences) {
+    const code = preference.toLowerCase().split('-')[0];
+    if (known.has(code)) return code as LanguageCode;
+  }
+
+  return 'en';
 }

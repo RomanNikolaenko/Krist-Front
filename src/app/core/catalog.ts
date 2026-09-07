@@ -1,105 +1,124 @@
-import { Injectable, signal } from '@angular/core';
-import { ColorName, Product, ShopFilters, SizeName, SortKey } from './models';
-import { ALL_COLORS, ALL_SIZES, MAX_PRICE, PRODUCTS } from './data/products';
+import { httpResource } from '@angular/common/http';
+import { inject, Injectable, Signal } from '@angular/core';
+import { API_BASE_URL } from './auth/api.config';
+import { I18n } from './i18n/i18n';
+import { Facets, Product, ProductPage, ShopFilters, SortKey } from './models';
 
 export const PAGE_SIZE = 16;
 
-export interface ShopResult {
-  items: Product[];
-  total: number;
-  pages: number;
-  from: number;
-  to: number;
-}
+export const EMPTY_FACETS: Facets = {
+  categories: [],
+  colors: [],
+  sizes: [],
+  minPrice: 0,
+  maxPrice: 0,
+};
 
+/** The swatch for a colour, taken from the row rather than a stylesheet. */
+export const swatchOf = (facets: Facets, name: string): string =>
+  facets.colors.find((color) => color.name === name)?.hex ?? 'transparent';
+
+const EMPTY_PAGE: ProductPage = { items: [], total: 0, pages: 1, from: 0, to: 0 };
+
+/**
+ * Filters that narrow nothing.
+ *
+ * Both ends of the price range are filled in from the facets when they arrive,
+ * so the slider spans what the catalogue actually costs rather than a pair of
+ * numbers written down here. A zero ceiling means they have not landed yet.
+ */
 export const EMPTY_FILTERS: ShopFilters = {
   categories: [],
   colors: [],
   sizes: [],
-  maxPrice: MAX_PRICE,
+  minPrice: 0,
+  maxPrice: 0,
   sort: 'latest',
   page: 1,
 };
 
+/**
+ * The catalogue, which now lives on the server.
+ *
+ * This used to be an array in the bundle and a set of synchronous lookups. It
+ * is a set of resources instead: each one owns a URL derived from signals, so
+ * changing a filter re-fetches without anybody wiring up a subscription, and
+ * every screen gets `isLoading` and `error` for free.
+ *
+ * The factory methods are called from a component's field initialisers, which
+ * is what ties each resource's lifetime to the screen that asked for it.
+ */
 @Injectable({ providedIn: 'root' })
 export class Catalog {
-  private readonly all = signal<Product[]>(PRODUCTS);
+  private readonly api = inject(API_BASE_URL);
+  private readonly i18n = inject(I18n);
 
-  readonly products = this.all.asReadonly();
-
-  bySlug(slug: string): Product | undefined {
-    return this.all().find((p) => p.slug === slug);
+  /**
+   * The language every catalogue request carries.
+   *
+   * Read inside each resource's URL factory rather than sent as a header, so
+   * that switching language in settings re-runs the factory and re-fetches.
+   * A header would change what the next request asks for without any of the
+   * resources knowing they had become stale.
+   */
+  private lang(): string {
+    return `lang=${this.i18n.lang()}`;
   }
 
-  byId(id: number): Product | undefined {
-    return this.all().find((p) => p.id === id);
-  }
+  /** Loaded once and shared: the filter counts do not depend on the filters. */
+  readonly facets = httpResource<Facets>(() => `${this.api}/products/facets`, {
+    defaultValue: EMPTY_FACETS,
+  });
 
-  bestsellers(count = 8): Product[] {
-    return [...this.all()].sort((a, b) => b.rating - a.rating).slice(0, count);
-  }
-
-  related(product: Product, count = 4): Product[] {
-    const sameCategory = this.all().filter(
-      (p) => p.id !== product.id && p.category === product.category,
-    );
-    const rest = this.all().filter((p) => p.id !== product.id && p.category !== product.category);
-    return [...sameCategory, ...rest].slice(0, count);
-  }
-
-  /** Facet counts are derived from the catalogue, never hard-coded. */
-  colorCounts(): { name: ColorName; token: string; count: number }[] {
-    return ALL_COLORS.map((c) => ({
-      ...c,
-      count: this.all().filter((p) => p.colors.includes(c.name)).length,
-    }));
-  }
-
-  sizeCounts(): { name: SizeName; count: number }[] {
-    return ALL_SIZES.map((s) => ({
-      name: s,
-      count: this.all().filter((p) => p.sizes.includes(s)).length,
-    }));
-  }
-
-  search(filters: ShopFilters): ShopResult {
-    let items = this.all().filter((p) => {
-      if (filters.categories.length && !filters.categories.includes(p.category)) return false;
-      if (filters.colors.length && !filters.colors.some((c) => p.colors.includes(c))) return false;
-      if (filters.sizes.length && !filters.sizes.some((s) => p.sizes.includes(s))) return false;
-      if (p.price > filters.maxPrice) return false;
-      return true;
+  searchResource(filters: Signal<ShopFilters>) {
+    return httpResource<ProductPage>(() => this.searchUrl(filters()), {
+      defaultValue: EMPTY_PAGE,
     });
-
-    items = sortItems(items, filters.sort);
-
-    const total = items.length;
-    const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const page = Math.min(Math.max(1, filters.page), pages);
-    const start = (page - 1) * PAGE_SIZE;
-    const slice = items.slice(start, start + PAGE_SIZE);
-
-    return {
-      items: slice,
-      total,
-      pages,
-      from: total === 0 ? 0 : start + 1,
-      to: start + slice.length,
-    };
   }
-}
 
-function sortItems(items: Product[], sort: SortKey): Product[] {
-  const copy = [...items];
-  switch (sort) {
-    case 'price-asc':
-      return copy.sort((a, b) => a.price - b.price);
-    case 'price-desc':
-      return copy.sort((a, b) => b.price - a.price);
-    case 'rating':
-      return copy.sort((a, b) => b.rating - a.rating);
-    case 'latest':
-    default:
-      return copy.sort((a, b) => b.id - a.id);
+  /** Undefined slug means no request — the route parameter has not resolved yet. */
+  productResource(slug: Signal<string>) {
+    return httpResource<Product>(() =>
+      slug() ? `${this.api}/products/${encodeURIComponent(slug())}?${this.lang()}` : undefined,
+    );
+  }
+
+  relatedResource(slug: Signal<string>, count = 4) {
+    return httpResource<Product[]>(
+      () =>
+        slug()
+          ? `${this.api}/products/${encodeURIComponent(slug())}/related?count=${count}&${this.lang()}`
+          : undefined,
+      { defaultValue: [] },
+    );
+  }
+
+  bestsellersResource(count = 8) {
+    return httpResource<Product[]>(
+      () => `${this.api}/products/bestsellers?count=${count}&${this.lang()}`,
+      {
+        defaultValue: [],
+      },
+    );
+  }
+
+  private searchUrl(filters: ShopFilters): string {
+    const query = new URLSearchParams();
+
+    if (filters.categories.length) query.set('categories', filters.categories.join(','));
+    if (filters.colors.length) query.set('colors', filters.colors.join(','));
+    if (filters.sizes.length) query.set('sizes', filters.sizes.join(','));
+    // The two ends travel together, and only once the facets have given them
+    // real values: a zero ceiling would ask for everything under nothing.
+    if (filters.maxPrice > 0) {
+      query.set('minPrice', String(filters.minPrice));
+      query.set('maxPrice', String(filters.maxPrice));
+    }
+    query.set('sort', filters.sort satisfies SortKey);
+    query.set('page', String(filters.page));
+    query.set('pageSize', String(PAGE_SIZE));
+    query.set('lang', this.i18n.lang());
+
+    return `${this.api}/products?${query.toString()}`;
   }
 }

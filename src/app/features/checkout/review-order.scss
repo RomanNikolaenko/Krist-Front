@@ -154,3 +154,15 @@ h2 {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.gate {
+  margin-bottom: 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--c-body);
+}
+
+.failure {
+  margin-top: 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--c-danger);
+}

@@ -1,3 +1,5 @@
+@use '../../../styles/mixins' as *;
+
 .backdrop {
   display: grid;
   place-items: center;
@@ -7,6 +9,7 @@
   padding: 1.5rem;
   overflow-y: auto;
   background: var(--c-overlay);
+  animation: fade-in 0.18s ease-out;
 }
 
 .panel {
@@ -17,10 +20,24 @@
   overflow-y: auto;
   background: var(--c-panel);
   box-shadow: var(--shadow-card);
+  // The dialog rises in like every other popup; the backdrop fades with it.
+  @include pop-in(0.18s);
 }
 
 @media (width <= 37.5rem) {
   .panel {
     padding: 1.375rem;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop {
+    animation: none;
   }
 }

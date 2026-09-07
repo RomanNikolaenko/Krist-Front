@@ -1,0 +1,100 @@
+@if (order(); as order) {
+  <a class="back" routerLink="/profile/orders">
+    <app-icon [name]="'arrow-left'" [size]="20" />
+    {{ 'order.back' | t }}
+  </a>
+
+  <div class="head">
+    <div>
+      <h2 class="number">{{ order.number }}</h2>
+      <p class="placed">
+        {{ 'order.placed' | t: { date: (order.placedAt | d: 'd MMMM y') ?? '' } }}
+      </p>
+    </div>
+    <span class="paid">{{ order.total | currency: 'USD' }}</span>
+  </div>
+
+  <ul class="lines">
+    @for (line of order.items; track line.id) {
+      <li class="line">
+        <img
+          class="line__thumb"
+          [src]="line.image"
+          [alt]="line.name"
+          width="80"
+          height="84"
+          loading="lazy"
+        />
+
+        <div class="line__body">
+          <p class="line__name">{{ line.name }}</p>
+          <p class="line__meta">{{ 'orders.size' | t }}: {{ line.size }}</p>
+          @if (line.colorLabel) {
+            <p class="line__meta">{{ 'orders.color' | t }}: {{ line.colorLabel }}</p>
+          }
+          <p class="line__meta">{{ 'orders.qty' | t }}: {{ line.qty }}</p>
+
+          <span
+            class="tag"
+            [class.is-process]="line.status === 'PROCESSING'"
+            [class.is-cancelled]="line.status === 'CANCELLED'"
+            >{{ 'status.' + line.status | t }}</span
+          >
+        </div>
+
+        <div class="line__side">
+          <span class="line__price">{{ line.price * line.qty | currency: 'USD' }}</span>
+
+          @if (line.status === 'PROCESSING') {
+            <button type="button" class="line__cancel" (click)="cancel(line)">
+              {{ 'orders.cancelOrder' | t }}
+            </button>
+          } @else if (line.status === 'DELIVERED' && line.slug) {
+            <a class="line__review" [routerLink]="['/product', line.slug]">
+              {{ 'orders.writeReview' | t }}
+            </a>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+
+  <div class="foot">
+    <!-- Kept out when the address it went to has since been deleted. -->
+    @if (order.address; as address) {
+      <section class="where">
+        <h3>{{ 'order.deliverTo' | t }}</h3>
+        <p class="where__name">{{ address.name }}</p>
+        <p class="where__lines">{{ address.line1 }} {{ address.area }}</p>
+        <p class="where__lines">{{ address.city }}, {{ address.state }} {{ address.pin }}</p>
+        <p class="where__lines">{{ address.phone }}</p>
+      </section>
+    }
+
+    <dl class="totals">
+      <div>
+        <dt>{{ 'summary.subtotal' | t }}</dt>
+        <dd>{{ order.subtotal | currency: 'USD' }}</dd>
+      </div>
+      @if (order.discount) {
+        <div>
+          <dt>{{ 'order.discount' | t }}</dt>
+          <dd>−{{ order.discount | currency: 'USD' }}</dd>
+        </div>
+      }
+      <div>
+        <dt>{{ 'summary.delivery' | t }}</dt>
+        <dd>{{ order.delivery | currency: 'USD' }}</dd>
+      </div>
+      <div class="totals__grand">
+        <dt>{{ 'summary.grandTotal' | t }}</dt>
+        <dd>{{ order.total | currency: 'USD' }}</dd>
+      </div>
+    </dl>
+  </div>
+} @else if (!loading()) {
+  <div class="empty">
+    <h3>{{ 'order.notFound' | t }}</h3>
+    <a class="btn btn--primary" routerLink="/profile/orders">{{ 'order.back' | t }}</a>
+  </div>
+}

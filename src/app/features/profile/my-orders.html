@@ -13,19 +13,27 @@
       <div>
         <p class="name">{{ order.name }}</p>
         <p class="meta">{{ 'orders.size' | t }}: {{ order.size }}</p>
+        @if (order.colorLabel) {
+          <p class="meta">{{ 'orders.color' | t }}: {{ order.colorLabel }}</p>
+        }
+        <p class="meta">{{ order.number }}</p>
         <p class="meta">{{ 'orders.qty' | t }}: {{ order.qty }}</p>
       </div>
 
       <span class="price">{{ order.price | currency: 'USD' }}</span>
 
       <div class="actions">
-        <button type="button">{{ 'orders.viewOrder' | t }}</button>
-        @if (order.status === 'Delivered') {
-          <button type="button" class="is-primary" [routerLink]="['/shop']">
+        <a [routerLink]="['/profile/orders', order.orderId]">{{ 'orders.viewOrder' | t }}</a>
+        @if (order.status === 'DELIVERED') {
+          <button
+            type="button"
+            class="is-primary"
+            [routerLink]="order.slug ? ['/product', order.slug] : ['/shop']"
+          >
             {{ 'orders.writeReview' | t }}
           </button>
-        } @else if (order.status === 'In Process') {
-          <button type="button" class="is-cancel" (click)="cancel(order.id)">
+        } @else if (order.status === 'PROCESSING') {
+          <button type="button" class="is-cancel" (click)="cancel(order)">
             {{ 'orders.cancelOrder' | t }}
           </button>
         }
@@ -35,11 +43,11 @@
     <p class="status">
       <span
         class="tag"
-        [class.is-process]="order.status === 'In Process'"
-        [class.is-cancelled]="order.status === 'Cancelled'"
+        [class.is-process]="order.status === 'PROCESSING'"
+        [class.is-cancelled]="order.status === 'CANCELLED'"
         >{{ 'status.' + order.status | t }}</span
       >
-      {{ order.statusTextKey | t }}
+      {{ 'statusText.' + order.status | t }}
     </p>
   </div>
 }

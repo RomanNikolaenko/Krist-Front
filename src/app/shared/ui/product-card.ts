@@ -22,7 +22,7 @@ export class ProductCard {
   readonly product = input.required<Product>();
   readonly variant = input<'grid' | 'wishlist'>('grid');
   readonly layout = input<'grid' | 'list'>('grid');
-  readonly remove = output<number>();
+  readonly remove = output<string>();
 
   protected addToCart(): void {
     const p = this.product();

@@ -1,15 +1,15 @@
-<div class="track">
-  <span class="rule"></span>
+<ol class="track">
   @for (s of steps; track s.key; let i = $index) {
-    <div class="step" [class.is-current]="s.key === current()" [class.is-done]="i < index()">
-      <a
-        class="badge"
-        [routerLink]="s.link"
-        [attr.aria-current]="s.key === current() ? 'step' : null"
-      >
+    <li class="step" [class.is-current]="s.key === current()" [class.is-done]="i < index()">
+      <span class="badge" [attr.aria-current]="s.key === current() ? 'step' : null">
         <app-icon [name]="s.icon" [size]="24" />
-      </a>
-      <span class="label">{{ s.labelKey | t }}</span>
-    </div>
+      </span>
+      <span class="label">
+        {{ s.labelKey | t }}
+        @if (i < index()) {
+          <span class="sr-only">{{ 'steps.done' | t }}</span>
+        }
+      </span>
+    </li>
   }
-</div>
+</ol>

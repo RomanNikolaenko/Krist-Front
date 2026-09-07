@@ -19,23 +19,37 @@
         >{{ 'nav.home' | t }}</a
       >
 
-      <span class="header__shop" (mouseenter)="onShopEnter()" (mouseleave)="onShopLeave()">
-        <button
-          type="button"
-          class="header__link header__link--button"
-          (click)="toggleShop()"
-          [class.header__link--active]="shopOpen()"
-          [attr.aria-expanded]="shopOpen()"
+      <!--
+        The dropdown lists departments, so with none of them it opens onto
+        nothing. The shop page itself still exists: link straight to it.
+      -->
+      @if (categories().length) {
+        <span class="header__shop" (mouseenter)="onShopEnter()" (mouseleave)="onShopLeave()">
+          <button
+            type="button"
+            class="header__link header__link--button"
+            (click)="toggleShop()"
+            [class.header__link--active]="shopOpen()"
+            [attr.aria-expanded]="shopOpen()"
+          >
+            {{ 'nav.shop' | t }}
+            <app-icon
+              class="header__caret"
+              [class.header__caret--up]="shopOpen()"
+              [name]="'chevron-down'"
+              [size]="20"
+            />
+          </button>
+        </span>
+      } @else {
+        <a
+          class="header__link"
+          routerLink="/shop"
+          routerLinkActive="header__link--active"
+          (click)="closeAll()"
+          >{{ 'nav.shop' | t }}</a
         >
-          {{ 'nav.shop' | t }}
-          <app-icon
-            class="header__caret"
-            [class.header__caret--up]="shopOpen()"
-            [name]="'chevron-down'"
-            [size]="20"
-          />
-        </button>
-      </span>
+      }
 
       <a
         class="header__link"
@@ -153,65 +167,108 @@
           >{{ 'nav.home' | t }}</a
         >
 
-        <button
-          type="button"
-          class="drawer__item drawer__item--button"
-          (click)="toggleShop()"
-          [attr.aria-expanded]="shopOpen()"
-        >
-          {{ 'nav.shop' | t }}
-          <app-icon
-            class="drawer__caret"
-            [class.drawer__caret--up]="shopOpen()"
-            [name]="'chevron-down'"
-            [size]="20"
-          />
-        </button>
+        <!-- Same on mobile: nothing to expand, so no accordion. -->
+        @if (categories().length) {
+          <button
+            type="button"
+            class="drawer__item drawer__item--button"
+            (click)="toggleShop()"
+            [attr.aria-expanded]="shopOpen()"
+          >
+            {{ 'nav.shop' | t }}
+            <app-icon
+              class="drawer__caret"
+              [class.drawer__caret--up]="shopOpen()"
+              [name]="'chevron-down'"
+              [size]="20"
+            />
+          </button>
 
-        <!-- height animates via grid-template-rows; the content stays mounted -->
-        <div class="drawer__reveal" [class.drawer__reveal--open]="shopOpen()">
-          <div class="drawer__reveal-inner">
-            <div class="drawer__sub">
-              @for (group of menuGroups(); track group.titleKey) {
-                <div
-                  class="drawer__group"
-                  [class.drawer__group--open]="openGroup() === group.titleKey"
-                >
-                  <button
-                    type="button"
-                    class="drawer__group-head"
-                    (click)="toggleGroup(group.titleKey)"
-                    [attr.aria-expanded]="openGroup() === group.titleKey"
-                    [attr.tabindex]="shopOpen() ? null : -1"
-                  >
-                    {{ group.titleKey | t }}
-                    <app-icon class="drawer__caret" [name]="'chevron-down'" [size]="20" />
-                  </button>
+          <!-- height animates via grid-template-rows; the content stays mounted -->
+          <div class="drawer__reveal" [class.is-open]="shopOpen()">
+            <div class="drawer__reveal-inner">
+              <!--
+                One flat list here rather than the nested accordion the invented
+                departments needed: the catalogue has one level, so the menu does.
+              -->
+              <!--
+                An accordion per department: the heading opens it, and the row of
+                subcategories underneath is where the actual choice is made. The
+                department itself is reachable from the "All" entry inside.
+              -->
+              <div class="drawer__sub">
+                @for (category of categories(); track category.key) {
+                  @if (category.children.length) {
+                    <div class="drawer__group">
+                      <button
+                        type="button"
+                        class="drawer__group-head"
+                        (click)="toggleGroup(category.key)"
+                        [attr.aria-expanded]="openGroup() === category.key"
+                        [attr.tabindex]="shopOpen() ? null : -1"
+                      >
+                        {{ category.name }}
+                        <app-icon
+                          class="drawer__caret"
+                          [class.drawer__caret--up]="openGroup() === category.key"
+                          [name]="'chevron-down'"
+                          [size]="20"
+                        />
+                      </button>
 
-                  <div
-                    class="drawer__reveal"
-                    [class.drawer__reveal--open]="openGroup() === group.titleKey"
-                  >
-                    <div class="drawer__reveal-inner">
-                      <div class="drawer__links">
-                        @for (link of group.links; track link) {
-                          <a
-                            class="drawer__sub-link"
-                            routerLink="/shop"
-                            (click)="closeAll()"
-                            [attr.tabindex]="openGroup() === group.titleKey ? null : -1"
-                          >
-                            {{ link | t }}
-                          </a>
-                        }
+                      <div class="drawer__reveal" [class.is-open]="openGroup() === category.key">
+                        <div class="drawer__reveal-inner">
+                          <div class="drawer__links">
+                            <a
+                              class="drawer__sub-link"
+                              routerLink="/shop"
+                              [queryParams]="{ categories: category.key }"
+                              (click)="closeAll()"
+                              [attr.tabindex]="openGroup() === category.key ? null : -1"
+                            >
+                              {{ 'nav.allIn' | t: { category: category.name } }}
+                            </a>
+
+                            @for (child of category.children; track child.key) {
+                              <a
+                                class="drawer__sub-link"
+                                routerLink="/shop"
+                                [queryParams]="{ categories: child.key }"
+                                (click)="closeAll()"
+                                [attr.tabindex]="openGroup() === category.key ? null : -1"
+                              >
+                                {{ child.name }}
+                              </a>
+                            }
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              }
+                  } @else {
+                    <!-- Nothing inside it, so nothing to open: a plain link. -->
+                    <a
+                      class="drawer__sub-link"
+                      routerLink="/shop"
+                      [queryParams]="{ categories: category.key }"
+                      (click)="closeAll()"
+                      [attr.tabindex]="shopOpen() ? null : -1"
+                    >
+                      {{ category.name }}
+                    </a>
+                  }
+                }
+              </div>
             </div>
           </div>
-        </div>
+        } @else {
+          <a
+            class="drawer__item"
+            routerLink="/shop"
+            routerLinkActive="drawer__item--active"
+            (click)="closeAll()"
+            >{{ 'nav.shop' | t }}</a
+          >
+        }
 
         <a
           class="drawer__item"
@@ -248,24 +305,39 @@
     </div>
   </nav>
 
-  @if (shopOpen()) {
+  @if (shopOpen() && categories().length) {
     <div class="mega" (mouseenter)="onShopEnter()" (mouseleave)="onShopLeave()">
       <div class="mega__inner">
-        @for (column of megaMenu; track $index) {
-          <div class="mega__col">
-            @for (group of column; track group.titleKey) {
-              <div class="mega__group">
-                <h2 class="mega__title">{{ group.titleKey | t }}</h2>
-                <ul class="mega__list">
-                  @for (link of group.links; track link) {
-                    <li>
-                      <a class="mega__link" routerLink="/shop" (click)="closeAll()">{{
-                        link | t
-                      }}</a>
-                    </li>
-                  }
-                </ul>
-              </div>
+        <!--
+          A department and what is inside it. Both levels are links: the heading
+          filters to the whole department, each entry to one part of it.
+        -->
+        @for (category of categories(); track category.key) {
+          <div class="mega__group">
+            <a
+              class="mega__title"
+              routerLink="/shop"
+              [queryParams]="{ categories: category.key }"
+              (click)="closeAll()"
+            >
+              {{ category.name }}
+            </a>
+
+            @if (category.children.length) {
+              <ul class="mega__list">
+                @for (child of category.children; track child.key) {
+                  <li>
+                    <a
+                      class="mega__link"
+                      routerLink="/shop"
+                      [queryParams]="{ categories: child.key }"
+                      (click)="closeAll()"
+                    >
+                      {{ child.name }}
+                    </a>
+                  </li>
+                }
+              </ul>
             }
           </div>
         }

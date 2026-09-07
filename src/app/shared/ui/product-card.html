@@ -40,20 +40,6 @@
       >
         <app-icon [name]="wishlist.has(product().id) ? 'heart-filled' : 'heart'" [size]="24" />
       </button>
-      <button
-        type="button"
-        class="card__tool"
-        [attr.aria-label]="'card.compare' | t: { name: product().name }"
-      >
-        <app-icon [name]="'compare'" [size]="24" />
-      </button>
-      <a
-        class="card__tool"
-        [routerLink]="['/product', product().slug]"
-        [attr.aria-label]="'card.quickView' | t: { name: product().name }"
-      >
-        <app-icon [name]="'eye'" [size]="24" />
-      </a>
     }
   </div>
 
@@ -70,8 +56,8 @@
     <a class="card__name" [routerLink]="['/product', product().slug]">{{ product().name }}</a>
     <span class="card__prices">
       <span class="card__price">{{ product().price | currency: 'USD' }}</span>
-      @if (product().oldPrice > product().price) {
-        <span class="card__old">{{ product().oldPrice | currency: 'USD' }}</span>
+      @if (product().oldPrice; as was) {
+        <span class="card__old">{{ was | currency: 'USD' }}</span>
       }
     </span>
     <button type="button" class="card__cta" (click)="addToCart()">
@@ -83,8 +69,8 @@
   <a class="card__name" [routerLink]="['/product', product().slug]">{{ product().name }}</a>
   <span class="card__prices">
     <span class="card__price">{{ product().price | currency: 'USD' }}</span>
-    @if (product().oldPrice > product().price) {
-      <span class="card__old">{{ product().oldPrice | currency: 'USD' }}</span>
+    @if (product().oldPrice; as was) {
+      <span class="card__old">{{ was | currency: 'USD' }}</span>
     }
   </span>
 }

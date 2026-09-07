@@ -28,7 +28,7 @@ const NAV: { path: string; labelKey: string; icon: IconName }[] = [
   { path: 'settings', labelKey: 'profile.settings', icon: 'settings' },
 ];
 
-const STATUSES: OrderStatus[] = ['Delivered', 'In Process', 'Cancelled'];
+const STATUSES: OrderStatus[] = ['DELIVERED', 'PROCESSING', 'CANCELLED'];
 
 @Component({
   selector: 'app-profile',
@@ -44,6 +44,16 @@ export class Profile {
   private readonly router = inject(Router);
 
   protected readonly nav = NAV;
+
+  /**
+   * Whether to offer the way into the admin panel.
+   *
+   * A computed rather than a call in the template, so the link appears the
+   * moment the answer changes rather than whenever change detection next
+   * happens to run. It reads the same permission the route guard reads, which
+   * is why a link that should not be there cannot lead anywhere anyway.
+   */
+  protected readonly isAdmin = computed(() => this.auth.has('products.write'));
   protected readonly statuses = STATUSES;
   protected readonly filterOpen = signal(false);
   /** Narrow layouts collapse the rail behind a trigger; wide ones ignore this. */
@@ -59,7 +69,12 @@ export class Profile {
   );
 
   /** Search + filter belong to the Orders screen only. */
-  protected readonly showToolbar = computed(() => this.url().includes('/profile/orders'));
+  /*
+   * The list, not a single order: searching and filtering one order's lines is
+   * not a thing anybody wants, and the controls would sit above a page that
+   * ignores them.
+   */
+  protected readonly showToolbar = computed(() => this.url().split('?')[0] === '/profile/orders');
 
   constructor() {
     // in "over" mode the drawer sits on a backdrop, so the page behind it holds still

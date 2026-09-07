@@ -19,131 +19,151 @@
   <div class="layout">
     <aside class="sidebar" [class.is-open]="filtersOpen()">
       <!--
-        Each filter group follows the accordion pattern: the heading carries the
-        button rather than the other way round, which keeps the group in the
-        document outline without nesting flow content inside a button.
+        Four groups, one control. The accordion component owns the heading, the
+        button, the chevron and the open/shut animation; the filter only says
+        what goes inside and which of them are open.
       -->
-      <!-- categories -->
-      <section class="panel">
-        <h2 class="panel__title">
-          <button
-            type="button"
-            class="panel__head"
-            (click)="togglePanel('categories')"
-            [attr.aria-expanded]="panels().categories"
+      <!--
+        One accordion per department, holding its subcategories. The department
+        itself is the first box inside it, so "everything in Men" is a tick
+        rather than a special case.
+      -->
+      @for (category of categories(); track category.key) {
+        @if (category.children.length) {
+          <app-accordion
+            [title]="category.name"
+            [open]="isPanelOpen(category.key)"
+            (toggled)="togglePanel(category.key)"
           >
-            {{ 'shop.productCategories' | t }}
-            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().categories" />
-          </button>
-        </h2>
-
-        @if (panels().categories) {
-          <ul class="panel__body">
-            @for (category of categories; track category) {
-              <li class="opt">
+            <ul class="filter__list">
+              <li class="filter__opt">
                 <label class="check">
                   <input
                     type="checkbox"
-                    [checked]="filters().categories.includes(category)"
-                    (change)="toggleCategory(category)"
+                    [checked]="isWholeDepartment(category.key)"
+                    (change)="onDepartmentChange($event, category.key)"
                   />
-                  <span>{{ 'category.' + category | t }}</span>
+                  <span>{{ 'shop.allIn' | t }}</span>
                 </label>
-                @if (expandable.includes(category)) {
-                  <app-icon [name]="'plus'" [size]="20" class="opt__more" />
-                }
+                <span class="filter__count">({{ category.count }})</span>
               </li>
-            }
-          </ul>
-        }
-      </section>
 
-      <!-- price -->
-      <section class="panel">
-        <h2 class="panel__title">
-          <button
-            type="button"
-            class="panel__head"
-            (click)="togglePanel('price')"
-            [attr.aria-expanded]="panels().price"
-          >
-            {{ 'shop.filterByPrice' | t }}
-            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().price" />
-          </button>
-        </h2>
-
-        @if (panels().price) {
-          <div class="panel__body">
-            <p class="price-label">
-              {{ 'shop.price' | t }}: {{ 0 | currency: 'USD' : 'symbol' : '1.0-0' }} -
-              {{ filters().maxPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
-            </p>
+              @for (child of category.children; track child.key) {
+                <li class="filter__opt">
+                  <label class="check">
+                    <input
+                      type="checkbox"
+                      [checked]="isSubcategoryOn(category.key, child.key)"
+                      (change)="onSubcategoryChange($event, category.key, child.key)"
+                    />
+                    <span>{{ child.name }}</span>
+                  </label>
+                  <span class="filter__count">({{ child.count }})</span>
+                </li>
+              }
+            </ul>
+          </app-accordion>
+        } @else {
+          <!--
+            Nothing under it to unfold. An accordion here opened onto a single
+            "everything in here" tick, which is what its own heading already
+            says: so the department is that tick.
+          -->
+          <label class="check filter__plain">
+            <span class="filter__plain-name">{{ category.name }}</span>
+            <span class="filter__count">({{ category.count }})</span>
             <input
-              class="range"
-              type="range"
-              min="0"
-              [max]="maxPrice"
-              step="10"
-              [value]="filters().maxPrice"
-              (input)="setPrice($event)"
-              [attr.aria-label]="'shop.maxPrice' | t"
+              type="checkbox"
+              [checked]="isWholeDepartment(category.key)"
+              (change)="onDepartmentChange($event, category.key)"
             />
-          </div>
+          </label>
         }
-      </section>
+      }
 
-      <!-- colour -->
-      <section class="panel">
-        <h2 class="panel__title">
-          <button
-            type="button"
-            class="panel__head"
-            (click)="togglePanel('color')"
-            [attr.aria-expanded]="panels().color"
-          >
-            {{ 'shop.filterByColor' | t }}
-            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().color" />
-          </button>
-        </h2>
+      <app-accordion
+        [title]="'shop.filterByPrice' | t"
+        [open]="panels().price"
+        (toggled)="togglePanel('price')"
+      >
+        <p class="filter__price">
+          {{ 'shop.price' | t }}: {{ filters().minPrice | currency: 'USD' : 'symbol' : '1.0-0' }} –
+          {{ filters().maxPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
+        </p>
 
-        @if (panels().color) {
-          <ul class="panel__body">
-            @for (color of colors; track color.name) {
-              <li class="opt">
+        <!--
+          Two range inputs stacked on one track. A single input cannot carry
+          two thumbs, and this pair is the only version of the control that
+          arrow keys and screen readers already understand.
+        -->
+        <div class="range">
+          <span class="range__track" aria-hidden="true">
+            <span
+              class="range__fill"
+              [style.left.%]="fillLeft()"
+              [style.right.%]="fillRight()"
+            ></span>
+          </span>
+
+          <input
+            class="range__input"
+            type="range"
+            [min]="floor()"
+            [max]="ceiling()"
+            step="1"
+            [value]="filters().minPrice"
+            (input)="setMinPrice($event)"
+            [attr.aria-label]="'shop.minPrice' | t"
+          />
+          <input
+            class="range__input"
+            type="range"
+            [min]="floor()"
+            [max]="ceiling()"
+            step="1"
+            [value]="filters().maxPrice"
+            (input)="setMaxPrice($event)"
+            [attr.aria-label]="'shop.maxPrice' | t"
+          />
+        </div>
+      </app-accordion>
+
+      <!-- The facets come from the catalogue: a shop with nothing coloured gets no colour filter rather than an empty one. -->
+      @if (colors().length) {
+        <app-accordion
+          [title]="'shop.filterByColor' | t"
+          [open]="panels().color"
+          (toggled)="togglePanel('color')"
+        >
+          <ul class="filter__list">
+            @for (color of colors(); track color.name) {
+              <li class="filter__opt">
                 <button
                   type="button"
-                  class="swatch-row"
+                  class="filter__swatch-row"
                   [class.is-on]="filters().colors.includes(color.name)"
                   (click)="toggleColor(color.name)"
                 >
-                  <span class="swatch" [style.background]="color.token"></span>
-                  <span>{{ 'color.' + color.name | t }}</span>
+                  <span class="filter__swatch" [style.background]="color.token"></span>
+                  <span>{{ color.label }}</span>
                 </button>
-                <span class="count">({{ color.count }})</span>
+                <span class="filter__count">({{ color.count }})</span>
               </li>
             }
           </ul>
-        }
-      </section>
+        </app-accordion>
+      }
 
-      <!-- size -->
-      <section class="panel">
-        <h2 class="panel__title">
-          <button
-            type="button"
-            class="panel__head"
-            (click)="togglePanel('size')"
-            [attr.aria-expanded]="panels().size"
-          >
-            {{ 'shop.filterBySize' | t }}
-            <app-icon [name]="'chevron-down'" [size]="20" [class.is-up]="panels().size" />
-          </button>
-        </h2>
-
-        @if (panels().size) {
-          <ul class="panel__body">
-            @for (size of sizes; track size.name) {
-              <li class="opt">
+      <!-- Likewise sizes — nothing to choose between is not a choice. -->
+      @if (sizes().length) {
+        <app-accordion
+          [title]="'shop.filterBySize' | t"
+          [open]="panels().size"
+          (toggled)="togglePanel('size')"
+        >
+          <ul class="filter__list">
+            @for (size of sizes(); track size.name) {
+              <li class="filter__opt">
                 <label class="check">
                   <input
                     type="checkbox"
@@ -152,13 +172,12 @@
                   />
                   <span>{{ size.name }}</span>
                 </label>
-                <span class="count">({{ size.count }})</span>
+                <span class="filter__count">({{ size.count }})</span>
               </li>
             }
           </ul>
-        }
-      </section>
-
+        </app-accordion>
+      }
       @if (activeCount()) {
         <button type="button" class="btn btn--outline btn--sm btn--block" (click)="reset()">
           {{ 'shop.clearFilters' | t }}

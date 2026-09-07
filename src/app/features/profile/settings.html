@@ -39,3 +39,65 @@
     />
   </div>
 }
+
+<!--
+  The one irreversible thing on this screen, so it is set apart from the rows
+  above rather than sitting in line with the appearance and language pickers.
+-->
+<div class="row row--danger">
+  <div>
+    <p class="title">{{ 'settings.deleteAccount' | t }}</p>
+    <p class="text">{{ 'settings.deleteAccountText' | t }}</p>
+  </div>
+  <button type="button" class="btn btn--danger" (click)="openDelete()">
+    {{ 'settings.deleteAccount' | t }}
+  </button>
+</div>
+
+<app-modal
+  [open]="confirming()"
+  [label]="'settings.deleteConfirmTitle' | t"
+  (closed)="confirming.set(false)"
+>
+  <h2 class="dialog__title">{{ 'settings.deleteConfirmTitle' | t }}</h2>
+  <p>{{ 'settings.deleteConfirmText' | t }}</p>
+
+  <ul class="loses">
+    @for (key of deleteLoses; track key) {
+      <li>{{ key | t }}</li>
+    }
+  </ul>
+
+  <!--
+    The password again, even though the session is already signed in: this is
+    the only request in the app that cannot be taken back.
+  -->
+  <label class="field">
+    <span class="field__label">{{ 'settings.deletePassword' | t }}</span>
+    <input
+      type="password"
+      class="control"
+      autocomplete="current-password"
+      [(ngModel)]="password"
+      (keydown.enter)="confirmDelete()"
+    />
+  </label>
+
+  @if (deleteError()) {
+    <p class="dialog__error">{{ deleteError() }}</p>
+  }
+
+  <div class="dialog__actions">
+    <button type="button" class="btn btn--outline" (click)="confirming.set(false)">
+      {{ 'settings.deleteCancel' | t }}
+    </button>
+    <button
+      type="button"
+      class="btn btn--danger"
+      [disabled]="!password || deleting()"
+      (click)="confirmDelete()"
+    >
+      {{ 'settings.deleteConfirm' | t }}
+    </button>
+  </div>
+</app-modal>

@@ -150,6 +150,17 @@ ul {
     }
   }
 
+  // Destructive, and the only variant that is. Outlined rather than filled:
+  // a solid red block reads as the obvious thing to press, which is the last
+  // thing a delete button should look like.
+  &--danger {
+    color: var(--c-danger);
+    background: var(--c-panel);
+    border-color: var(--c-danger);
+    &:hover {
+      background: var(--c-danger-soft);
+    }
+  }
   &--ghost {
     color: var(--c-heading);
     background: var(--c-surface);
@@ -226,6 +237,19 @@ ul {
   }
 }
 
+// Compact, for rows of controls that sit inside a list rather than a form.
+.control--sm {
+  padding: 0.4375rem 0.625rem;
+  font-size: var(--fs-sm);
+  border-color: var(--c-line);
+}
+
+// The native colour well needs a fixed box or it stretches across its row.
+.control--color {
+  flex: none;
+  width: 2.5rem;
+  padding: 0.1875rem;
+}
 textarea.control {
   min-height: 6rem;
   resize: vertical;
@@ -236,6 +260,49 @@ app-select.is-invalid .trigger {
   border-color: var(--c-danger);
 }
 
+// A checkbox and its word, sitting on one line rather than stacked.
+.field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.field__hint {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+/*
+ * A button that is only its icon: remove a row, rename a thing. The label it
+ * has no room for goes in `aria-label`.
+ */
+.icon-btn {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  padding: 0.5rem;
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+
+  @include focus-ring;
+
+  &:hover {
+    color: var(--c-heading);
+    background: var(--c-surface);
+  }
+
+  &--danger {
+    color: var(--c-danger);
+
+    &:hover {
+      color: var(--c-danger);
+      background: var(--c-danger-soft);
+    }
+  }
+}
 .field__error {
   font-size: var(--fs-xs);
   color: var(--c-danger);
@@ -325,6 +392,7 @@ app-select.is-invalid .trigger {
   border: none;
 }
 
+// A short state word attached to a thing: in stock, delivered, refunded.
 .badge {
   display: inline-flex;
   align-items: center;
@@ -335,6 +403,90 @@ app-select.is-invalid .trigger {
     color: var(--c-success);
     background: var(--c-success-soft);
   }
+  &--danger {
+    color: var(--c-danger);
+    background: var(--c-danger-soft);
+  }
+  &--muted {
+    color: var(--c-muted);
+    background: var(--c-surface);
+  }
+}
+
+// ---------- fieldset ----------
+/*
+ * A named group of controls. The border and the legend were being redrawn in
+ * every form that had one; only the contents ever differed.
+ */
+.fieldset {
+  max-width: 52rem;
+  padding: 1rem 1.25rem 1.25rem;
+  margin: 1.75rem 0 0;
+  border: 0.0625rem solid var(--c-line);
+  border-radius: var(--r-md);
+}
+
+.fieldset__legend {
+  padding-inline: 0.5rem;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-heading);
+}
+// ---------- alert ----------
+/*
+ * A message about the request that just happened, addressed to the person
+ * who made it. Six screens were each carrying their own `.error` rule for
+ * this; the modifier is the only thing that ever differed.
+ */
+.alert {
+  padding: 0.75rem 1rem;
+  font-size: var(--fs-sm);
+  border-radius: var(--r-sm);
+
+  &--danger {
+    color: var(--c-danger);
+    background: var(--c-danger-soft);
+  }
+
+  &--success {
+    color: var(--c-success);
+    background: var(--c-success-soft);
+  }
+}
+
+// ---------- dialog ----------
+/*
+ * The inside of an `app-modal`. The component owns the overlay and the panel;
+ * this is the content those panels kept re-describing one screen at a time.
+ */
+.dialog__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  color: var(--c-heading);
+}
+
+.dialog__note {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.dialog__warn {
+  font-size: var(--fs-sm);
+  color: var(--c-warn);
+}
+
+.dialog__error {
+  margin-top: 0.875rem;
+  font-size: var(--fs-sm);
+  color: var(--c-danger);
+}
+
+.dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 /*
@@ -365,4 +517,23 @@ app-select.is-invalid .trigger {
   white-space: nowrap;
   border: 0;
   clip-path: inset(50%);
+}
+
+/*
+ * Shared with the pop-in mixin. Keyframes are global whatever file they sit in,
+ * so they live here rather than pretending to be scoped to one component.
+ */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+/*
+ * Anything that opens downwards in place: a filter group, a submenu. Toggle
+ * `.is-open` on it and put the content in a single child.
+ */
+.reveal {
+  @include reveal;
 }

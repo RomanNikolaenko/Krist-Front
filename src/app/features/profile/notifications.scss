@@ -66,3 +66,44 @@
     grid-column: 2;
   }
 }
+
+// The row is a button so it can be reached by keyboard; these strip the
+// control back to the layout the rule above already describes.
+button.item {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.item.is-unread {
+  background: var(--c-surface);
+}
+
+.ref {
+  color: var(--c-heading);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mark-all {
+  font: inherit;
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.empty {
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--c-muted);
+}

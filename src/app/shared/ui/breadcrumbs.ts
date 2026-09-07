@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Params, RouterLink } from '@angular/router';
 import { Icon } from './icon';
 
 export interface Crumb {
   label: string;
   link?: string;
+  /** Carried with the link, so a crumb can point at a filtered shop. */
+  queryParams?: Params;
 }
 
 @Component({
