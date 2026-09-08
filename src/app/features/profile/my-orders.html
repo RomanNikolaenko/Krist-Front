@@ -44,6 +44,8 @@
       <span
         class="tag"
         [class.is-process]="order.status === 'PROCESSING'"
+        [class.is-shipped]="order.status === 'SHIPPED'"
+        [class.is-returned]="order.status === 'RETURNED'"
         [class.is-cancelled]="order.status === 'CANCELLED'"
         >{{ 'status.' + order.status | t }}</span
       >

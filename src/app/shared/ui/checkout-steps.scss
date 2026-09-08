@@ -60,7 +60,7 @@
 }
 
 /* A step still out of reach reads as one, rather than as one you may click. */
-.step:not(.is-done):not(.is-current) .label {
+.step:not(.is-done, .is-current) .label {
   color: var(--c-muted);
 }
 

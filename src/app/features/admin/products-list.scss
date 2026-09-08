@@ -120,10 +120,10 @@
 .products__thumb {
   display: block;
   width: 3rem;
-  height: 3.625rem;
   // Opts out of the global fluid-image rule: this one has a size of its own,
   // and letting a narrow box override the width alone distorts it.
   max-width: none;
+  height: 3.625rem;
   border-radius: var(--r-sm);
   object-fit: cover;
 }
@@ -251,14 +251,13 @@
   .products__row {
     display: grid;
     grid-template-columns: 3rem minmax(0, 1fr);
-    column-gap: 0.875rem;
-    row-gap: 0.25rem;
     align-items: start;
+    gap: 0.25rem 0.875rem;
     padding: 1rem;
-    border: 0.0625rem solid var(--c-line);
-    border-radius: var(--r-md);
     container-type: inline-size;
     container-name: card;
+    border: 0.0625rem solid var(--c-line);
+    border-radius: var(--r-md);
   }
 
   .products__cell {
@@ -270,8 +269,8 @@
 
   // Spans every row of the card, so the picture sits beside the whole block.
   .products__cell--thumb {
-    grid-row: 1 / -1;
     grid-column: 1;
+    grid-row: 1 / -1;
     width: auto;
   }
 
@@ -283,10 +282,10 @@
     display: grid;
     // Wide enough for the longest of them, "Colours and sizes", on one line.
     grid-template-columns: 7.5rem minmax(0, 1fr);
-    gap: 0.5rem;
-    padding-top: 0.25rem;
     // Or the badge, being a grid item, stretches the whole width of the card.
     justify-items: start;
+    gap: 0.5rem;
+    padding-top: 0.25rem;
 
     &::before {
       content: attr(data-label);

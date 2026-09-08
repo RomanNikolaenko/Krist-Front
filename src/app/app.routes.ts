@@ -33,6 +33,10 @@ export const routes: Routes = [
           import('./features/admin/product-form').then((m) => m.AdminProductForm),
       },
       {
+        path: 'orders',
+        loadComponent: () => import('./features/admin/orders-list').then((m) => m.AdminOrdersList),
+      },
+      {
         path: 'taxonomy',
         loadComponent: () => import('./features/admin/taxonomy').then((m) => m.AdminTaxonomy),
       },

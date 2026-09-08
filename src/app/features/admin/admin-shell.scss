@@ -189,11 +189,11 @@
     // Full width on a phone, capped so it never becomes a wall on a tablet.
     width: 100%;
     max-width: 25rem;
+    overflow-y: auto;
     border-right: 0.0625rem solid var(--c-line);
     box-shadow: var(--shadow-menu);
     transform: translateX(-100%);
     transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
   }
 
   .admin__side--open {

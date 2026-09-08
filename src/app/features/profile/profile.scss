@@ -215,11 +215,11 @@
  * screens above it rather than reading as one more of them.
  */
 .profile__nav-item--admin {
+  padding-top: 1.125rem;
   margin-top: 0.5rem;
   color: var(--c-heading);
   border-top: 0.0625rem solid var(--c-line);
   border-radius: 0;
-  padding-top: 1.125rem;
 
   &:hover {
     background: var(--c-surface);

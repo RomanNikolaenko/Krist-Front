@@ -1,0 +1,275 @@
+.orders__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.orders__title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--c-heading);
+}
+
+.orders__count {
+  margin: 0.25rem 0 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.orders__note {
+  color: var(--c-muted);
+}
+
+.orders__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.orders__search {
+  display: flex;
+  flex: 1 1 16rem;
+  align-items: center;
+  gap: 0.625rem;
+  max-width: 26rem;
+  padding: 0.625rem 0.875rem;
+  color: var(--c-muted);
+  border: 0.0625rem solid var(--c-line);
+  border-radius: var(--r-md);
+
+  input {
+    width: 100%;
+    min-width: 0;
+    font: inherit;
+    color: var(--c-heading);
+    background: none;
+    border: 0;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--c-line-strong);
+  }
+}
+
+.orders__filter {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.orders__filter-label {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  color: var(--c-muted);
+}
+
+.orders__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders__th {
+  padding: 0.75rem;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--c-muted);
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+.orders__cell {
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 0.0625rem solid var(--c-line);
+}
+
+/*
+ * Column floors, for the same reason the catalogue table has them: an auto
+ * layout will happily squeeze a column down to its longest word, and the
+ * address column has plenty of short ones to squeeze between.
+ */
+.orders__cell--number,
+.orders__cell--total,
+.orders__cell--status {
+  white-space: nowrap;
+}
+
+.orders__cell--who {
+  min-width: 9rem;
+}
+
+.orders__cell--items {
+  min-width: 14rem;
+}
+
+.orders__cell--ship {
+  min-width: 12rem;
+}
+
+.orders__number {
+  margin: 0;
+  font-weight: 600;
+  color: var(--c-heading);
+}
+
+.orders__placed,
+.orders__email,
+.orders__qty,
+.orders__cell--ship {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.orders__placed {
+  margin: 0.125rem 0 0;
+}
+
+.orders__name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--c-heading);
+}
+
+.orders__email {
+  margin: 0.125rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.orders__qty {
+  margin: 0;
+}
+
+.orders__lines {
+  padding: 0;
+  margin: 0.375rem 0 0;
+  font-size: var(--fs-sm);
+  list-style: none;
+  color: var(--c-body);
+
+  li {
+    padding: 0.0625rem 0;
+  }
+
+  // Called off by the customer: still part of the record, no longer part of
+  // what is being packed.
+  .is-cancelled {
+    text-decoration: line-through;
+    color: var(--c-muted);
+  }
+}
+
+// The row is waiting on the server; the select is already disabled.
+.orders__row.is-saving {
+  opacity: 0.6;
+}
+
+.orders__pagination {
+  display: block;
+  margin-top: 1.5rem;
+}
+
+@container admin (width <= 68rem) {
+  .orders__th,
+  .orders__cell {
+    padding: 0.625rem 0.5rem;
+  }
+}
+
+/*
+ * Below this the six columns stop fitting and each row becomes a card, with
+ * every cell carrying back the heading it lost. Measured against the container,
+ * because the rail beside it takes 15rem the content never sees.
+ */
+@container admin (width <= 62rem) {
+  .orders__table,
+  .orders__cell {
+    display: block;
+  }
+
+  .orders__thead {
+    display: none;
+  }
+
+  .orders__body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(21.25rem, 100%), 1fr));
+    gap: 0.75rem;
+  }
+
+  .orders__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1rem;
+    border: 0.0625rem solid var(--c-line);
+    border-radius: var(--r-md);
+  }
+
+  .orders__cell {
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.375rem 0;
+    border-bottom: none;
+  }
+
+  .orders__cell::before {
+    content: attr(data-label);
+    font-size: var(--fs-sm);
+    color: var(--c-muted);
+  }
+
+  /*
+   * Everything but the label belongs in the second column.
+   *
+   * Several of these cells hold more than one element — a name over an email, a
+   * count over a list of lines — and auto-placement sent the second one back to
+   * column one, under the label. That column is `auto`, so a long product name
+   * landing there widened it until the value beside the label had a few pixels
+   * left and "Товарів: 2" broke across two lines.
+   */
+  .orders__cell > * {
+    grid-column: 2;
+  }
+
+  // Every column can wrap here; nothing is holding a row open any more.
+  .orders__cell--number,
+  .orders__cell--total,
+  .orders__cell--status {
+    white-space: normal;
+  }
+
+  .orders__cell--who,
+  .orders__cell--items,
+  .orders__cell--ship {
+    min-width: 0;
+  }
+}
+
+/* One column of pairs is too many at this width: the label goes above. */
+@container admin (width <= 30rem) {
+  .orders__cell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.125rem;
+  }
+
+  /*
+   * And back to the first column with them. The rule above sends every value to
+   * column two, which here does not exist: the browser made an implicit one,
+   * collapsed column one to nothing, and printed each label underneath its own
+   * value.
+   */
+  .orders__cell > * {
+    grid-column: 1;
+  }
+}

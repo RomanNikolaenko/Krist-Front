@@ -129,7 +129,11 @@ export interface SavedCard {
   isDefault: boolean;
 }
 
-export type OrderStatus = 'PROCESSING' | 'DELIVERED' | 'CANCELLED';
+/**
+ * Where one line of an order has got to. The first four are the shop's to set,
+ * in roughly that order; CANCELLED is the customer's and nothing takes it back.
+ */
+export type OrderStatus = 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'RETURNED' | 'CANCELLED';
 
 export interface OrderLine {
   id: string;

@@ -1,0 +1,135 @@
+<div class="orders">
+  <div class="orders__head">
+    <div class="orders__heading">
+      <h1 class="orders__title">{{ 'admin.orders' | t }}</h1>
+      <p class="orders__count">{{ 'admin.orderCount' | t: { count: total() } }}</p>
+    </div>
+  </div>
+
+  <div class="orders__tools">
+    <label class="orders__search">
+      <app-icon [name]="'search'" [size]="20" />
+      <input
+        type="search"
+        [value]="query()"
+        (input)="search($event)"
+        [placeholder]="'admin.searchOrders' | t"
+        [attr.aria-label]="'admin.searchOrders' | t"
+      />
+    </label>
+
+    <label class="orders__filter">
+      <span class="orders__filter-label">{{ 'admin.status' | t }}</span>
+      <select class="control control--sm" [value]="status()" (change)="filter($event)">
+        <option value="">{{ 'admin.allStatuses' | t }}</option>
+        @for (option of filterStatuses; track option) {
+          <option [value]="option">{{ 'status.' + option | t }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (error()) {
+    <p class="alert alert--danger">{{ error() | t }}</p>
+  }
+
+  @if (loading()) {
+    <p class="orders__note">{{ 'admin.loading' | t }}</p>
+  } @else if (items().length) {
+    <!--
+      The same two shapes as the catalogue table: a real table while the columns
+      fit, and one card per order once they stop.
+    -->
+    <table class="orders__table">
+      <thead class="orders__thead">
+        <tr class="orders__row orders__row--head">
+          <th class="orders__th" scope="col">{{ 'admin.orderNumber' | t }}</th>
+          <th class="orders__th" scope="col">{{ 'admin.customer' | t }}</th>
+          <th class="orders__th" scope="col">{{ 'admin.items' | t }}</th>
+          <th class="orders__th" scope="col">{{ 'admin.shipTo' | t }}</th>
+          <th class="orders__th" scope="col">{{ 'admin.total' | t }}</th>
+          <th class="orders__th" scope="col">{{ 'admin.status' | t }}</th>
+        </tr>
+      </thead>
+
+      <tbody class="orders__body">
+        @for (order of items(); track order.id) {
+          <tr class="orders__row" [class.is-saving]="saving() === order.id">
+            <td
+              class="orders__cell orders__cell--number"
+              [attr.data-label]="'admin.orderNumber' | t"
+            >
+              <p class="orders__number">{{ order.number }}</p>
+              <p class="orders__placed">{{ order.placedAt | d: 'd MMM y' }}</p>
+            </td>
+
+            <td class="orders__cell orders__cell--who" [attr.data-label]="'admin.customer' | t">
+              @if (order.customer.name) {
+                <p class="orders__name">{{ order.customer.name }}</p>
+              }
+              <p class="orders__email">{{ order.customer.email }}</p>
+            </td>
+
+            <td class="orders__cell orders__cell--items" [attr.data-label]="'admin.items' | t">
+              <p class="orders__qty">{{ 'admin.itemCount' | t: { count: itemCount(order) } }}</p>
+              <ul class="orders__lines">
+                @for (line of order.lines; track line.id) {
+                  <li [class.is-cancelled]="line.status === 'CANCELLED'">{{ lineLabel(line) }}</li>
+                }
+              </ul>
+            </td>
+
+            <td class="orders__cell orders__cell--ship" [attr.data-label]="'admin.shipTo' | t">
+              {{ order.shipTo ?? '—' }}
+            </td>
+
+            <td class="orders__cell orders__cell--total" [attr.data-label]="'admin.total' | t">
+              {{ order.total | currency: 'USD' }}
+            </td>
+
+            <td class="orders__cell orders__cell--status" [attr.data-label]="'admin.status' | t">
+              <!--
+                Nothing left to move: every line was called off by the person
+                who placed it, and a select over that would offer a change it
+                cannot make.
+              -->
+              @if (order.status === 'CANCELLED') {
+                <span class="badge badge--danger">{{ 'status.CANCELLED' | t }}</span>
+              } @else {
+                <select
+                  class="control control--sm"
+                  [value]="order.status ?? ''"
+                  [disabled]="saving() === order.id"
+                  (change)="setStatus(order, $event)"
+                  [attr.aria-label]="'admin.setStatusFor' | t: { number: order.number }"
+                >
+                  <!--
+                    Reachable only while the lines disagree, and never chosen:
+                    it says what is, rather than offering to make it so.
+                  -->
+                  @if (order.status === null) {
+                    <option value="" disabled>{{ 'admin.mixedStatus' | t }}</option>
+                  }
+                  @for (option of statuses; track option) {
+                    <option [value]="option">{{ 'status.' + option | t }}</option>
+                  }
+                </select>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (pages() > 1) {
+      <app-pagination
+        class="orders__pagination"
+        [page]="page()"
+        [pages]="pages()"
+        (pageChange)="setPage($event)"
+      />
+    }
+  } @else {
+    <p class="orders__note">{{ 'admin.noOrders' | t }}</p>
+  }
+</div>

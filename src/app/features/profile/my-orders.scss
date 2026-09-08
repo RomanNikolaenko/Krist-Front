@@ -104,9 +104,15 @@
   border-radius: var(--r-sm);
 }
 
-.tag.is-process {
+.tag.is-process,
+.tag.is-shipped {
   color: var(--c-warn);
   background: var(--c-warn-soft);
+}
+
+.tag.is-returned {
+  color: var(--c-muted);
+  background: var(--c-surface);
 }
 
 .tag.is-cancelled {

@@ -37,6 +37,8 @@
           <span
             class="tag"
             [class.is-process]="line.status === 'PROCESSING'"
+            [class.is-shipped]="line.status === 'SHIPPED'"
+            [class.is-returned]="line.status === 'RETURNED'"
             [class.is-cancelled]="line.status === 'CANCELLED'"
             >{{ 'status.' + line.status | t }}</span
           >

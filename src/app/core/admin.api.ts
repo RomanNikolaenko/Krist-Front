@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from './auth/api.config';
 import { I18n } from './i18n/i18n';
+import { OrderStatus } from './models';
 
 /** One language of a product. Blank fields fall back to the base language. */
 export interface ProductTranslation {
@@ -52,6 +53,47 @@ export interface ProductDraft {
   sizes: string[];
   inStock: boolean;
   images: { url: string }[];
+}
+
+/** The four an administrator may set. Cancelling stays the customer's. */
+export const ADMIN_ORDER_STATUSES = [
+  'PROCESSING',
+  'SHIPPED',
+  'DELIVERED',
+  'RETURNED',
+] as const satisfies readonly OrderStatus[];
+
+export type AdminOrderStatus = (typeof ADMIN_ORDER_STATUSES)[number];
+
+export interface AdminOrderLine {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  size: string;
+  color: string | null;
+  colorLabel: string | null;
+  qty: number;
+  status: OrderStatus;
+}
+
+export interface AdminOrder {
+  id: string;
+  number: string;
+  placedAt: string;
+  total: number;
+  customer: { name: string; email: string };
+  /** Flattened by the server. Null once the address has been deleted. */
+  shipTo: string | null;
+  /** Null when the lines disagree — half shipped is not a status. */
+  status: OrderStatus | null;
+  lines: AdminOrderLine[];
+}
+
+export interface AdminOrderPage {
+  items: AdminOrder[];
+  total: number;
+  pages: number;
 }
 
 /** A taxonomy row's name in another language. */
@@ -119,12 +161,32 @@ export class AdminApi {
   }
 
   products(query: { q?: string; page?: number }): Promise<AdminProductPage> {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ lang: this.i18n.lang() });
     if (query.q?.trim()) params.set('q', query.q.trim());
     if (query.page) params.set('page', String(query.page));
 
     return firstValueFrom(
       this.http.get<AdminProductPage>(`${this.api}/admin/products?${params.toString()}`),
+    );
+  }
+
+  orders(query: { q?: string; status?: OrderStatus | ''; page?: number }): Promise<AdminOrderPage> {
+    const params = new URLSearchParams({ lang: this.i18n.lang() });
+    if (query.q?.trim()) params.set('q', query.q.trim());
+    if (query.status) params.set('status', query.status);
+    if (query.page) params.set('page', String(query.page));
+
+    return firstValueFrom(
+      this.http.get<AdminOrderPage>(`${this.api}/admin/orders?${params.toString()}`),
+    );
+  }
+
+  /** Moves the whole order; the server leaves cancelled lines where they are. */
+  setOrderStatus(id: string, status: AdminOrderStatus): Promise<AdminOrder> {
+    return firstValueFrom(
+      this.http.patch<AdminOrder>(`${this.api}/admin/orders/${id}/status?${this.lang()}`, {
+        status,
+      }),
     );
   }
 

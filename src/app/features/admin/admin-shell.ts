@@ -16,6 +16,7 @@ import { T } from '../../shared/t.pipe';
 
 const NAV: { path: string; labelKey: string; icon: IconName }[] = [
   { path: 'products', labelKey: 'admin.products', icon: 'box' },
+  { path: 'orders', labelKey: 'admin.orders', icon: 'clipboard' },
   { path: 'taxonomy', labelKey: 'admin.taxonomy', icon: 'sliders' },
 ];
 
