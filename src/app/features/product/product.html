@@ -246,7 +246,12 @@
             <p class="reviews__empty">{{ 'product.noReviewsYet' | t }}</p>
           }
 
-          @if (auth.isAuthenticated()) {
+          <!--
+            Reviews are for people who bought the thing. The server refuses the
+            rest, and this is what stops somebody writing three paragraphs
+            before being told.
+          -->
+          @if (auth.isAuthenticated() && p.canReview) {
             <form class="review-form" (submit)="$event.preventDefault(); submitReview()">
               <h3>{{ (myReview() ? 'product.editYourReview' : 'product.addReview') | t }}</h3>
 
@@ -298,6 +303,8 @@
                 <p class="review-form__error">{{ reviewError() }}</p>
               }
             </form>
+          } @else if (auth.isAuthenticated()) {
+            <p class="reviews__gate">{{ 'product.buyToReview' | t }}</p>
           } @else {
             <!-- A review has to be attributable, so it needs an account behind it. -->
             <p class="reviews__gate">

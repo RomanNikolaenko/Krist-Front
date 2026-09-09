@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ADMIN_ORDER_STATUSES,
   AdminApi,
@@ -8,15 +14,13 @@ import {
   AdminOrderLine,
   AdminOrderStatus,
 } from '../../core/admin.api';
+import { AuthService } from '../../core/auth/auth.service';
 import { OrderStatus } from '../../core/models';
 import { D } from '../../shared/d.pipe';
 import { Icon } from '../../shared/ui/icon';
 import { Pagination } from '../../shared/ui/pagination';
+import { apiMessage } from '../../core/api-error';
 import { T } from '../../shared/t.pipe';
-
-interface ApiError {
-  message?: string | string[];
-}
 
 /**
  * The order book.
@@ -35,6 +39,13 @@ interface ApiError {
 })
 export class AdminOrdersList {
   private readonly api = inject(AdminApi);
+  private readonly auth = inject(AuthService);
+
+  /**
+   * Support may read the order book and not change it. The server enforces
+   * that; this decides whether a select is put in front of them at all.
+   */
+  protected readonly canWrite = computed(() => this.auth.has('orders.write'));
 
   protected readonly statuses = ADMIN_ORDER_STATUSES;
   /** What the filter offers: the four, plus the one only a customer can set. */
@@ -101,7 +112,7 @@ export class AdminOrdersList {
       // The select already shows the new value; the server disagreed, so put it
       // back rather than leaving the screen claiming something that is not so.
       select.value = order.status ?? '';
-      this.error.set(this.messageFor(error));
+      this.error.set(apiMessage(error, 'admin.ordersFailed'));
     } finally {
       this.saving.set(null);
     }
@@ -117,19 +128,9 @@ export class AdminOrdersList {
       this.pages.set(result.pages);
       this.total.set(result.total);
     } catch (error) {
-      this.error.set(this.messageFor(error));
+      this.error.set(apiMessage(error, 'admin.ordersFailed'));
     } finally {
       this.loading.set(false);
     }
-  }
-
-  private messageFor(error: unknown): string {
-    const detail = error instanceof HttpErrorResponse ? (error.error as ApiError | null) : null;
-    const message = detail?.message;
-
-    if (typeof message === 'string' && message) return message;
-    if (Array.isArray(message) && message.length) return message[0];
-
-    return 'admin.ordersFailed';
   }
 }

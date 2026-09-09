@@ -68,6 +68,7 @@ export class Shop {
         .filter(Boolean) ?? [];
 
     return {
+      q: params.get('q') ?? '',
       categories: list('categories'),
       colors: list('colors'),
       sizes: list('sizes'),
@@ -210,7 +211,13 @@ export class Shop {
     const narrowed =
       this.ceiling() > 0 && (f.minPrice > this.floor() || f.maxPrice < this.ceiling());
 
-    return f.categories.length + f.colors.length + f.sizes.length + (narrowed ? 1 : 0);
+    return (
+      (f.q.trim() ? 1 : 0) +
+      f.categories.length +
+      f.colors.length +
+      f.sizes.length +
+      (narrowed ? 1 : 0)
+    );
   });
 
   protected togglePanel(key: PanelKey | string): void {
@@ -337,6 +344,16 @@ export class Shop {
     this.apply({ maxPrice: Math.max(value, this.filters().minPrice) });
   }
 
+  /** Asks the same question again after a failure. */
+  protected retry(): void {
+    this.page.reload();
+  }
+
+  /** Clears the term without touching the rest of the filters. */
+  protected clearSearch(): void {
+    this.apply({ q: '' });
+  }
+
   protected setSort(sort: string): void {
     this.apply({ sort: sort as SortKey });
   }
@@ -364,6 +381,7 @@ export class Shop {
     const next: ShopFilters = { ...this.filters(), ...patch, page };
 
     const queryParams: Params = {
+      q: next.q.trim() ? next.q.trim() : null,
       categories: next.categories.length ? next.categories.join(',') : null,
       colors: next.colors.length ? next.colors.join(',') : null,
       sizes: next.sizes.length ? next.sizes.join(',') : null,

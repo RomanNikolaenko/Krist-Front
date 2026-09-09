@@ -103,10 +103,15 @@
           }
         </label>
 
-        <button type="submit" class="btn btn--primary submit full">{{ 'contact.send' | t }}</button>
+        <button type="submit" class="btn btn--primary submit full" [disabled]="sending()">
+          {{ (sending() ? 'contact.sending' : 'contact.send') | t }}
+        </button>
 
         @if (sent()) {
           <p class="sent full">{{ 'contact.sent' | t }}</p>
+        }
+        @if (error()) {
+          <p class="alert alert--danger full">{{ error() }}</p>
         }
       </form>
     </section>

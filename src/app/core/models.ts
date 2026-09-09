@@ -15,6 +15,11 @@ export type SizeName = string;
  * move to a database.
  */
 export interface Product {
+  /**
+   * Whether the person reading may review it — they are signed in and have
+   * ordered it. Only the detail endpoint answers this; the lists leave it out.
+   */
+  canReview?: boolean;
   id: string;
   slug: string;
   brand: string;
@@ -193,6 +198,8 @@ export interface AppNotification {
 export type SortKey = 'latest' | 'price-asc' | 'price-desc' | 'rating';
 
 export interface ShopFilters {
+  /** Free text, matched against the brand and the name by the server. */
+  q: string;
   categories: string[];
   colors: ColorName[];
   sizes: SizeName[];

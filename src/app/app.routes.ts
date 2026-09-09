@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, permissionGuard } from './core/auth/auth.guard';
+import { anyPermissionGuard, authGuard, permissionGuard } from './core/auth/auth.guard';
 import { checkoutStepGuard } from './core/checkout.guard';
 import { Shell } from './layout/shell';
 
@@ -12,7 +12,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./features/admin/admin-shell').then((m) => m.AdminShell),
-    canActivate: [permissionGuard('products.write')],
+    canActivate: [anyPermissionGuard('products.write', 'orders.read')],
     title: 'Krist — Admin',
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'products' },
@@ -20,25 +20,30 @@ export const routes: Routes = [
         path: 'products',
         loadComponent: () =>
           import('./features/admin/products-list').then((m) => m.AdminProductsList),
+        canActivate: [permissionGuard('products.write')],
       },
       // Before ":id", or "new" is read as the id of a product that does not exist.
       {
         path: 'products/new',
         loadComponent: () =>
           import('./features/admin/product-form').then((m) => m.AdminProductForm),
+        canActivate: [permissionGuard('products.write')],
       },
       {
         path: 'products/:id',
         loadComponent: () =>
           import('./features/admin/product-form').then((m) => m.AdminProductForm),
+        canActivate: [permissionGuard('products.write')],
       },
       {
         path: 'orders',
         loadComponent: () => import('./features/admin/orders-list').then((m) => m.AdminOrdersList),
+        canActivate: [permissionGuard('orders.read')],
       },
       {
         path: 'taxonomy',
         loadComponent: () => import('./features/admin/taxonomy').then((m) => m.AdminTaxonomy),
+        canActivate: [permissionGuard('products.write')],
       },
     ],
   },
@@ -169,10 +174,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/forgot-password').then((m) => m.ForgotPassword),
     title: 'Forgot Password — Krist',
   },
+  /*
+   * The addresses the emails point at. They did not exist: both links fell
+   * through to the catch-all and landed on the home page, which is why an
+   * account could never be confirmed and a password could never be reset.
+   */
   {
-    path: 'otp',
-    loadComponent: () => import('./features/auth/otp').then((m) => m.Otp),
-    title: 'Enter OTP — Krist',
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/reset-password').then((m) => m.ResetPassword),
+    title: 'Reset Password — Krist',
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () => import('./features/auth/verify-email').then((m) => m.VerifyEmail),
+    title: 'Confirm Your Email — Krist',
   },
   {
     path: 'password-changed',

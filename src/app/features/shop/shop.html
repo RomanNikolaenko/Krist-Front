@@ -186,6 +186,16 @@
     </aside>
 
     <div class="content">
+      @if (filters().q) {
+        <p class="term">
+          {{ 'shop.searchingFor' | t: { term: filters().q } }}
+          <button type="button" class="term__clear" (click)="clearSearch()">
+            <app-icon [name]="'close'" [size]="16" />
+            {{ 'shop.clearSearch' | t }}
+          </button>
+        </p>
+      }
+
       <div class="toolbar">
         <div class="views">
           <button
@@ -220,7 +230,17 @@
         />
       </div>
 
-      @if (result().items.length) {
+      @if (failed()) {
+        <div class="empty">
+          <h2>{{ 'shop.failedTitle' | t }}</h2>
+          <p class="muted">{{ 'shop.failedText' | t }}</p>
+          <button type="button" class="btn btn--primary" (click)="retry()">
+            {{ 'shop.retry' | t }}
+          </button>
+        </div>
+      } @else if (loading() && !result().items.length) {
+        <p class="muted">{{ 'shop.loading' | t }}</p>
+      } @else if (result().items.length) {
         <div [class]="view() === 'grid' ? 'grid' : 'list'">
           @for (product of result().items; track product.id) {
             <app-product-card [product]="product" [layout]="view()" />

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AccountStore } from '../../core/account-store';
 import { AuthService } from '../../core/auth/auth.service';
@@ -13,11 +12,8 @@ import { Icon } from '../../shared/ui/icon';
 import { Modal } from '../../shared/ui/modal';
 import { I18n } from '../../core/i18n/i18n';
 import { D } from '../../shared/d.pipe';
+import { apiMessage } from '../../core/api-error';
 import { T } from '../../shared/t.pipe';
-
-interface ApiError {
-  message?: string | string[];
-}
 
 @Component({
   selector: 'app-review-order',
@@ -88,7 +84,7 @@ export class ReviewOrder {
       this.checkout.reset();
       this.confirmed.set(true);
     } catch (error) {
-      this.failure.set(this.messageFor(error));
+      this.failure.set(apiMessage(error, this.i18n.translate('review.orderFailed')));
     } finally {
       this.placing.set(false);
     }
@@ -109,16 +105,6 @@ export class ReviewOrder {
     this.checkout.deliverTo({ ...created });
 
     return created.id;
-  }
-
-  private messageFor(error: unknown): string {
-    const detail = error instanceof HttpErrorResponse ? (error.error as ApiError | null) : null;
-    const message = detail?.message;
-
-    if (typeof message === 'string' && message) return message;
-    if (Array.isArray(message) && message.length) return message[0];
-
-    return this.i18n.translate('review.orderFailed');
   }
 
   protected viewOrder(): void {

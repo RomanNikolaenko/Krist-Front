@@ -35,17 +35,32 @@
       <div class="col subscribe">
         <h2 class="col__title">{{ 'footer.subscribe' | t }}</h2>
         <p>{{ 'footer.subscribeText' | t }}</p>
-        <form class="sub" (submit)="$event.preventDefault()">
-          <app-icon [name]="'mail'" [size]="24" />
-          <input
-            type="email"
-            [placeholder]="'footer.emailPlaceholder' | t"
-            [attr.aria-label]="'footer.emailLabel' | t"
-          />
-          <button type="submit" [attr.aria-label]="'footer.subscribeAction' | t">
-            <app-icon [name]="'arrow-right'" [size]="24" />
-          </button>
-        </form>
+        @if (subscribed()) {
+          <p class="sub__done">{{ 'footer.subscribed' | t }}</p>
+        } @else {
+          <form class="sub" (submit)="$event.preventDefault(); subscribe()">
+            <app-icon [name]="'mail'" [size]="24" />
+            <input
+              type="email"
+              required
+              [value]="email()"
+              (input)="email.set($any($event.target).value)"
+              [placeholder]="'footer.emailPlaceholder' | t"
+              [attr.aria-label]="'footer.emailLabel' | t"
+            />
+            <button
+              type="submit"
+              [disabled]="sending()"
+              [attr.aria-label]="'footer.subscribeAction' | t"
+            >
+              <app-icon [name]="'arrow-right'" [size]="24" />
+            </button>
+          </form>
+
+          @if (error()) {
+            <p class="sub__error">{{ error() }}</p>
+          }
+        }
       </div>
     </div>
 
@@ -59,15 +74,9 @@
       </ul>
       <p class="copy">{{ 'footer.rights' | t }}</p>
       <ul class="social">
-        <li>
-          <a href="#" aria-label="Facebook"><app-icon [name]="'facebook'" [size]="24" /></a>
-        </li>
-        <li>
-          <a href="#" aria-label="Instagram"><app-icon [name]="'instagram'" [size]="24" /></a>
-        </li>
-        <li>
-          <a href="#" aria-label="Twitter"><app-icon [name]="'twitter'" [size]="24" /></a>
-        </li>
+        <li></li>
+        <li></li>
+        <li></li>
       </ul>
     </div>
   </div>

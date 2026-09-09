@@ -208,3 +208,14 @@ hr {
     grid-template-columns: 1fr;
   }
 }
+
+.sub__done {
+  font-size: var(--fs-sm);
+  color: var(--c-on-ink);
+}
+
+.sub__error {
+  margin-top: 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--c-danger);
+}

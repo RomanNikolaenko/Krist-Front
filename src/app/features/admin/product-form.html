@@ -30,8 +30,9 @@
       </label>
 
       <label class="field field--inline product-form__grid-full">
-        <input type="checkbox" formControlName="inStock" />
-        <span>{{ 'admin.inStock' | t }}</span>
+        <span class="field__label">{{ 'admin.stockCount' | t }}</span>
+        <input class="control" type="number" formControlName="stock" min="0" step="1" />
+        <span class="field__hint">{{ 'admin.stockHint' | t }}</span>
       </label>
     </div>
 

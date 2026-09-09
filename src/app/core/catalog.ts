@@ -28,6 +28,7 @@ const EMPTY_PAGE: ProductPage = { items: [], total: 0, pages: 1, from: 0, to: 0 
  * numbers written down here. A zero ceiling means they have not landed yet.
  */
 export const EMPTY_FILTERS: ShopFilters = {
+  q: '',
   categories: [],
   colors: [],
   sizes: [],
@@ -65,8 +66,14 @@ export class Catalog {
     return `lang=${this.i18n.lang()}`;
   }
 
-  /** Loaded once and shared: the filter counts do not depend on the filters. */
-  readonly facets = httpResource<Facets>(() => `${this.api}/products/facets`, {
+  /**
+   * Shared by the menu, the home rail and the shop's filters: the counts do not
+   * depend on which filters are on, only on which language is being read. That
+   * "only" was missing — this was the one request here that did not name a
+   * language, so the departments came back in whatever the browser's
+   * Accept-Language said and stayed that way when somebody switched.
+   */
+  readonly facets = httpResource<Facets>(() => `${this.api}/products/facets?${this.lang()}`, {
     defaultValue: EMPTY_FACETS,
   });
 
@@ -105,6 +112,7 @@ export class Catalog {
   private searchUrl(filters: ShopFilters): string {
     const query = new URLSearchParams();
 
+    if (filters.q.trim()) query.set('q', filters.q.trim());
     if (filters.categories.length) query.set('categories', filters.categories.join(','));
     if (filters.colors.length) query.set('colors', filters.colors.join(','));
     if (filters.sizes.length) query.set('sizes', filters.sizes.join(','));

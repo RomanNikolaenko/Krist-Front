@@ -10,7 +10,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
 import { CartStore } from '../core/cart-store';
 import { ScrollLock } from '../core/scroll-lock';
@@ -54,6 +54,8 @@ export class Header {
   protected toggleGroup(key: string): void {
     this.openGroup.update((open) => (open === key ? null : key));
   }
+
+  private readonly router = inject(Router);
 
   protected readonly shopOpen = signal(false);
   protected readonly drawerOpen = signal(false);
@@ -107,6 +109,30 @@ export class Header {
     this.drawerOpen.set(next);
     if (next) this.searchOpen.set(false);
     else this.closeAll();
+  }
+
+  /** What is in the box. The URL is what the shop reads; this is the draft. */
+  protected readonly term = signal('');
+
+  /**
+   * Hands the term to the shop and closes the field behind it.
+   *
+   * The box empties on the way out. What was searched for is in the address bar
+   * and on the shop's own chip from here on, and a field that reopens holding
+   * the last thing somebody looked for reads as a filter that is still applied.
+   */
+  protected search(): void {
+    const q = this.term().trim();
+
+    void this.router.navigate(['/shop'], { queryParams: q ? { q } : {} });
+    this.term.set('');
+    this.searchOpen.set(false);
+  }
+
+  /** Empties the box without leaving it, and puts the cursor back in it. */
+  protected clear(): void {
+    this.term.set('');
+    this.searchInput()?.nativeElement.focus();
   }
 
   protected toggleSearch(): void {

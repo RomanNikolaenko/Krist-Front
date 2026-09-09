@@ -582,3 +582,49 @@
     margin-left: 0;
   }
 }
+
+/* The search row: a field that grows and the button that submits it. */
+.header__search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header__search-form .header__search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.header__search-go {
+  flex: none;
+}
+
+@media (width <= 30rem) {
+  .header__search-go {
+    display: none;
+  }
+}
+
+/*
+ * The cross inside the field. Native `type="search"` draws one of its own in
+ * Chrome, which would put two of them side by side — and that one is invisible
+ * to keyboards and screen readers, so this replaces it rather than joining it.
+ */
+.header__search-field input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.header__search-clear {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--c-heading);
+  }
+}

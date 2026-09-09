@@ -130,10 +130,40 @@
   @if (searchOpen()) {
     <div class="header__search">
       <div class="container container--wide">
-        <label class="header__search-field">
-          <app-icon [name]="'search'" [size]="24" />
-          <input #searchInput type="search" [placeholder]="'header.searchPlaceholder' | t" />
-        </label>
+        <!--
+          A form, so Enter submits it and the phone keyboard offers "search".
+          It hands the term to the shop through the URL, which is where every
+          other filter lives too.
+        -->
+        <form class="header__search-form" (submit)="$event.preventDefault(); search()">
+          <label class="header__search-field">
+            <app-icon [name]="'search'" [size]="24" />
+            <input
+              #searchInput
+              type="search"
+              name="q"
+              [value]="term()"
+              (input)="term.set($any($event.target).value)"
+              [placeholder]="'header.searchPlaceholder' | t"
+              [attr.aria-label]="'header.search' | t"
+            />
+
+            <!-- Only while there is something to clear. -->
+            @if (term()) {
+              <button
+                type="button"
+                class="header__search-clear"
+                (click)="clear()"
+                [attr.aria-label]="'header.clearSearch' | t"
+              >
+                <app-icon [name]="'close'" [size]="20" />
+              </button>
+            }
+          </label>
+          <button type="submit" class="btn btn--primary header__search-go">
+            {{ 'header.search' | t }}
+          </button>
+        </form>
       </div>
     </div>
   }

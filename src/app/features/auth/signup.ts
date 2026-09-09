@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
-import { messageFrom } from './login';
 import { AuthLayout } from './auth-layout';
+import { apiMessage } from '../../core/api-error';
+import { I18n } from '../../core/i18n/i18n';
 import { T } from '../../shared/t.pipe';
 
 @Component({
@@ -14,6 +15,7 @@ import { T } from '../../shared/t.pipe';
   templateUrl: './signup.html',
 })
 export class Signup {
+  private readonly i18n = inject(I18n);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
 
@@ -57,7 +59,7 @@ export class Signup {
       this.sent.set(result.message);
       this.form.reset();
     } catch (failure) {
-      this.error.set(messageFrom(failure));
+      this.error.set(apiMessage(failure, this.i18n.translate('common.failed')));
     } finally {
       this.submitting.set(false);
     }

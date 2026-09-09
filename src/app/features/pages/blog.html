@@ -5,9 +5,14 @@
   <div class="grid">
     @for (post of posts; track post.slug) {
       <article class="post">
-        <a class="post__media" href="#" [attr.aria-label]="post.title">
+        <!--
+          Not a link. These are teasers with no article behind them yet; a card
+          that navigates nowhere is a worse promise than a card that does not
+          claim to.
+        -->
+        <div class="post__media">
           <img [src]="post.image" alt="" width="351" height="234" loading="lazy" />
-        </a>
+        </div>
 
         <p class="post__meta">
           <span class="post__tag">{{ post.tag }}</span>
@@ -19,10 +24,10 @@
         <h2 class="post__title">{{ post.title }}</h2>
         <p class="post__excerpt">{{ post.excerpt }}</p>
 
-        <a class="post__more" href="#">
+        <p class="post__more">
           {{ 'blog.readMore' | t }}
           <app-icon [name]="'arrow-right'" [size]="24" />
-        </a>
+        </p>
       </article>
     }
   </div>

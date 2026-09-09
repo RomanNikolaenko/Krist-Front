@@ -185,10 +185,11 @@
 <section class="section container">
   <h2 class="section__title">{{ 'home.instagram' | t }}</h2>
   <div class="grid-4 stories">
+    <!-- Pictures, not links: there is no account for them to point at yet. -->
     @for (story of stories; track story) {
-      <a class="story" href="#"
-        ><img [src]="story" [alt]="'home.storyAlt' | t" width="260" height="322" loading="lazy"
-      /></a>
+      <span class="story">
+        <img [src]="story" [alt]="'home.storyAlt' | t" width="260" height="322" loading="lazy" />
+      </span>
     }
   </div>
 </section>

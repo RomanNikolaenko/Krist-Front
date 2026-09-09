@@ -54,7 +54,7 @@
     </div>
 
     <nav class="admin__nav" [attr.aria-label]="'admin.sections' | t">
-      @for (item of nav; track item.path) {
+      @for (item of nav(); track item.path) {
         <a
           class="admin__nav-item"
           [routerLink]="item.path"

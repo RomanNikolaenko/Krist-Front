@@ -107,14 +107,17 @@ export const FOOTER_LINKS = [
       { key: 'footer.checkout', route: '/checkout/address' },
     ],
   },
+  /*
+   * Only what exists. Careers, delivery terms, a privacy policy and terms of
+   * use each pointed at the home page — a link that lies about where it goes is
+   * worse than a column with fewer rows. They come back when the pages do.
+   */
   {
     titleKey: 'footer.service',
     links: [
       { key: 'footer.aboutUs', route: '/our-story' },
-      { key: 'footer.careers', route: '/' },
-      { key: 'footer.delivery', route: '/' },
-      { key: 'footer.privacy', route: '/' },
-      { key: 'footer.terms', route: '/' },
+      { key: 'nav.contact', route: '/contact' },
+      { key: 'nav.blog', route: '/blog' },
     ],
   },
 ];

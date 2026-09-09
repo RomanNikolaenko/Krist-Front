@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthLayout } from './auth-layout';
+import { apiMessage } from '../../core/api-error';
+import { I18n } from '../../core/i18n/i18n';
 import { T } from '../../shared/t.pipe';
 
 @Component({
@@ -13,6 +15,7 @@ import { T } from '../../shared/t.pipe';
   templateUrl: './login.html',
 })
 export class Login {
+  private readonly i18n = inject(I18n);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -22,7 +25,7 @@ export class Login {
   protected readonly error = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    email: ['roma.nikolaenko.91@gmail.com', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
     remember: [true],
   });
@@ -52,19 +55,9 @@ export class Login {
     } catch (failure) {
       // One message for a wrong password and an unknown address — the server
       // deliberately does not distinguish them, and neither should the form.
-      this.error.set(messageFrom(failure));
+      this.error.set(apiMessage(failure, this.i18n.translate('common.failed')));
     } finally {
       this.submitting.set(false);
     }
   }
-}
-
-/** Pulls the server's message out of an HttpErrorResponse, with a fallback. */
-export function messageFrom(failure: unknown): string {
-  const body = (failure as { error?: { message?: string | string[] } } | null)?.error;
-  const message = body?.message;
-
-  if (Array.isArray(message)) return message[0];
-  if (typeof message === 'string') return message;
-  return 'Something went wrong. Please try again.';
 }

@@ -26,6 +26,9 @@ export interface AdminProduct {
   /** `name` goes back to the server; `label` is the one in the chosen language. */
   colors: { name: string; label: string }[];
   sizes: string[];
+  /** How many there are. Zero is what takes it off sale. */
+  stock: number;
+  /** `stock > 0`, derived by the server so both ends agree on one number. */
   inStock: boolean;
   images: string[];
   /** Shown before a delete, so nobody removes something people wrote about. */
@@ -51,7 +54,7 @@ export interface ProductDraft {
   translations: ProductTranslation[];
   colors: string[];
   sizes: string[];
-  inStock: boolean;
+  stock: number;
   images: { url: string }[];
 }
 

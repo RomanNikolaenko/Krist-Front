@@ -14,10 +14,10 @@ import { ScrollLock } from '../../core/scroll-lock';
 import { Icon, IconName } from '../../shared/ui/icon';
 import { T } from '../../shared/t.pipe';
 
-const NAV: { path: string; labelKey: string; icon: IconName }[] = [
-  { path: 'products', labelKey: 'admin.products', icon: 'box' },
-  { path: 'orders', labelKey: 'admin.orders', icon: 'clipboard' },
-  { path: 'taxonomy', labelKey: 'admin.taxonomy', icon: 'sliders' },
+const NAV: { path: string; labelKey: string; icon: IconName; permission: string }[] = [
+  { path: 'products', labelKey: 'admin.products', icon: 'box', permission: 'products.write' },
+  { path: 'orders', labelKey: 'admin.orders', icon: 'clipboard', permission: 'orders.read' },
+  { path: 'taxonomy', labelKey: 'admin.taxonomy', icon: 'sliders', permission: 'products.write' },
 ];
 
 /** Below this the rail costs more room than the content can spare. */
@@ -43,7 +43,8 @@ export class AdminShell {
   private readonly router = inject(Router);
 
   protected readonly account = inject(AccountStore);
-  protected readonly nav = NAV;
+  /** Only the screens this person can actually open. */
+  protected readonly nav = computed(() => NAV.filter((item) => this.auth.has(item.permission)));
 
   protected readonly drawerOpen = signal(false);
 

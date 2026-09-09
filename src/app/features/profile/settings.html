@@ -26,20 +26,6 @@
   />
 </div>
 
-@for (item of switches; track item.key) {
-  <div class="row">
-    <div>
-      <p class="title">{{ item.titleKey | t }}</p>
-      <p class="text">{{ item.textKey | t }}</p>
-    </div>
-    <app-toggle-switch
-      [checked]="toggles()[item.key]"
-      [label]="item.titleKey | t"
-      (checkedChange)="setToggle(item.key, $event)"
-    />
-  </div>
-}
-
 <!--
   The one irreversible thing on this screen, so it is set apart from the rows
   above rather than sitting in line with the appearance and language pickers.

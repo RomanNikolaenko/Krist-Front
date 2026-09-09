@@ -6,7 +6,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -16,11 +15,8 @@ import { I18n } from '../../core/i18n/i18n';
 import { ChipOption, ChipSelect } from '../../shared/ui/chip-select';
 import { LANGUAGES } from '../../core/i18n/i18n';
 import { Icon } from '../../shared/ui/icon';
+import { apiMessage } from '../../core/api-error';
 import { T } from '../../shared/t.pipe';
-
-interface ApiError {
-  message?: string | string[];
-}
 
 interface TranslationDraft {
   name: string;
@@ -123,7 +119,7 @@ export class AdminProductForm {
     description: ['', [Validators.required, Validators.maxLength(5000)]],
     price: [0, [Validators.required, Validators.min(0)]],
     oldPrice: [null as number | null],
-    inStock: [true],
+    stock: [0, [Validators.required, Validators.min(0)]],
     images: this.fb.array<string>([]),
   });
 
@@ -225,7 +221,7 @@ export class AdminProductForm {
       categories: [...this.chosenCategories(), ...this.chosenSubcategories()],
       colors: this.chosenColors(),
       sizes: this.chosenSizes(),
-      inStock: value.inStock,
+      stock: value.stock,
       images: images.map((url) => ({ url })),
       translations: Object.entries(this.translations()).map(([locale, text]) => ({
         locale,
@@ -241,7 +237,7 @@ export class AdminProductForm {
 
       await this.router.navigate(['/admin/products']);
     } catch (error) {
-      this.error.set(this.messageFor(error));
+      this.error.set(apiMessage(error, this.i18n.translate('admin.saveFailed')));
     } finally {
       this.saving.set(false);
     }
@@ -274,7 +270,7 @@ export class AdminProductForm {
         description: product.description,
         price: product.price,
         oldPrice: product.oldPrice,
-        inStock: product.inStock,
+        stock: product.stock,
       });
       // Nulls become empty strings: the inputs need a value, and an empty one
       // is what the server reads back as "no translation".
@@ -301,19 +297,9 @@ export class AdminProductForm {
         this.images.push(this.fb.nonNullable.control(url, Validators.required));
       }
     } catch (error) {
-      this.error.set(this.messageFor(error));
+      this.error.set(apiMessage(error, this.i18n.translate('admin.saveFailed')));
     } finally {
       this.loading.set(false);
     }
-  }
-
-  private messageFor(error: unknown): string {
-    const detail = error instanceof HttpErrorResponse ? (error.error as ApiError | null) : null;
-    const message = detail?.message;
-
-    if (typeof message === 'string' && message) return message;
-    if (Array.isArray(message) && message.length) return message[0];
-
-    return this.i18n.translate('admin.saveFailed');
   }
 }

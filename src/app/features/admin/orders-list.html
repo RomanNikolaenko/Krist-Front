@@ -95,6 +95,10 @@
               -->
               @if (order.status === 'CANCELLED') {
                 <span class="badge badge--danger">{{ 'status.CANCELLED' | t }}</span>
+              } @else if (!canWrite()) {
+                <span class="badge">
+                  {{ (order.status ? 'status.' + order.status : 'admin.mixedStatus') | t }}
+                </span>
               } @else {
                 <select
                   class="control control--sm"

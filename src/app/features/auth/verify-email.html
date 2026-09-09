@@ -1,0 +1,40 @@
+<app-auth-layout image="https://picsum.photos/seed/krist-verify/900/1200">
+  @switch (state()) {
+    @case ('checking') {
+      <h1 class="auth-title">{{ 'auth.verifyChecking' | t }}</h1>
+      <p class="auth-sub">{{ 'auth.verifyWait' | t }}</p>
+    }
+
+    @case ('done') {
+      <h1 class="auth-title">{{ 'auth.verifyDoneTitle' | t }}</h1>
+      <p class="auth-sub">{{ 'auth.verifyDoneText' | t }}</p>
+      <a class="btn btn--primary auth-submit" routerLink="/login">{{ 'auth.backToLogin' | t }}</a>
+    }
+
+    @default {
+      <h1 class="auth-title">{{ 'auth.verifyFailedTitle' | t }}</h1>
+      <p class="auth-sub">
+        {{ (state() === 'no-token' ? 'auth.verifyNoToken' : 'auth.verifyFailedText') | t }}
+      </p>
+
+      @if (resent()) {
+        <p class="alert">{{ 'auth.verifyResent' | t }}</p>
+      } @else {
+        <form class="auth-form" [formGroup]="form" (ngSubmit)="resend()">
+          <label class="field">
+            <span class="field__label">{{ 'auth.email' | t }}</span>
+            <input class="control" type="email" formControlName="email" autocomplete="email" />
+          </label>
+
+          @if (error()) {
+            <p class="alert alert--danger">{{ error() }}</p>
+          }
+
+          <button type="submit" class="btn btn--primary auth-submit" [disabled]="resending()">
+            {{ (resending() ? 'auth.sending' : 'auth.verifyResend') | t }}
+          </button>
+        </form>
+      }
+    }
+  }
+</app-auth-layout>

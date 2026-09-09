@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -20,13 +19,10 @@ import { ProductCard } from '../../shared/ui/product-card';
 import { FeatureStrip } from '../../shared/ui/feature-strip';
 import { I18n } from '../../core/i18n/i18n';
 import { D } from '../../shared/d.pipe';
+import { apiMessage } from '../../core/api-error';
 import { T } from '../../shared/t.pipe';
 
 /** The shape the API filter answers with when it refuses a request. */
-interface ApiError {
-  message?: string | string[];
-}
-
 // Kept in step with WriteReviewDto on the server.
 const TITLE_MIN = 3;
 const BODY_MIN = 10;
@@ -189,7 +185,7 @@ export class ProductPage {
       this.reviewsResource.reload();
       this.productResource.reload();
     } catch (error) {
-      this.reviewError.set(this.messageFor(error));
+      this.reviewError.set(apiMessage(error, this.i18n.translate('product.reviewFailed')));
     } finally {
       this.submitting.set(false);
     }
@@ -203,16 +199,6 @@ export class ProductPage {
    * the same text fails in exactly the same way. The generic line is kept for
    * the failures that really are worth retrying: a dropped connection, a 500.
    */
-  private messageFor(error: unknown): string {
-    const detail = error instanceof HttpErrorResponse ? (error.error as ApiError | null) : null;
-    const message = detail?.message;
-
-    if (typeof message === 'string' && message) return message;
-    if (Array.isArray(message) && message.length) return message[0];
-
-    return this.i18n.translate('product.reviewFailed');
-  }
-
   protected async toggleLike(id: string, liked: boolean): Promise<void> {
     await this.reviewsApi.setLike(id, !liked);
     this.reviewsResource.reload();
